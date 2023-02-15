@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.main_view, new ProfileFragment()).commit();
         });
 
-
         shopButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_view, new ShopFragment()).commit();
