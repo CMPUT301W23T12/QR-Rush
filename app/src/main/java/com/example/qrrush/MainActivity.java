@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
         // Get Fire store instance
         firestore = FirebaseFirestore.getInstance();
 
-        FirebaseWrapper.addData("bruh", "userID", "pair associated");
-        FirebaseWrapper.addData("bruh", "password", "123321312321");
-        FirebaseWrapper.readData("bruh");
 
         mainView = findViewById(R.id.main_view);
         profileButton = findViewById(R.id.profile_button);

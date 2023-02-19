@@ -7,55 +7,62 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FirebaseWrapper {
 
+
     /**
-     * This method allows you to create a collection without haivng to write redudant code.
-     * Firebase unfortuantely only allows non-empty collection, so this collection is created with an inital empty document (which can be deleted afterwards)
-     * ACTUALLY NO NEED FOR THIS(?) ADD DATA METHOD CREATES THE COLLECTION FOR YOU SO POSSIBLE DELETE?
-     * TODO: Error handling for reused collection names (rerunning a program shouldn't recreate an empty document)
+     * This methods creates a new collection with name collectionName
+     * and creates a new document with name documentID
+     * and takes in a hashmap of data, HASHMAP must be populated with data before adding
+     *
+     * FIXES:
+     * - This will no longer duplicate entries since we force a document ID
      * @param collectionName
+     * @param documentID
+     * @param data
      */
-    public static void createCollection(String collectionName) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection(collectionName).add(new HashMap<String, Object>());
+    // CUSTOM documentID required but forces no duplicates, and you can set your own ID so its good
+    public static void addData(String collectionName, String documentID, Map<String, Object> data) {
+        FirebaseFirestore.getInstance().collection(collectionName)
+                .document(documentID)
+                .set(data)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseWrapper", "Document added with ID: " + documentID);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseWrapper", "Error adding document", e);
+                });
     }
 
     /**
-     * This method adds Data to a collection, if the collection doesn't exist, it creates one, so might not need createCollection
-     * Few problems with this
-     * 1. Duplicates entries, gotta add error handling to check if the collection already has the item trying to be added (if so dont duplicate)
-     * 2. ..
-     *
+     *  This method updates an existing collection, if the collection doesn't exist it creates a new one (bruh)
+     *  but this way it doesn't overwrite data written in an existing table so you can update to add more information into a document
      * @param collectionName
-     * @param key
-     * @param pair
+     * @param documentId
+     * @param data
      */
-    public static void addData(String collectionName, String key, String pair){
-
-        Map<String, Object> data = new HashMap<>();
-        data.put(key, pair);
-        FirebaseFirestore.getInstance().collection(collectionName).add(data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("FirebaseWrapper", "Document added with ID: " + documentReference.getId());
-                    }
+    public static void updateData(String collectionName, String documentId, Map<String, Object> data) {
+        FirebaseFirestore.getInstance().collection(collectionName)
+                .document(documentId)
+                .set(data)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FirebaseWrapper", "Document updated: " + documentId);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("FirebaseWrapper", "Error adding document", e);
-                    }
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseWrapper", "Error updating document: " + documentId, e);
                 });
     }
 
