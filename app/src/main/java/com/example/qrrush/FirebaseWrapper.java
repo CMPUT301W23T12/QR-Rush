@@ -116,9 +116,6 @@ public class FirebaseWrapper {
                 });
     }
 
-    public static void deleteCollection(String collectionName){
-        // NOT RECOMMEND BY FIREBASE?
-    }
 
 
 
