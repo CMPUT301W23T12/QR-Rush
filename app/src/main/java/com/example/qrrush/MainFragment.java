@@ -7,13 +7,16 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,6 +26,8 @@ public class MainFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    Button cameraButton;
 
     public MainFragment() {
         // Required empty public constructor
@@ -53,6 +58,25 @@ public class MainFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        cameraButton = getView().findViewById(R.id.camera_button);
+        cameraButton.setOnClickListener(this);
+    }
+
+    /**
+     * The onClick handler for the MainFragment. This should handle everything the user can click
+     * on in the main page, which is the camera button, the weekly tasks, etc.
+     * @param view is the View which was clicked on.
+     */
+    @Override
+    public void onClick(View view) {
+        if (view.getId() != R.id.camera_button) {
+            return;
+        }
+
+        // Scan a new QR code
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_view, new CameraFragment()).commit();
     }
 
     @Override
