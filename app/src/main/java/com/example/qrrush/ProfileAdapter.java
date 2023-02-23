@@ -37,9 +37,11 @@ public class ProfileAdapter extends ArrayAdapter<QRcode> {
         nameView.setText(qRcode.getName());
         pointView.setText(String.valueOf(qRcode.getValue()));
         locationView.setText(qRcode.getLocation());
+        // Image will be fit into the size of the image view
         Picasso
                 .get()
                 .load(qRcode.getImageURL())
+                .fit()
                 .into(imageView);
         return view;
     }
