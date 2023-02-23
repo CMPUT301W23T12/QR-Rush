@@ -2,14 +2,24 @@ package com.example.qrrush;
 
 import java.util.ArrayList;
 
+// User class, should only be one user that can have multiple QR codes
 public class User {
     private String userName;
     private String phoneNumber;
-    private String rank;
+    private int rank;
+    private int score;
     private ArrayList<QRcode> QRcodes;
     // unsure of data type for now
     private String profilePicture;
 
+    public User(String userName, String phoneNumber, int rank, int score, ArrayList<QRcode> QRcodes, String profilePicture) {
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.rank = rank;
+        this.score = score;
+        this.QRcodes = QRcodes;
+        this.profilePicture = profilePicture;
+    }
 
     public String getUserName() {
         return userName;
@@ -35,12 +45,20 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getRank() {
+    public int getRank() {
         return rank;
     }
 
-    public void setRank(String rank) {
+    public void setRank(int rank) {
         this.rank = rank;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public ArrayList<QRcode> getQRcodes() {
