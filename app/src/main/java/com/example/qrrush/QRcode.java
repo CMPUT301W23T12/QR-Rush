@@ -6,7 +6,14 @@ public class QRcode {
 
 //    Unsure of data type for now
     private String location;
-    private String image;
+    private String imageURL;
+
+    public QRcode(String name, int value, String location, String imageURL) {
+        this.name = name;
+        this.value = value;
+        this.location = location;
+        this.imageURL = imageURL;
+    }
 
     public String getName() {
         return name;
@@ -32,11 +39,11 @@ public class QRcode {
         this.location = location;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageURL(String image) {
+        this.imageURL = imageURL;
     }
 }
