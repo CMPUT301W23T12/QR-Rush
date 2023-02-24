@@ -24,18 +24,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class FirebaseWrapper {
-
+    // See Documentation: https://github.com/CMPUT301W23T12/6ixStacks/wiki/FirebaseWrapper-API-Documentation
 
     /**
      * This methods creates a new collection with name collectionName
      * and creates a new document with name documentID
      * and takes in a hashmap of data, HASHMAP must be populated with data before adding
-     *
-     * FIXES:
-     * - This will no longer duplicate entries since we force a document ID
-     *
-     * ISSUES:
-     * - New hashmap of data overwrites old data (NOT GOOD)
      * @param collectionName
      * @param documentID
      * @param data
@@ -55,8 +49,6 @@ public class FirebaseWrapper {
 
     /**
      * This method updates a document in a collection.
-     * ISSUES:
-     * Need to create a new hashmap with the value you want to delete and call update data on that new hashmap with the same collection, docID not very convenint
      * @param collectionName
      * @param documentID
      * @param data
