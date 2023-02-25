@@ -1,10 +1,13 @@
 package com.example.qrrush;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,9 +18,11 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 // Custom Adapter for each item in the listview
 public class ProfileAdapter extends ArrayAdapter<QRcode> {
+    ArrayList<QRcode> qRcodes;
 
     public ProfileAdapter(Context context, ArrayList<QRcode> objects) {
         super(context, 0, objects);
+        qRcodes = objects;
     }
 
     @NonNull
@@ -37,6 +42,18 @@ public class ProfileAdapter extends ArrayAdapter<QRcode> {
         nameView.setText(qRcode.getName());
         pointView.setText(String.valueOf(qRcode.getValue()));
         locationView.setText(qRcode.getLocation());
+        Button d = view.findViewById(R.id.deleteButton);
+        d.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (qRcodes.isEmpty()) {
+                    return;
+                }
+                qRcodes.remove(position);
+                Log.e("QR Rush", "this is a test");
+                notifyDataSetChanged();
+            }
+        });
         // Image will be fit into the size of the image view
         Picasso
                 .get()
