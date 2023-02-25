@@ -29,6 +29,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ import java.util.List;
 public class CameraFragment extends Fragment {
 
     PreviewView previewView;
-    ListenableFuture cameraProviderFuture;
+    ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     CameraController cameraController;
 
     public CameraFragment() {
@@ -58,10 +59,16 @@ public class CameraFragment extends Fragment {
 
         ImageAnalysis analysis = new ImageAnalysis.Builder().build();
         analysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext()),
-                new MlKitAnalyzer(Arrays.asList(barcodeScanner), COORDINATE_SYSTEM_ORIGINAL,
+                new MlKitAnalyzer(Collections.singletonList(barcodeScanner), COORDINATE_SYSTEM_ORIGINAL,
                         ContextCompat.getMainExecutor(requireContext()), (result) -> {
                     List<Barcode> results = result.getValue(barcodeScanner);
+                    if (results == null) {
+                        return;
+                    }
+
                     for (Barcode b: results) {
+                        // TODO: once the QR code class is merged, change this to save it as an
+                        //       actual QR code and add it to the user's profile.
                         Log.e("QR Rush", b.toString());
                     }
                 }));
