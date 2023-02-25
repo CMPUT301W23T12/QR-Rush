@@ -1,6 +1,6 @@
 package com.example.qrrush;
 
-public class QRcode {
+public class QRCode {
     private String name;
     private int value;
 
@@ -8,7 +8,7 @@ public class QRcode {
     private String location;
     private String imageURL;
 
-    public QRcode(String name, int value, String location, String imageURL) {
+    public QRCode(String name, int value, String location, String imageURL) {
         this.name = name;
         this.value = value;
         this.location = location;

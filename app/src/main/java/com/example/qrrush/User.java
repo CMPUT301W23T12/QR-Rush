@@ -8,16 +8,16 @@ public class User {
     private String phoneNumber;
     private int rank;
     private int score;
-    private ArrayList<QRcode> QRcodes;
+    private ArrayList<QRCode> qrCodes;
     // unsure of data type for now
     private String profilePicture;
 
-    public User(String userName, String phoneNumber, int rank, int score, ArrayList<QRcode> QRcodes, String profilePicture) {
+    public User(String userName, String phoneNumber, int rank, int score, ArrayList<QRCode> qrCodes, String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.score = score;
-        this.QRcodes = QRcodes;
+        this.qrCodes = qrCodes;
         this.profilePicture = profilePicture;
     }
 
@@ -61,12 +61,12 @@ public class User {
         this.score = score;
     }
 
-    public ArrayList<QRcode> getQRcodes() {
-        return QRcodes;
+    public ArrayList<QRCode> getQRCodes() {
+        return qrCodes;
     }
 
-    public void addQRcode(QRcode qRcode) {
-        QRcodes.add(qRcode);
+    public void addQRCode(QRCode qrCode) {
+        qrCodes.add(qrCode);
     }
 
 }

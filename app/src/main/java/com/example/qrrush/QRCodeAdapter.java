@@ -1,11 +1,9 @@
 package com.example.qrrush;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,48 +14,48 @@ import androidx.annotation.Nullable;
 
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
-// Custom Adapter for each item in the listview
-public class ProfileAdapter extends ArrayAdapter<QRcode> {
-    ArrayList<QRcode> qRcodes;
 
-    public ProfileAdapter(Context context, ArrayList<QRcode> objects) {
+// ArrayAdapter which displays QR Codes from the QRCode class.
+public class QRCodeAdapter extends ArrayAdapter<QRCode> {
+    ArrayList<QRCode> qrCodes;
+
+    public QRCodeAdapter(Context context, ArrayList<QRCode> objects) {
         super(context, 0, objects);
-        qRcodes = objects;
+        qrCodes = objects;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view;
+        View view = convertView;
         if (convertView == null) {
             view = LayoutInflater.from(super.getContext()).inflate(R.layout.profile_content, parent, false);
-        } else {
-            view = convertView;
         }
-        QRcode qRcode = super.getItem(position);
+        QRCode qrCode = getItem(position);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView pointView = view.findViewById(R.id.pointView);
         TextView locationView = view.findViewById(R.id.locationView);
         ImageView imageView = view.findViewById(R.id.imageView);
-        nameView.setText(qRcode.getName());
-        pointView.setText(String.valueOf(qRcode.getValue()));
-        locationView.setText(qRcode.getLocation());
-        Button d = view.findViewById(R.id.deleteButton);
-        d.setOnClickListener(new View.OnClickListener() {
+        nameView.setText(qrCode.getName());
+        pointView.setText(String.valueOf(qrCode.getValue()));
+        locationView.setText(qrCode.getLocation());
+        Button deleteButton = view.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            // TODO: Make a confirmation button before actually deleting things in the final
+            //       product.
             @Override
             public void onClick(View v) {
-                if (qRcodes.isEmpty()) {
+                if (qrCodes.isEmpty()) {
                     return;
                 }
-                qRcodes.remove(position);
-                Log.e("QR Rush", "this is a test");
+                qrCodes.remove(position);
                 notifyDataSetChanged();
             }
         });
         // Image will be fit into the size of the image view
         Picasso
                 .get()
-                .load(qRcode.getImageURL())
+                .load(qrCode.getImageURL())
                 .fit()
                 .into(imageView);
         return view;
