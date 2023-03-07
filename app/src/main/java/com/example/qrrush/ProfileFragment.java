@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment {
         // Sets the users profile, still need to crop the image to fit a certain size
         // TODO: remove copyrighted material before merging into main.
         user = new User("TheLegend27",
-                "987-6543-321", 1, 25412, qrCodes,
+                "987-6543-321", 1, qrCodes,
                 "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);

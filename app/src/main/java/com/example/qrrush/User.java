@@ -7,16 +7,14 @@ public class User {
     private String userName;
     private String phoneNumber;
     private int rank;
-    private int score;
     private ArrayList<QRCode> qrCodes;
     // unsure of data type for now
     private String profilePicture;
 
-    public User(String userName, String phoneNumber, int rank, int score, ArrayList<QRCode> qrCodes, String profilePicture) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
-        this.score = score;
         this.qrCodes = qrCodes;
         this.profilePicture = profilePicture;
     }
@@ -54,11 +52,12 @@ public class User {
     }
 
     public int getScore() {
-        return score;
-    }
+        int score = 0;
+        for (QRCode code : this.qrCodes) {
+            score += code.getScore();
+        }
 
-    public void setScore(int score) {
-        this.score = score;
+        return score;
     }
 
     public ArrayList<QRCode> getQRCodes() {
