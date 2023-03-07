@@ -1,5 +1,6 @@
 package com.example.qrrush;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +19,11 @@ import java.util.ArrayList;
 // ArrayAdapter which displays QR Codes from the QRCode class.
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
-
-    public QRCodeAdapter(Context context, ArrayList<QRCode> objects) {
+    User user;
+    public QRCodeAdapter(Context context, ArrayList<QRCode> objects,User user) {
         super(context, 0, objects);
         qrCodes = objects;
+        this.user = user;
     }
 
     @NonNull
@@ -49,8 +51,12 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                     return;
                 }
                 qrCodes.remove(position);
+                user.setTotalQRcodes(user.getNumberOfQRCodes()-1);
+                TextView qrScannedTextView = ((Activity)getContext()).findViewById(R.id.qrCodesView);
+                qrScannedTextView.setText(String.valueOf(user.getNumberOfQRCodes()));
                 notifyDataSetChanged();
             }
+
         });
         // Image will be fit into the size of the image view
         Picasso
