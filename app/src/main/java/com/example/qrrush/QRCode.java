@@ -108,10 +108,8 @@ public class QRCode {
     public static int getMaxConsecutiveZeroes(String hashValue) {
         int max = 0;
         int current = 0;
-        System.out.println("hash: " + hashValue);
         byte[] data = hashValue.getBytes(StandardCharsets.US_ASCII);
         for (byte b : data) {
-            System.out.println(b + " " + (byte)'0' + " " + max);
             if (b != '0') {
                 current = 0;
                 continue;
