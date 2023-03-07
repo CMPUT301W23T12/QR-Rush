@@ -23,7 +23,6 @@ public class ShopFragment extends Fragment {
     private Button commonButton;
     private Button rareButton;
     private Button legendaryButton;
-    private Score score;
     private TextView qrContentText;
 
     public ShopFragment() {
@@ -47,7 +46,6 @@ public class ShopFragment extends Fragment {
         commonButton = view.findViewById(R.id.common_button);
         rareButton = view.findViewById(R.id.rare_button);
         legendaryButton = view.findViewById(R.id.legendary_button);
-        score = new Score(0);
         qrContentText = view.findViewById(R.id.qr_content);
 
         // Add click listeners to buttons

@@ -9,8 +9,6 @@ import java.util.Random;
 public class QRCode {
     private String name;
     private final String hash;
-
-//    Unsure of data type for now
     private Optional<String> location;
     private String imageURL;
 
@@ -43,6 +41,12 @@ public class QRCode {
         this.location = Optional.of(location);
     }
 
+    private QRCode(String hash) {
+        this.name = "Default Name";
+        this.location = Optional.empty();
+        this.hash = hash;
+    }
+
     /**
      * Converts some array of bytes to a hex string.
      * @param bytes The array of bytes to convert to a hex string.
@@ -60,25 +64,33 @@ public class QRCode {
      * @param r The rarity of the QR Code to generate.
      */
     public static QRCode withRarity(Rarity r) {
-        int numZeroes = 1;
-        if (r == Rarity.Rare) {
-            numZeroes = 2;
-        } else if (r == Rarity.Legendary) {
-                numZeroes = 4;
-        }
-
-        StringBuilder sb = new StringBuilder(32);
         Random rand = new Random();
+        int numZeroes = Rarity.minConsecutiveZeroesFor(r) + rand.nextInt(2);
+        StringBuilder sb = new StringBuilder(32);
         for (int i = 0; i < 32; i++) {
             sb.append(Integer.toHexString(rand.nextInt(15) + 1));
         }
-        byte[] data = sb.toString().getBytes(StandardCharsets.UTF_8);
+        byte[] data = sb.toString().getBytes(StandardCharsets.US_ASCII);
 
-        for (int i = 0; i <= numZeroes; i += 1) {
+        for (int i = 0; i < numZeroes; i += 1) {
             data[i] = '0';
         }
+        
+        QRCode result = null;
 
-        return new QRCode(data);
+        // If the score isn't high enough, keep adding more fs to the hash, since that's the
+        // highest digit.
+        for (int i = numZeroes; i < data.length; i += 1) {
+            result = new QRCode(new String(data, StandardCharsets.US_ASCII));
+
+            if (result.getRarity() == r) {
+                break;
+            }
+
+            data[i] = 'f';
+        }
+        
+        return result;
     }
 
     public String getName() {
@@ -93,24 +105,27 @@ public class QRCode {
         return imageURL;
     }
 
-    private static int getNumConsecutiveZeroes(String hashValue) {
-        int numConsecutiveZeroes = 0;
-        int maxConsecutiveZeroes = 0;
-        for (int i = 0; i < hashValue.length(); i++) {
-            if (hashValue.charAt(i) != '0') {
-                numConsecutiveZeroes = 0;
+    public static int getMaxConsecutiveZeroes(String hashValue) {
+        int max = 0;
+        int current = 0;
+        System.out.println("hash: " + hashValue);
+        byte[] data = hashValue.getBytes(StandardCharsets.US_ASCII);
+        for (byte b : data) {
+            System.out.println(b + " " + (byte)'0' + " " + max);
+            if (b != '0') {
+                current = 0;
                 continue;
             }
 
-            numConsecutiveZeroes++;
-            maxConsecutiveZeroes = Math.max(maxConsecutiveZeroes, numConsecutiveZeroes);
+            current += 1;
+            max = Integer.max(max, current);
         }
 
-        return maxConsecutiveZeroes;
+        return max;
     }
 
     public Rarity getRarity() {
-        return Rarity.fromScore(this.getScore());
+        return Rarity.fromHash(this.getHash());
     }
 
     public String getHash() {
@@ -128,6 +143,6 @@ public class QRCode {
             result += Character.digit(value, 16);
         }
 
-        return result * (1 + getNumConsecutiveZeroes(this.hash));
+        return result * (1 + getMaxConsecutiveZeroes(this.hash));
     }
 }
