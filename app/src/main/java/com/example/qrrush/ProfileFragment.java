@@ -41,14 +41,14 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ArrayList<QRCode> qrCodes = new ArrayList<>();
-        // TODO: These are copyrighted material. They shouldn't be allowed to be merged into main,
-        //       since main should only contain things we can present.
-        qrCodes.add(new QRCode("Mike Wazowski", 125, "Monstropolis",
-                "https://static.wikia.nocookie.net/disney/images/d/d5/Profile_-_Mike_Wazowski.jpg/revision/latest?cb=20220608010955"));
-        qrCodes.add(new QRCode("James P. Sullivan", 21441, "Monstropolis",
-                "https://static.wikia.nocookie.net/pixar/images/8/8c/Sulleymonsters%2Cinc..png/revision/latest?cb=20170807224356"));
-        qrCodes.add(new QRCode("Mary Gibbs(Boo)", 12, "Earth",
-                "https://static.wikia.nocookie.net/disney/images/3/31/Profile_-_Boo.png/revision/latest?cb=20190313094050"));
+        byte[][] sampleData = {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+        };
+        qrCodes.add(new QRCode(sampleData[0]));
+        qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[2]));
 
         // Sets the users profile, still need to crop the image to fit a certain size
         // TODO: remove copyrighted material before merging into main.

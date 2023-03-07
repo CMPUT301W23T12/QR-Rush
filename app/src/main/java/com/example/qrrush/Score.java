@@ -52,14 +52,5 @@ public class Score {
         }
         return maxConsecutiveZeroes;
     }
-    public static Rarity getRarity(String hashValue) {
-        int numZeroes = getNumConsecutiveZeroes(hashValue);
-        if (numZeroes >= 4) {
-            return Rarity.Legendary;
-        } else if (numZeroes >= 2) {
-            return Rarity.Rare;
-        }
 
-        return Rarity.Common;
-    }
 }

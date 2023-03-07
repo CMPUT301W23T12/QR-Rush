@@ -37,8 +37,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         TextView locationView = view.findViewById(R.id.locationView);
         ImageView imageView = view.findViewById(R.id.imageView);
         nameView.setText(qrCode.getName());
-        pointView.setText(String.valueOf(qrCode.getValue()));
-        locationView.setText(qrCode.getLocation());
+        pointView.setText(String.valueOf(qrCode.getScore()));
+        locationView.setText(qrCode.getLocation().orElse("no location availible"));
         Button deleteButton = view.findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             // TODO: Make a confirmation button before actually deleting things in the final
