@@ -1,11 +1,6 @@
 package com.example.qrrush;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,23 +8,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         leaderboardButton = findViewById(R.id.leaderboard_button);
 
 
-        if (UserUtil.isFirstTimeLogin(this)){
+        if (UserUtil.isFirstTimeLogin(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             LayoutInflater inflater = this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.first_time_launch_popup, null);
@@ -75,45 +64,46 @@ public class MainActivity extends AppCompatActivity {
             builder.setTitle("Enter your information");
             builder.setView(dialogView);
 
+            // Check if the username is unique when the user clicks "OK" on the first time run
+            // prompt.
             builder.setPositiveButton("OK", null);
             AlertDialog alertDialog = builder.create();
-            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                @Override
-                public void onShow(DialogInterface dialog) {
-                    Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    button.setOnClickListener(v -> {
-                        String username = usernameEditText.getText().toString();
-                        String phoneNumber = phoneNumberEditText.getText().toString();
-                        FirebaseWrapper.checkUsernameAvailability(username, new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    QuerySnapshot querySnapshot = task.getResult();
-                                    if (querySnapshot.size() > 0) {
-                                        // Username is taken, prompt user to pick a new name
-                                        username_Taken.setVisibility(dialogView.VISIBLE);
-                                    } else {
-                                        // Username is unique, continue with registration process
-                                        HashMap<String, Object> profiles = new HashMap<>();
-                                        profiles.put(username, UserUtil.generateUUID());
-                                        profiles.put("phone-number", phoneNumber);
-                                        // Add name + UUID and phonenumber to FB
-                                        FirebaseWrapper.addData("profiles", username, profiles);
-                                        dialog.dismiss();
-
-                                        // set firstTimeLogin to false
-
-                                        UserUtil.setFirstTime(MainActivity.this, true);
-                                    }
-                                }
-                                else {
-                                    // Error occurred while querying database
-                                    Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
-                                }
+            alertDialog.setOnShowListener((dialog) -> {
+                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(v -> {
+                    String username = usernameEditText.getText().toString();
+                    String phoneNumber = phoneNumberEditText.getText().toString();
+                    FirebaseWrapper.checkUsernameAvailability(username, new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (!task.isSuccessful()) {
+                                // Error occurred while querying database
+                                Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
+                                return;
                             }
-                        });
+
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (querySnapshot.size() > 0) {
+                                // Username is taken, prompt user to pick a new name
+                                username_Taken.setVisibility(dialogView.VISIBLE);
+                                return;
+                            }
+
+                            // Username is unique, continue with registration process
+                            HashMap<String, Object> profiles = new HashMap<>();
+                            profiles.put(username, UserUtil.generateUUID());
+                            profiles.put("phone-number", phoneNumber);
+
+                            // Add name + UUID and phonenumber to FB
+                            FirebaseWrapper.addData("profiles", username, profiles);
+
+                            // set firstTimeLogin to false
+                            UserUtil.setFirstTime(MainActivity.this, true);
+
+                            dialog.dismiss();
+                        }
                     });
-                }
+                });
             });
             alertDialog.show();
         }
