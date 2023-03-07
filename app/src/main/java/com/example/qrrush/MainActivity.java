@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Testing new commit into branch
+
+        
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
         // Get Fire store instance
