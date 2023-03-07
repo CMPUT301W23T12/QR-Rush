@@ -39,7 +39,7 @@ public class Score {
         return new Random().nextInt(50) + 51;
     }
 
-    public static int getNumConsecutiveZeroes(String hashValue) {
+    static int getNumConsecutiveZeroes(String hashValue) {
         int numConsecutiveZeroes = 0;
         int maxConsecutiveZeroes = 0;
         for (int i = 0; i < hashValue.length(); i++) {
@@ -52,14 +52,14 @@ public class Score {
         }
         return maxConsecutiveZeroes;
     }
-    public static int getRarity(String hashValue) {
+    public static Rarity getRarity(String hashValue) {
         int numZeroes = getNumConsecutiveZeroes(hashValue);
         if (numZeroes >= 4) {
-            return 2; // Legendary
+            return Rarity.Legendary;
         } else if (numZeroes >= 2) {
-            return 1; // Rare
-        } else {
-            return 0; // Common
+            return Rarity.Rare;
         }
+
+        return Rarity.Common;
     }
 }
