@@ -71,7 +71,7 @@ public class ShopFragment extends Fragment {
         legendaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                QRCode code = QRCode.withRarity(Rarity.Rare);
+                QRCode code = QRCode.withRarity(Rarity.Legendary);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
             }

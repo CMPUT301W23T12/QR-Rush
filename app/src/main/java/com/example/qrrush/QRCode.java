@@ -141,6 +141,11 @@ public class QRCode {
             result += Character.digit(value, 16);
         }
 
-        return result * (1 + getMaxConsecutiveZeroes(this.hash));
+        result *= (1 + getMaxConsecutiveZeroes(this.hash));
+        if (this.getRarity() == Rarity.Legendary) {
+            result *= 10;
+        }
+
+        return result;
     }
 }
