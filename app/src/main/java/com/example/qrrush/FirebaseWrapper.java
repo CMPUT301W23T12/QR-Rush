@@ -1,6 +1,5 @@
 package com.example.qrrush;
 
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -23,9 +22,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * A wrapper class for accessing the Firebase database for QR Rush.
+ * Detailed documentation can be found at
+ * <a href="https://github.com/CMPUT301W23T12/6ixStacks/wiki/FirebaseWrapper-API-Documentation">the wiki.</a>
+ */
 public class FirebaseWrapper {
-    // See Documentation: https://github.com/CMPUT301W23T12/6ixStacks/wiki/FirebaseWrapper-API-Documentation
-
     /**
      * This methods creates a new collection with name collectionName
      * and creates a new document with name documentID
@@ -46,7 +48,6 @@ public class FirebaseWrapper {
                 });
     }
 
-
     /**
      * This method updates a document in a collection.
      * @param collectionName
@@ -64,7 +65,6 @@ public class FirebaseWrapper {
                     Log.e("FirebaseWrapper", "Error updating document", e);
                 });
     }
-
 
     /**
      * Reads data from a collection, works fine, just kinda useless since it stores it in the log, maybe figure out a new way to output it? idk might be fine as is.
@@ -107,17 +107,4 @@ public class FirebaseWrapper {
                     }
                 });
     }
-
-
-
-
-
-
-
-
 }
-
-
-
-
-
