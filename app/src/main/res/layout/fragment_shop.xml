@@ -17,7 +17,7 @@
             android:textSize="24sp"
             android:layout_marginTop="32dp"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true" />
 
         <RelativeLayout
             android:id="@+id/qr_code_layout"
@@ -44,7 +44,18 @@
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:layout_marginTop="16dp"
-                android:gravity="center"/>
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/name_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/qr_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:layout_marginTop="16dp"
+                android:gravity="center" />
 
         </RelativeLayout>
 
@@ -83,8 +94,7 @@
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            />
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 
