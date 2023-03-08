@@ -1,18 +1,14 @@
 package com.example.qrrush;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Shop Fragment for QR codes
@@ -24,6 +20,7 @@ public class ShopFragment extends Fragment {
     private Button rareButton;
     private Button legendaryButton;
     private TextView qrContentText;
+    private TextView nameContentText;
     User user;
 
     public ShopFragment(User user) {
@@ -48,6 +45,7 @@ public class ShopFragment extends Fragment {
         rareButton = view.findViewById(R.id.rare_button);
         legendaryButton = view.findViewById(R.id.legendary_button);
         qrContentText = view.findViewById(R.id.qr_content);
+        nameContentText = view.findViewById(R.id.name_content);
 
         // Add click listeners to buttons
         // TODO: add these scores to the current User.
@@ -57,6 +55,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Common);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getNames());
             }
         });
 
@@ -66,6 +65,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Rare);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getNames());
             }
         });
 
@@ -75,6 +75,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Legendary);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getNames());
             }
         });
 
