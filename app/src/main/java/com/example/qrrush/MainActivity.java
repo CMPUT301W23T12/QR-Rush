@@ -140,12 +140,12 @@ public class MainActivity extends AppCompatActivity {
 
         shopButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ShopFragment()).commit();
+                    .replace(R.id.main_view, new ShopFragment(user)).commit();
         });
 
         socialButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new SocialFragment()).commit();
+                    .replace(R.id.main_view, new SocialFragment(user)).commit();
         });
 
         mainButton.setOnClickListener((v) -> {
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         leaderboardButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new LeaderboardFragment()).commit();
+                    .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
         });
 
         getSupportFragmentManager().beginTransaction()
