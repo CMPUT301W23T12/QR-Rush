@@ -12,8 +12,6 @@ public class QRCode {
     private Optional<String> location;
     private String imageURL;
 
-    private String Fruit;
-
     /**
      * Makes a new QRCode from some data without specifying a Location.
      *
@@ -140,7 +138,7 @@ public class QRCode {
         // This Generates a human readable name using fruits
 
         String pp = getHash();
-        StringBuilder poke = new StringBuilder("");
+        StringBuilder poke = new StringBuilder();
 
         for (int i = 0; i < 5; i++) {
             // Even numbers excepts for 0
@@ -215,8 +213,8 @@ public class QRCode {
             }
 
         }
-        String singleName = poke.toString();
-        return singleName;
+
+        return poke.toString();
     }
 
     public int getScore() {
