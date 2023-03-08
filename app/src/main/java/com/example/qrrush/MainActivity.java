@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                             HashMap<String, Object> profiles = new HashMap<>();
                             profiles.put(username, UserUtil.generateUUID());
                             profiles.put("phone-number", phoneNumber);
+                            profiles.put("rank", 0);
+                            profiles.put("score", 0);
+                            profiles.put("qrcodes", new ArrayList<QRCode>());
 
                             // Add name + UUID and phonenumber to FB
                             FirebaseWrapper.addData("profiles", username, profiles);
