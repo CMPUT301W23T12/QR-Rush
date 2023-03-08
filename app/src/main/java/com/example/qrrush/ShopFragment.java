@@ -24,9 +24,10 @@ public class ShopFragment extends Fragment {
     private Button rareButton;
     private Button legendaryButton;
     private TextView qrContentText;
+    User user;
 
-    public ShopFragment() {
-        // Required empty public constructor
+    public ShopFragment(User user) {
+        this.user = user;
     }
 
     @Override
