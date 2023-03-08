@@ -11,12 +11,15 @@ public class User {
     // unsure of data type for now
     private String profilePicture;
 
+    private int totalQRcodes;
+
     public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.profilePicture = profilePicture;
+        totalQRcodes = qrCodes.size();
     }
 
     public String getUserName() {
@@ -68,4 +71,9 @@ public class User {
         qrCodes.add(qrCode);
     }
 
+    public int getNumberOfQRCodes(){return totalQRcodes;}
+
+    public void setTotalQRcodes(int totalQRcodes) {
+        this.totalQRcodes = totalQRcodes;
+    }
 }

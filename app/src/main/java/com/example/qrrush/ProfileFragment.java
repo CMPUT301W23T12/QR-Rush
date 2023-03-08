@@ -27,13 +27,16 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
+
     }
 
     @Override
@@ -59,11 +62,14 @@ public class ProfileFragment extends Fragment {
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
+        TextView QRScanned = view.findViewById(R.id.qrCodesView);
         ImageView profileView = view.findViewById(R.id.profileView);
         contactView.setText(user.getPhoneNumber());
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         scoreView.setText(String.valueOf(user.getScore()));
+        QRScanned.setText(String.valueOf(user.getNumberOfQRCodes()));
+
 
         // Image will be fit into the size of the image view
         Picasso
@@ -73,8 +79,9 @@ public class ProfileFragment extends Fragment {
                 .into(profileView);
 
 
-        QRCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes());
+        QRCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(),user);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(QRCodeAdapter);
+        QRCodeAdapter.notifyDataSetChanged();
     }
 }
