@@ -18,6 +18,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,13 +30,38 @@ public class MainActivity extends AppCompatActivity {
     Button mainButton;
     Button socialButton;
     Button leaderboardButton;
+
+    User user;
     private FirebaseFirestore firestore;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /**
+         * Users infromation stored here hard coded values for now
+         * untill firebase is setup
+         * TODO Add firebase integration
+         */
+
+        ArrayList<QRCode> qrCodes = new ArrayList<>();
+        byte[][] sampleData = {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+        };
+        qrCodes.add(new QRCode(sampleData[0]));
+        qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[2]));
+
+        // TODO: remove copyrighted material before merging into main.
+        user = new User("TheLegend27",
+                "987-6543-321", 1, qrCodes,
+                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
+
 
         // Testing new commit into branch
 
@@ -109,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         }
         profileButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ProfileFragment()).commit();
+                    .replace(R.id.main_view, new ProfileFragment(user)).commit();
         });
 
         shopButton.setOnClickListener((v) -> {
@@ -124,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         mainButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new MainFragment()).commit();
+                    .replace(R.id.main_view, new MainFragment(user)).commit();
         });
 
         leaderboardButton.setOnClickListener((v) -> {
@@ -133,6 +159,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_view, new MainFragment()).commit();
+                .replace(R.id.main_view, new MainFragment(user)).commit();
     }
 }
