@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -50,6 +51,29 @@ public class ProfileFragment extends Fragment {
          * Sets up initial profile
          */
         super.onViewCreated(view, savedInstanceState);
+
+        ArrayList<QRCode> qrCodes = new ArrayList<>();
+        byte[] b = new byte[20];
+        Random rand = new Random();
+        byte[][] sampleData = {
+                new byte[20],
+                new byte[20],
+                new byte[20],
+        };
+
+        rand.nextBytes(sampleData[0]);
+        rand.nextBytes(sampleData[1]);
+        rand.nextBytes(sampleData[2]);
+
+        qrCodes.add(new QRCode(sampleData[0]));
+        qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[2]));
+
+        // Sets the users profile, still need to crop the image to fit a certain size
+        // TODO: remove copyrighted material before merging into main.
+        user = new User("TheLegend27",
+                "987-6543-321", 1, qrCodes,
+                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);

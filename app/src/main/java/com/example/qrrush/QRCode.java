@@ -1,5 +1,8 @@
 package com.example.qrrush;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +17,7 @@ public class QRCode {
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
+     *
      * @param data The data contained inside the QR Code.
      */
     public QRCode(byte[] data) {
@@ -33,7 +37,8 @@ public class QRCode {
 
     /**
      * Makes a new QRCode from some data, specifying the Location which the QR Code was scanned.
-     * @param data The data contained inside the QR Code.
+     *
+     * @param data     The data contained inside the QR Code.
      * @param location The location which the QR Code was scanned.
      */
     public QRCode(byte[] data, String location) {
@@ -49,6 +54,7 @@ public class QRCode {
 
     /**
      * Converts some array of bytes to a hex string.
+     *
      * @param bytes The array of bytes to convert to a hex string.
      */
     private static String bytesToHex(byte[] bytes) {
@@ -61,6 +67,7 @@ public class QRCode {
 
     /**
      * Returns a new QR Code of a specified rarity.
+     *
      * @param r The rarity of the QR Code to generate.
      */
     public static QRCode withRarity(Rarity r) {
@@ -75,7 +82,7 @@ public class QRCode {
         for (int i = 0; i < numZeroes; i += 1) {
             data[i] = '0';
         }
-        
+
         QRCode result = null;
 
         // If the score isn't high enough, keep adding more fs to the hash, since that's the
@@ -89,7 +96,7 @@ public class QRCode {
 
             data[i] = 'f';
         }
-        
+
         return result;
     }
 
@@ -101,8 +108,51 @@ public class QRCode {
         return location;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public Bitmap getImage() {
+        // 1. For each character of the hash, if it's even make it a 0, and if its odd make it a 1.
+        StringBuilder binaryHash = new StringBuilder(this.hash);
+        for (int i = 0; i < this.hash.length(); i += 1) {
+            byte[] val = {(byte) (binaryHash.charAt(i) % 2)};
+            binaryHash.setCharAt(i, String.valueOf(binaryHash.charAt(i) % 2).charAt(0));
+        }
+
+        // 2. Add 4 extra padding characters to make it a square by dividing up the hash into 4
+        //    sections and performing the same thing as 1 on the sum of each of the sections.
+        int[][] pairs = {
+                {0, 7},
+                {8, 16},
+                {17, 25},
+                {26, 32},
+        };
+        for (int[] pair : pairs) {
+            int sum = 0;
+            for (int i = pair[0]; i < pair[1]; i += 1) {
+                sum += Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16);
+            }
+
+            byte[] val = {(byte) (sum % 2)};
+            binaryHash.append(bytesToHex(val).charAt(0));
+        }
+
+        String str = binaryHash.toString();
+
+        // 3. Use the first 6 bytes of the hash as a hex color.
+        int c = Color.parseColor("#" + this.hash.substring(0, 6));
+
+        // 4. Paint each pixel into a 6x6 square.
+        Bitmap result = Bitmap.createBitmap(6, 6, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < 6; y += 1) {
+            for (int x = 0; x < 6; x += 1) {
+                if (str.charAt(6 * y + x) == '1') {
+                    result.setPixel(x, y, c);
+                    continue;
+                }
+
+                result.setPixel(x, y, Color.WHITE);
+            }
+        }
+
+        return result;
     }
 
     public static int getMaxConsecutiveZeroes(String hashValue) {
