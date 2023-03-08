@@ -8,10 +8,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -107,4 +109,15 @@ public class FirebaseWrapper {
                     }
                 });
     }
+
+    public static void checkUsernameAvailability(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // if you want to change the collection name that stores profile information, change it in here too
+        CollectionReference usersRef = db.collection("profiles");
+        Query query = usersRef.whereEqualTo(FieldPath.documentId(), username);
+        query.get().addOnCompleteListener(onCompleteListener);
+    }
+
+
+
 }

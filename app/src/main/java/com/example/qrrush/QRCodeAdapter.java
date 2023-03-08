@@ -1,6 +1,8 @@
 package com.example.qrrush;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +20,11 @@ import java.util.ArrayList;
 // ArrayAdapter which displays QR Codes from the QRCode class.
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
-
-    public QRCodeAdapter(Context context, ArrayList<QRCode> objects) {
+    User user;
+    public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user) {
         super(context, 0, objects);
         qrCodes = objects;
+        this.user = user;
     }
 
     @NonNull
@@ -39,6 +42,9 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         nameView.setText(qrCode.getName());
         pointView.setText(String.valueOf(qrCode.getScore()));
         locationView.setText(qrCode.getLocation().orElse("no location availible"));
+        /**
+         * Delete button instance for each QR code item
+         */
         Button deleteButton = view.findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             // TODO: Make a confirmation button before actually deleting things in the final
@@ -48,11 +54,24 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 if (qrCodes.isEmpty()) {
                     return;
                 }
+                /**
+                 * Updates the users total score and number of QR codes
+                 * when the respective item is deleted
+                 */
+                user.setTotalScore(user.getTotalScore()-qrCodes.get(position).getScore());
                 qrCodes.remove(position);
+                user.setTotalQRcodes(user.getNumberOfQRCodes()-1);
+                TextView qrScannedTextView = ((Activity)getContext()).findViewById(R.id.qrCodesView);
+                TextView scoreView = ((Activity)getContext()).findViewById(R.id.scoreView);
+                scoreView.setText(String.valueOf(user.getTotalScore()));
+                qrScannedTextView.setText(String.valueOf(user.getNumberOfQRCodes()));
                 notifyDataSetChanged();
             }
+
         });
-        // Image will be fit into the size of the image view
+        /**
+         * Image will be fit into the size of the image view
+         */
         Picasso
                 .get()
                 .load(qrCode.getImageURL())
