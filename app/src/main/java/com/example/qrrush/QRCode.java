@@ -1,12 +1,11 @@
 package com.example.qrrush;
 
-import android.graphics.Canvas;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -109,47 +108,51 @@ public class QRCode {
         return location;
     }
 
-    public Canvas getImage() {
+    public Bitmap getImage() {
         // 1. For each character of the hash, if it's even make it a 0, and if its odd make it a 1.
         StringBuilder binaryHash = new StringBuilder(this.hash);
         for (int i = 0; i < this.hash.length(); i += 1) {
-            byte[] val = {(byte) (Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16) % 2)};
-            binaryHash.setCharAt(i, bytesToHex(val).charAt(0));
+            byte[] val = {(byte) (binaryHash.charAt(i) % 2)};
+            binaryHash.setCharAt(i, String.valueOf(binaryHash.charAt(i) % 2).charAt(0));
         }
 
         // 2. Add 4 extra padding characters to make it a square by dividing up the hash into 4
         //    sections and performing the same thing as 1 on the sum of each of the sections.
-        String[] sections = {
-                this.hash.substring(0, 7),
-                this.hash.substring(8, 16),
-                this.hash.substring(17, 25),
-                this.hash.substring(26, 32),
+        int[][] pairs = {
+                {0, 7},
+                {8, 16},
+                {17, 25},
+                {26, 32},
         };
-        for (String section : sections) {
-            ArrayList<Integer> bytes = new ArrayList<>(8);
-            for (int i = 0; i < this.hash.length(); i += 1) {
-                bytes.add((int) Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16));
-            }
-
+        for (int[] pair : pairs) {
             int sum = 0;
-            for (int i : bytes) {
-                sum += i;
+            for (int i = pair[0]; i < pair[1]; i += 1) {
+                sum += Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16);
             }
 
             byte[] val = {(byte) (sum % 2)};
             binaryHash.append(bytesToHex(val).charAt(0));
         }
 
-        // 3. Use the first 3 bytes of the hash as RGB values for the color.
-        int c = Color.rgb(
-                Integer.parseInt(Character.toString(binaryHash.charAt(0)), 16),
-                Integer.parseInt(Character.toString(binaryHash.charAt(1)), 16),
-                Integer.parseInt(Character.toString(binaryHash.charAt(2)), 16)
-        );
+        String str = binaryHash.toString();
+
+        // 3. Use the first 6 bytes of the hash as a hex color.
+        int c = Color.parseColor("#" + this.hash.substring(0, 6));
 
         // 4. Paint each pixel into a 6x6 square.
-        // TODO: actually do this.
-        return new Canvas();
+        Bitmap result = Bitmap.createBitmap(6, 6, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < 6; y += 1) {
+            for (int x = 0; x < 6; x += 1) {
+                if (str.charAt(6 * y + x) == '1') {
+                    result.setPixel(x, y, c);
+                    continue;
+                }
+
+                result.setPixel(x, y, Color.WHITE);
+            }
+        }
+
+        return result;
     }
 
     public static int getMaxConsecutiveZeroes(String hashValue) {

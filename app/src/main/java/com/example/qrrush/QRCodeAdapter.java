@@ -1,6 +1,7 @@
 package com.example.qrrush;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,11 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         pointView.setText(String.valueOf(qrCode.getScore()));
         locationView.setText(qrCode.getLocation().orElse("no location availible"));
         Button deleteButton = view.findViewById(R.id.deleteButton);
+
+        // Image will be fit into the size of the image view
+        Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false);
+        imageView.setImageBitmap(b);
+
         deleteButton.setOnClickListener(new View.OnClickListener() {
             // TODO: Make a confirmation button before actually deleting things in the final
             //       product.
@@ -52,12 +58,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 notifyDataSetChanged();
             }
         });
-        // Image will be fit into the size of the image view
-        Picasso
-                .get()
-                .load(qrCode.getImageURL())
-                .fit()
-                .into(imageView);
+
         return view;
     }
 }

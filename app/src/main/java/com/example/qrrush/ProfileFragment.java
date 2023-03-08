@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -41,11 +42,18 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ArrayList<QRCode> qrCodes = new ArrayList<>();
+        byte[] b = new byte[20];
+        Random rand = new Random();
         byte[][] sampleData = {
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9},
+                new byte[20],
+                new byte[20],
+                new byte[20],
         };
+
+        rand.nextBytes(sampleData[0]);
+        rand.nextBytes(sampleData[1]);
+        rand.nextBytes(sampleData[2]);
+
         qrCodes.add(new QRCode(sampleData[0]));
         qrCodes.add(new QRCode(sampleData[1]));
         qrCodes.add(new QRCode(sampleData[2]));
