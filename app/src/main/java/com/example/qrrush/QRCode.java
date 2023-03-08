@@ -130,8 +130,7 @@ public class QRCode {
                 sum += Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16);
             }
 
-            byte[] val = {(byte) (sum % 2)};
-            binaryHash.append(bytesToHex(val).charAt(0));
+            binaryHash.append(String.valueOf(sum).charAt(0));
         }
 
         String str = binaryHash.toString();
