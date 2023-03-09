@@ -3,42 +3,28 @@ package com.example.qrrush;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
-import java.util.Objects;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-/**
- */
-public class MainFragment extends Fragment implements View.OnClickListener {
-    static final String PERMISSIONS = Manifest.permission.CAMERA;
 
-    Button cameraButton;
+public class MainFragment extends Fragment {
+    User user;
 
-    public MainFragment() {
+    /**
+     * Grabs the User object from the main activity
+     *
+     * @param user
+     */
+    public MainFragment(User user) {
+        this.user = user;
         // Required empty public constructor
     }
-
-    // Register the permissions callback
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), (granted) -> {
-                if (granted) {
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new CameraFragment()).commit();
-                    return;
-                }
-
-                // TODO: explain to the user that this permission is necessary for the game to
-                //       work, and thus the game can't continue without it.
-            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,5 +68,15 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         cameraButton = result.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener(this);
         return result;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        TextView scoreView = view.findViewById(R.id.scoreView);
+        /**
+         * sets users total score on the main page
+         */
+//        scoreView.setText(String.valueOf(user.getTotalScore()));
     }
 }

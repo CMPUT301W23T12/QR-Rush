@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/alert_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter your username and (optionally) phone number:"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:textColor="@android:color/black"/>
+
+    <EditText
+        android:id="@+id/username_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your username"
+        android:padding="16dp"
+        android:textColorHint="@android:color/darker_gray"/>
+
+
+    <TextView
+        android:id="@+id/username_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Error, name is already taken choose another one"
+        android:textColor="#fe0000"
+        android:visibility="gone"
+        />
+
+    <EditText
+        android:id="@+id/phone_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your phone number (optional)"
+        android:padding="16dp"
+        android:textColorHint="@android:color/darker_gray"/>
+
+</LinearLayout>
