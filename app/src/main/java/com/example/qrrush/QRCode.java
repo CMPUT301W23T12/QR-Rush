@@ -9,11 +9,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Random;
 
+/**
+ * A QR Code is the object representing the scanned QR codes which users in the app will add to
+ * their account. Their main purpose is to provide the user with points, which can be spent in the
+ * shop and contribute to the user's total score.
+ */
 public class QRCode {
-    private String name;
     private final String hash;
     private Optional<String> location;
-    private String imageURL;
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
@@ -21,11 +24,7 @@ public class QRCode {
      * @param data The data contained inside the QR Code.
      */
     public QRCode(byte[] data) {
-        // TODO: When you generate a QR code, the name and image should be automatically generated
-        //       from the hash of data.
-        this.name = "Default Name";
         this.location = Optional.empty();
-        this.imageURL = imageURL;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(data);
@@ -47,7 +46,6 @@ public class QRCode {
     }
 
     private QRCode(String hash) {
-        this.name = "Default Name";
         this.location = Optional.empty();
         this.hash = hash;
     }
@@ -100,14 +98,13 @@ public class QRCode {
         return result;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Optional<String> getLocation() {
         return location;
     }
 
+    /**
+     * Generates a visualization for the QR Code and returns it as a Bitmap object.
+     */
     public Bitmap getImage() {
         // 1. For each character of the hash, if it's even make it a 0, and if its odd make it a 1.
         StringBuilder binaryHash = new StringBuilder(this.hash);
@@ -153,6 +150,11 @@ public class QRCode {
         return result;
     }
 
+    /**
+     * Returns the length of the longest run of consecutive zeroes in the hash hashValue.
+     *
+     * @param hashValue The hash to read the run of zeroes from.
+     */
     public static int getMaxConsecutiveZeroes(String hashValue) {
         int max = 0;
         int current = 0;
@@ -178,7 +180,10 @@ public class QRCode {
         return this.hash;
     }
 
-    public String getNames() {
+    /**
+     * Generates a human readable name for the QR Code and returns it as a String.
+     */
+    public String getName() {
         // This Generates a human readable name using fruits
 
         String pp = getHash();
@@ -261,6 +266,9 @@ public class QRCode {
         return poke.toString();
     }
 
+    /**
+     * Returns the QR Code's score, which is caluclated from its hash.
+     */
     public int getScore() {
         // This is the algorithm for now:
         // 1. Take the hash
