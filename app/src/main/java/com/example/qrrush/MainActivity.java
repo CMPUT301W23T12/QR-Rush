@@ -1,5 +1,8 @@
 package com.example.qrrush;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+import android.Manifest;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,70 +27,54 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-
     View mainView;
-
     Button profileButton;
     Button shopButton;
     Button mainButton;
     Button socialButton;
     Button leaderboardButton;
-
     User user;
+
     private FirebaseFirestore firestore;
 
+    static final String[] PERMISSIONS = {
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+    };
+
+    private boolean hasPermissions() {
+        for (String permission : MainActivity.PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * Users infromation stored here hard coded values for now
-         * untill firebase is setup
-         * TODO Add firebase integration
-         */
+        // TODO: If they say no, explain what the permissions are for and explain that they are
+        //  needed for the app to work?
 
-        ArrayList<QRCode> qrCodes = new ArrayList<>();
-
-        byte[] b = new byte[20];
-        Random rand = new Random();
-        byte[][] sampleData = {
-                new byte[20],
-                new byte[20],
-                new byte[20],
-        };
-
-        rand.nextBytes(sampleData[0]);
-        rand.nextBytes(sampleData[1]);
-        rand.nextBytes(sampleData[2]);
-
-        qrCodes.add(new QRCode(sampleData[0]));
-        qrCodes.add(new QRCode(sampleData[1]));
-        qrCodes.add(new QRCode(sampleData[2]));
-
-        // TODO: remove copyrighted material before merging into main.
-        user = new User("TheLegend27",
-                "987-6543-321", 1, qrCodes,
-                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
-
-        // Testing new commit into branch
-
+        // TODO: Maybe ask for location separately since its not necessary?
+        if (!hasPermissions()) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
+        }
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
+
         // Get Fire store instance
         firestore = FirebaseFirestore.getInstance();
 
-
-        mainView = findViewById(R.id.main_view);
-        profileButton = findViewById(R.id.profile_button);
-        shopButton = findViewById(R.id.shop_button);
-        socialButton = findViewById(R.id.social_button);
-        mainButton = findViewById(R.id.main_button);
-        leaderboardButton = findViewById(R.id.leaderboard_button);
-
+        // Initialize geolocation API
+        Geo.initGeolocation(this);
 
         if (UserUtil.isFirstTimeLogin(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -119,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             QuerySnapshot querySnapshot = task.getResult();
                             if (querySnapshot.size() > 0) {
                                 // Username is taken, prompt user to pick a new name
-                                username_Taken.setVisibility(dialogView.VISIBLE);
+                                username_Taken.setVisibility(View.VISIBLE);
                                 return;
                             }
 
@@ -131,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                             profiles.put("score", 0);
                             profiles.put("qrcodes", new ArrayList<QRCode>());
 
-                            // Add name + UUID and phonenumber to FB
+                            // Add name + UUID and phone number to FB
                             FirebaseWrapper.addData("profiles", username, profiles);
 
                             // set firstTimeLogin to false
@@ -144,6 +132,43 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialog.show();
         }
+
+        /*
+         * Users infromation stored here hard coded values for now
+         * untill firebase is setup
+         * TODO Add firebase integration
+         */
+
+        ArrayList<QRCode> qrCodes = new ArrayList<>();
+
+        byte[] b = new byte[20];
+        Random rand = new Random();
+        byte[][] sampleData = {
+                new byte[20],
+                new byte[20],
+                new byte[20],
+        };
+
+        rand.nextBytes(sampleData[0]);
+        rand.nextBytes(sampleData[1]);
+        rand.nextBytes(sampleData[2]);
+
+        qrCodes.add(new QRCode(sampleData[0]));
+        qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[2]));
+
+        // TODO: remove copyrighted material before merging into main.
+        user = new User("TheLegend27",
+                "987-6543-321", 1, qrCodes,
+                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
+
+        mainView = findViewById(R.id.main_view);
+        profileButton = findViewById(R.id.profile_button);
+        shopButton = findViewById(R.id.shop_button);
+        socialButton = findViewById(R.id.social_button);
+        mainButton = findViewById(R.id.main_button);
+        leaderboardButton = findViewById(R.id.leaderboard_button);
+
         profileButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_view, new ProfileFragment(user)).commit();
