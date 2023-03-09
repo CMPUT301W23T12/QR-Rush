@@ -3,7 +3,6 @@ package com.example.qrrush;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -60,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
         }
 
+        Geo.initGeolocation(this);
+
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
@@ -89,41 +90,42 @@ public class MainActivity extends AppCompatActivity {
                     document.getLong("rank").intValue(),
                     document.getLong("score").intValue(),
                     qrCodes);
-        });
 
-        mainView = findViewById(R.id.main_view);
-        profileButton = findViewById(R.id.profile_button);
-        shopButton = findViewById(R.id.shop_button);
-        socialButton = findViewById(R.id.social_button);
-        mainButton = findViewById(R.id.main_button);
-        leaderboardButton = findViewById(R.id.leaderboard_button);
+            mainView = findViewById(R.id.main_view);
+            profileButton = findViewById(R.id.profile_button);
+            shopButton = findViewById(R.id.shop_button);
+            socialButton = findViewById(R.id.social_button);
+            mainButton = findViewById(R.id.main_button);
+            leaderboardButton = findViewById(R.id.leaderboard_button);
 
-        profileButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ProfileFragment(user)).commit();
-        });
+            profileButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ProfileFragment(user)).commit();
+            });
 
-        shopButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ShopFragment(user)).commit();
-        });
+            shopButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ShopFragment(user)).commit();
+            });
 
-        socialButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new SocialFragment(user)).commit();
-        });
+            socialButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new SocialFragment(user)).commit();
+            });
 
-        mainButton.setOnClickListener((v) -> {
+            mainButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new MainFragment(user)).commit();
+            });
+
+            leaderboardButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
+            });
+
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_view, new MainFragment(user)).commit();
         });
 
-        leaderboardButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
-        });
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_view, new MainFragment(user)).commit();
     }
 }

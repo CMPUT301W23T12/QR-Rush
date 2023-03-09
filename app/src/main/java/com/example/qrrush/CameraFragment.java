@@ -1,9 +1,11 @@
 package com.example.qrrush;
 
 import static androidx.camera.core.ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL;
-import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
@@ -17,18 +19,12 @@ import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,13 +33,13 @@ import java.util.List;
  * screen which shows the user what they've scanned.
  */
 public class CameraFragment extends Fragment {
-
     PreviewView previewView;
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     CameraController cameraController;
+    User user;
 
-    public CameraFragment() {
-        // Required empty public constructor
+    public CameraFragment(User user) {
+        this.user = user;
     }
 
     @Override
@@ -66,10 +62,9 @@ public class CameraFragment extends Fragment {
                         return;
                     }
 
-                    for (Barcode b: results) {
-                        // TODO: once the QR code class is merged, change this to save it as an
-                        //       actual QR code and add it to the user's profile.
-                        Log.e("QR Rush", b.toString());
+                    for (Barcode b : results) {
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.main_view, new QRConfirmFragment(user, b)).commit();
                     }
                 }));
 
@@ -94,7 +89,7 @@ public class CameraFragment extends Fragment {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = (ProcessCameraProvider)cameraProviderFuture.get();
+                ProcessCameraProvider cameraProvider = (ProcessCameraProvider) cameraProviderFuture.get();
                 bindImageAnalysis(cameraProvider);
             } catch (Exception e) {
                 e.printStackTrace();

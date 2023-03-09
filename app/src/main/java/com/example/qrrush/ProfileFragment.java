@@ -1,10 +1,6 @@
 package com.example.qrrush;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +8,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.Random;
+import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -23,6 +20,7 @@ public class ProfileFragment extends Fragment {
 
     /**
      * Grabs User object from the main activity
+     *
      * @param user
      */
     public ProfileFragment(User user) {
@@ -59,18 +57,14 @@ public class ProfileFragment extends Fragment {
         rankView.setText(String.valueOf(user.getRank()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         QRScanned.setText(String.valueOf(user.getNumberOfQRCodes()));
-        /**
-         *      Image will be fit into the size of the image view
-         */
+        //      Image will be fit into the size of the image view
         Picasso
                 .get()
                 .load(user.getProfilePicture())
                 .fit()
                 .into(profileView);
 
-        /**
-         * Passes User object from main activity to the QR code adapter
-         */
+        // Passes User object from main activity to the QR code adapter
         QRCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(QRCodeAdapter);
