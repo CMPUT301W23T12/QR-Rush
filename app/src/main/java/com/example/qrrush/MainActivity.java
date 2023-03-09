@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -70,8 +71,35 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
+        /**
+         * Test data for QR codes (Testing the sorting system) don't remove!
+         * TODO remove once users can scan QR codes into fire base
+         * ================================================
+         */
         ArrayList<QRCode> qrCodes = new ArrayList<>();
-        // Get everything from firebase
+        byte[] b = new byte[20];
+        Random rand = new Random();
+        byte[][] sampleData = {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+                new byte[20],
+                new byte[20],
+                new byte[20],
+        };
+        rand.nextBytes(sampleData[0]);
+        rand.nextBytes(sampleData[1]);
+        rand.nextBytes(sampleData[2]);
+        qrCodes.add(new QRCode(sampleData[0]));
+        qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[2]));
+        /**
+         * ================================================
+         */
+
+        /**
+         * Get everything from firebase
+         */
         FirebaseWrapper.getUserData(username, (Task<DocumentSnapshot> task) -> {
             if (!task.isSuccessful()) {
                 Log.d("Firebase User", "Error creating user");
