@@ -6,6 +6,7 @@ import android.graphics.Color;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
@@ -17,6 +18,11 @@ import java.util.Random;
 public class QRCode {
     private final String hash;
     private Optional<String> location;
+
+    /**
+     * TODO Set the date so that when the QR code is scanned its date is set here
+     */
+    Date date;
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
@@ -288,4 +294,7 @@ public class QRCode {
         return result;
     }
 
+    public Date getDate() {
+        return date;
+    }
 }
