@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Username is unique, continue with registration process
                 HashMap<String, Object> profiles = new HashMap<>();
-                profiles.put(username, UserUtil.generateUUID());
+                profiles.put("UUID", UserUtil.generateUUID());
                 profiles.put("phone-number", phoneNumber);
                 profiles.put("rank", 0);
                 profiles.put("score", 0);
