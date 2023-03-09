@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -58,12 +59,6 @@ public class MainActivity extends AppCompatActivity {
         qrCodes.add(new QRCode(sampleData[2]));
 
         // TODO: remove copyrighted material before merging into main.
-        user = new User("TheLegend27",
-                "987-6543-321", 1, qrCodes,
-                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
-
-
-        // Testing new commit into branch
 
 
         // Initialize Firebase
@@ -126,8 +121,30 @@ public class MainActivity extends AppCompatActivity {
                             // Add name + UUID and phonenumber to FB
                             FirebaseWrapper.addData("profiles", username, profiles);
 
+
                             // set firstTimeLogin to false
                             UserUtil.setFirstTime(MainActivity.this, true);
+                            FirebaseWrapper.setUserData(username, new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                            String phoneNumber = document.getString("phone-number");
+                                            int rank = document.getLong("rank").intValue();
+                                            int score = document.getLong("score").intValue();
+                                            ArrayList<QRCode> qrCodes = (ArrayList<QRCode>) document.get("qrcodes");
+                                            // Create a new User object using the retrieved data
+                                            user = new User(username, phoneNumber, rank, score, qrCodes);
+
+                                        } else {
+                                            Log.d("Firebase", "No such document");
+                                        }
+                                    } else {
+                                        Log.d("Firebase", "get failed with ", task.getException());
+                                    }
+                                }
+                            });
 
                             dialog.dismiss();
                         }

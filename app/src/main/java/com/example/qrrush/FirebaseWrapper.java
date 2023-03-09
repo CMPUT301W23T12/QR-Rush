@@ -14,15 +14,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A wrapper class for accessing the Firebase database for QR Rush.
@@ -34,6 +28,7 @@ public class FirebaseWrapper {
      * This methods creates a new collection with name collectionName
      * and creates a new document with name documentID
      * and takes in a hashmap of data, HASHMAP must be populated with data before adding
+     *
      * @param collectionName
      * @param documentID
      * @param data
@@ -52,6 +47,7 @@ public class FirebaseWrapper {
 
     /**
      * This method updates a document in a collection.
+     *
      * @param collectionName
      * @param documentID
      * @param data
@@ -70,8 +66,9 @@ public class FirebaseWrapper {
 
     /**
      * Reads data from a collection, works fine, just kinda useless since it stores it in the log, maybe figure out a new way to output it? idk might be fine as is.
-     *
+     * <p>
      * ASYNC Function so can't really return an array of contents etc.
+     *
      * @param collectionName
      */
     public static void readData(String collectionName, String documentID) {
@@ -93,7 +90,7 @@ public class FirebaseWrapper {
         });
     }
 
-    public static void deleteDocument(String collectionName, String documentName){
+    public static void deleteDocument(String collectionName, String documentName) {
         FirebaseFirestore.getInstance().collection(collectionName).document(documentName)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -118,6 +115,11 @@ public class FirebaseWrapper {
         query.get().addOnCompleteListener(onCompleteListener);
     }
 
-
-
+    public static void setUserData(String username, OnCompleteListener<DocumentSnapshot> listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("profiles").document(username)
+                .get()
+                .addOnCompleteListener(listener);
+    }
 }

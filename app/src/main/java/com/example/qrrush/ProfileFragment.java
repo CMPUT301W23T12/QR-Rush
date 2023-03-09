@@ -1,16 +1,16 @@
 package com.example.qrrush;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,6 +23,7 @@ public class ProfileFragment extends Fragment {
 
     /**
      * Grabs User object from the main activity
+     *
      * @param user
      */
     public ProfileFragment(User user) {
@@ -65,15 +66,14 @@ public class ProfileFragment extends Fragment {
         rand.nextBytes(sampleData[1]);
         rand.nextBytes(sampleData[2]);
 
-        qrCodes.add(new QRCode(sampleData[0]));
         qrCodes.add(new QRCode(sampleData[1]));
+        qrCodes.add(new QRCode(sampleData[0]));
         qrCodes.add(new QRCode(sampleData[2]));
 
         // Sets the users profile, still need to crop the image to fit a certain size
         // TODO: remove copyrighted material before merging into main.
-        user = new User("TheLegend27",
-                "987-6543-321", 1, qrCodes,
-                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
+//        user = new User("TheLegend27",
+//                "987-6543-321", 1, qrCodes);
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
