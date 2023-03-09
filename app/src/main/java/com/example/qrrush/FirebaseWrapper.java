@@ -122,4 +122,22 @@ public class FirebaseWrapper {
                 .get()
                 .addOnCompleteListener(listener);
     }
+
+    public static void removeUserProfile(String username) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles").document(username)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("FirebaseWrapper", "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("FirebaseWrapper", "Error deleting the document.");
+                    }
+                });
+    }
 }
