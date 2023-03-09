@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public class MainFragment extends Fragment {
@@ -36,8 +37,10 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         cameraButton = view.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener((v) -> {
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new CameraFragment(user)).commit();
+            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+            t.replace(R.id.main_view, new CameraFragment(user));
+            t.addToBackStack(null);
+            t.commit();
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);

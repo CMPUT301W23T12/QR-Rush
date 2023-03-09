@@ -110,11 +110,12 @@ public class User {
 
             Map<String, Object> newData = ds.getData();
             // TODO: check if they've already scanned this one before.
-            ArrayList<QRCode> codes = (ArrayList<QRCode>) newData.get("qrcodes");
-            codes.add(code);
-            newData.put("qrcodes", codes);
+            ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
+            codes.add(code.getHash());
+            newData.replace("qrcodes", codes);
 
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            this.qrCodes.add(code);
         });
     }
 }

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.mlkit.vision.barcode.common.Barcode;
 
@@ -54,15 +55,19 @@ public class QRConfirmFragment extends Fragment {
         QRCode qrCode = new QRCode(this.code.getRawBytes());
 
         retakeButton.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new CameraFragment(user)).commit();
+            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+            t.replace(R.id.main_view, new CameraFragment(user));
+            t.addToBackStack(null);
+            t.commit();
         });
 
         confirmButton.setOnClickListener(v -> {
             user.addQRCode(qrCode);
 
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new MainFragment(user)).commit();
+            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+            t.replace(R.id.main_view, new MainFragment(user));
+            t.addToBackStack(null);
+            t.commit();
         });
 
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 200, 200, false);
