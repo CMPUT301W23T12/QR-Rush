@@ -112,16 +112,15 @@ public class QRCode {
         // 1. For each character of the hash, if it's even make it a 0, and if its odd make it a 1.
         StringBuilder binaryHash = new StringBuilder(this.hash);
         for (int i = 0; i < this.hash.length(); i += 1) {
-            byte[] val = {(byte) (binaryHash.charAt(i) % 2)};
-            binaryHash.setCharAt(i, String.valueOf(binaryHash.charAt(i) % 2).charAt(0));
+            binaryHash.setCharAt(i, Integer.toString(binaryHash.charAt(i) % 2).charAt(0));
         }
 
         // 2. Add 4 extra padding characters to make it a square by dividing up the hash into 4
         //    sections and performing the same thing as 1 on the sum of each of the sections.
         int[][] pairs = {
-                {0, 7},
-                {8, 16},
-                {17, 25},
+                {0, 8},
+                {8, 17},
+                {17, 26},
                 {26, 32},
         };
         for (int[] pair : pairs) {
@@ -130,7 +129,7 @@ public class QRCode {
                 sum += Integer.parseInt(Character.toString(binaryHash.charAt(i)), 16);
             }
 
-            binaryHash.append(String.valueOf(sum).charAt(0));
+            binaryHash.append(Integer.toString(sum % 2).charAt(0));
         }
 
         String str = binaryHash.toString();
