@@ -10,6 +10,9 @@ public class UserUtil {
     private static final String HAS_USERNAME_KEY = "hasUsername";
     private static final String UUID_KEY = "uuid";
 
+
+    private static final String USERNAME_KEY = "username";
+
     public static boolean isFirstTimeLogin(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         return !prefs.getBoolean(HAS_USERNAME_KEY, false);
@@ -17,6 +20,18 @@ public class UserUtil {
 
     public static String generateUUID() {
         return UUID.randomUUID().toString();
+    }
+
+    public static String getUsername(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        return prefs.getString(USERNAME_KEY, "null");
+    }
+
+    public static void setUsername(Context context, String username) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(USERNAME_KEY, username);
+        editor.apply();
     }
 
     // Get UUID from Firebase as well???

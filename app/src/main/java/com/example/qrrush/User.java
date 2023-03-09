@@ -14,18 +14,21 @@ public class User {
 
     private int totalQRcodes;
 
-    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, String profilePicture) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
-        this.profilePicture = profilePicture;
         totalQRcodes = qrCodes.size();
-        int totalScore = 0;
-        for (int i = 0; i < qrCodes.size(); i++){
-            totalScore += qrCodes.get(i).getScore();
+
+        if (totalQRcodes == 0) {
+            totalScore = 0;
+        } else {
+            for (int i = 0; i < qrCodes.size(); i++) {
+                totalScore += qrCodes.get(i).getScore();
+            }
+            this.totalScore = totalScore;
         }
-        this.totalScore = totalScore;
     }
 
     public String getUserName() {
@@ -68,7 +71,9 @@ public class User {
         qrCodes.add(qrCode);
     }
 
-    public int getNumberOfQRCodes(){return totalQRcodes;}
+    public int getNumberOfQRCodes() {
+        return totalQRcodes;
+    }
 
     public void setTotalQRcodes(int totalQRcodes) {
         this.totalQRcodes = totalQRcodes;
