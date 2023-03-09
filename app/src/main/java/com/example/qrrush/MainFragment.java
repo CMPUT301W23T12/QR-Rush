@@ -43,6 +43,6 @@ public class MainFragment extends Fragment {
         /**
          * sets users total score on the main page
          */
-        scoreView.setText(String.valueOf(user.getTotalScore()));
+//        scoreView.setText(String.valueOf(user.getTotalScore()));
     }
 }

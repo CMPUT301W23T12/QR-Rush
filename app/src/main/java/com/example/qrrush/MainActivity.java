@@ -15,11 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     Button leaderboardButton;
 
     User user;
+
+    String username;
+
     private FirebaseFirestore firestore;
 
 
@@ -67,10 +73,6 @@ public class MainActivity extends AppCompatActivity {
         qrCodes.add(new QRCode(sampleData[2]));
 
         // TODO: remove copyrighted material before merging into main.
-        user = new User("TheLegend27",
-                "987-6543-321", 1, qrCodes,
-                "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
-
         // Testing new commit into branch
 
 
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.setOnShowListener((dialog) -> {
                 Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(v -> {
-                    String username = usernameEditText.getText().toString();
+                    username = usernameEditText.getText().toString();
                     String phoneNumber = phoneNumberEditText.getText().toString();
                     FirebaseWrapper.checkUsernameAvailability(username, new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -129,14 +131,20 @@ public class MainActivity extends AppCompatActivity {
                             profiles.put("phone-number", phoneNumber);
                             profiles.put("rank", 0);
                             profiles.put("score", 0);
-                            profiles.put("qrcodes", new ArrayList<QRCode>());
-
+                            List<Map<String, Object>> qrCodeList = new ArrayList<>();
+                            for (QRCode qrCode : qrCodes) {
+                                Map<String, Object> qrCodeMap = qrCode.toMap();
+                                qrCodeList.add(qrCodeMap);
+                            }
+                            profiles.put("qrcodes", qrCodeList);
                             // Add name + UUID and phonenumber to FB
                             FirebaseWrapper.addData("profiles", username, profiles);
+                            // Create the user for them
+
 
                             // set firstTimeLogin to false
                             UserUtil.setFirstTime(MainActivity.this, true);
-
+                            UserUtil.setUsername(MainActivity.this, username);
                             dialog.dismiss();
                         }
                     });
@@ -144,6 +152,25 @@ public class MainActivity extends AppCompatActivity {
             });
             alertDialog.show();
         }
+
+        // Retrieve data from Firebase:
+        Log.d("TAG", UserUtil.getUsername(MainActivity.this));
+        FirebaseWrapper.getUserData(username, new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        user = new User(username, document.getString("phone-number"), document.getLong("rank").intValue(), document.getLong("score").intValue(), qrCodes);
+                    }
+
+                } else {
+                    Log.d("Firebase User", "Error creating user");
+                }
+            }
+        });
+
+
         profileButton.setOnClickListener((v) -> {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_view, new ProfileFragment(user)).commit();

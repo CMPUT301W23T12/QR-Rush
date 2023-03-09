@@ -115,7 +115,7 @@ public class FirebaseWrapper {
         query.get().addOnCompleteListener(onCompleteListener);
     }
 
-    public static void setUserData(String username, OnCompleteListener<DocumentSnapshot> listener) {
+    public static void getUserData(String username, OnCompleteListener<DocumentSnapshot> listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         db.collection("profiles").document(username)
