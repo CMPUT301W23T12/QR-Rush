@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1092952263530",
+    "project_id": "qr-rush",
+    "storage_bucket": "qr-rush.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092952263530:android:9478ce233994d45706b313",
+        "android_client_info": {
+          "package_name": "com.example.qrrush"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092952263530-9eimgkoknjmaf5v0rlc1d8u5pci28nfe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxdnjMSL8uerFsJh9-XXK1Ur_hxr8fNA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092952263530-9eimgkoknjmaf5v0rlc1d8u5pci28nfe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

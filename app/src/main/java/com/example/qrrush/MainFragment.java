@@ -14,6 +14,18 @@ import android.view.ViewGroup;
 import android.location.Location;
 import android.widget.Toast;
 
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+
+public class MainFragment extends Fragment {
+    User user;
+    Button cameraButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -26,7 +38,36 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+    /**
+     * Grabs the User object from the main activity
+     *
+     * @param user
+     */
+    public MainFragment(User user) {
+        this.user = user;
+        // Required empty public constructor
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        cameraButton = view.findViewById(R.id.camera_button);
+        cameraButton.setOnClickListener((v) -> {
+            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+            t.replace(R.id.main_view, new CameraFragment(user));
+            t.addToBackStack(null);
+            t.commit();
+        });
+
+        TextView scoreView = view.findViewById(R.id.scoreView);
+        // sets users total score on the main page
+        scoreView.setText(String.valueOf(user.getTotalScore()));
+    }
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     Location currentLocation;
