@@ -55,7 +55,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Common);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getNames());
+                nameContentText.setText("Name: " + code.getName());
             }
         });
 
@@ -65,7 +65,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Rare);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getNames());
+                nameContentText.setText("Name: " + code.getName());
             }
         });
 
@@ -75,7 +75,7 @@ public class ShopFragment extends Fragment {
                 QRCode code = QRCode.withRarity(Rarity.Legendary);
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getNames());
+                nameContentText.setText("Name: " + code.getName());
             }
         });
 
