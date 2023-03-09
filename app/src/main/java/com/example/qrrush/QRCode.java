@@ -6,8 +6,6 @@ import android.graphics.Color;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -290,16 +288,4 @@ public class QRCode {
         return result;
     }
 
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("name", this.name);
-        map.put("hash", this.hash);
-        map.put("location", this.location.orElse(null));
-        map.put("imageURL", this.imageURL);
-        map.put("score", this.getScore());
-
-        return map;
-    }
 }
