@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,11 +49,19 @@ public class MainActivity extends AppCompatActivity {
          */
 
         ArrayList<QRCode> qrCodes = new ArrayList<>();
+
+        byte[] b = new byte[20];
+        Random rand = new Random();
         byte[][] sampleData = {
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9},
+                new byte[20],
+                new byte[20],
+                new byte[20],
         };
+
+        rand.nextBytes(sampleData[0]);
+        rand.nextBytes(sampleData[1]);
+        rand.nextBytes(sampleData[2]);
+
         qrCodes.add(new QRCode(sampleData[0]));
         qrCodes.add(new QRCode(sampleData[1]));
         qrCodes.add(new QRCode(sampleData[2]));
@@ -61,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         user = new User("TheLegend27",
                 "987-6543-321", 1, qrCodes,
                 "https://static.wikia.nocookie.net/intothespiderverse/images/b/b0/Wilson_Fisk_%28E-1610%29_001.png/revision/latest?cb=20210609163717");
-
 
         // Testing new commit into branch
 
