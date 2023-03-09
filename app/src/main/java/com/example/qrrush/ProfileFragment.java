@@ -1,16 +1,16 @@
 package com.example.qrrush;
 
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,7 +23,6 @@ public class ProfileFragment extends Fragment {
 
     /**
      * Grabs User object from the main activity
-     *
      * @param user
      */
     public ProfileFragment(User user) {
@@ -48,32 +47,7 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        /**
-         * Sets up initial profile
-         */
         super.onViewCreated(view, savedInstanceState);
-
-        ArrayList<QRCode> qrCodes = new ArrayList<>();
-        byte[] b = new byte[20];
-        Random rand = new Random();
-        byte[][] sampleData = {
-                new byte[20],
-                new byte[20],
-                new byte[20],
-        };
-
-        rand.nextBytes(sampleData[0]);
-        rand.nextBytes(sampleData[1]);
-        rand.nextBytes(sampleData[2]);
-
-        qrCodes.add(new QRCode(sampleData[1]));
-        qrCodes.add(new QRCode(sampleData[0]));
-        qrCodes.add(new QRCode(sampleData[2]));
-
-        // Sets the users profile, still need to crop the image to fit a certain size
-        // TODO: remove copyrighted material before merging into main.
-//        user = new User("TheLegend27",
-//                "987-6543-321", 1, qrCodes);
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
