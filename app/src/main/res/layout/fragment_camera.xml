@@ -19,6 +19,8 @@
             android:background="#FFFFFF"
             android:gravity="center"
             android:text="Looking for QR Code..."
+            android:fontFamily="@font/gatekept"
+            android:textColor="@color/black"
             android:textAlignment="gravity" />
 
         <androidx.camera.view.PreviewView

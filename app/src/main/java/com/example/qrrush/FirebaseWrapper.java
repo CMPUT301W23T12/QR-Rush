@@ -90,6 +90,7 @@ public class FirebaseWrapper {
         });
     }
 
+
     public static void deleteDocument(String collectionName, String documentName) {
         FirebaseFirestore.getInstance().collection(collectionName).document(documentName)
                 .delete()

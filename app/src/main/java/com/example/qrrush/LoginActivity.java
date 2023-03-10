@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 profiles.put("rank", 0);
                 profiles.put("score", 0);
                 profiles.put("qrcodes", new ArrayList<QRCode>());
+                profiles.put("qrcodescomments", new ArrayList<String>());
                 // Add name + UUID and phone number to FB
                 FirebaseWrapper.addData("profiles", username, profiles);
 

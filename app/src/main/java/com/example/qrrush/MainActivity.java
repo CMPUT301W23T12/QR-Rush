@@ -6,7 +6,6 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -90,10 +89,14 @@ public class MainActivity extends AppCompatActivity {
 
             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
             ArrayList<QRCode> qrCodes = new ArrayList<>();
+            ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
+            HashMap<String, ArrayList<String>> firebaseComment = new HashMap<>();
+
             for (String hash : hashes) {
                 qrCodes.add(new QRCode(hash));
-            }
+                comments.add("");
 
+            }
             user = new User(
                     username,
                     document.getString("phone-number"),

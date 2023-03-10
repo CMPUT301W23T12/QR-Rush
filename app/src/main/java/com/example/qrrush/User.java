@@ -96,6 +96,8 @@ public class User {
         }
 
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+
+
         FirebaseWrapper.getUserData(this.getUserName(), task -> {
             if (!task.isSuccessful()) {
                 Log.e("addQRCode", "Failed to read from firebase!");
@@ -109,12 +111,17 @@ public class User {
             }
 
             Map<String, Object> newData = ds.getData();
+
             // TODO: check if they've already scanned this one before.
             ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
             codes.add(code.getHash());
+            comments.add("");
+            newData.replace("qrcodescomments", comments);
             newData.replace("qrcodes", codes);
 
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            FirebaseWrapper.updateData("qrcodescomments", this.getUserName(), data);
             this.qrCodes.add(code);
         });
     }

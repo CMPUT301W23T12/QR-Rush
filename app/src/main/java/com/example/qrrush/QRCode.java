@@ -19,7 +19,7 @@ import java.util.Random;
 public class QRCode {
     private final String hash;
     private Optional<Location> location;
-    private String comment;
+    private String comment = "";
 
     public String getComment() {
         return comment;
