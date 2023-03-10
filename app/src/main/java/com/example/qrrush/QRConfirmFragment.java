@@ -63,7 +63,7 @@ public class QRConfirmFragment extends Fragment {
 
         confirmButton.setOnClickListener(v -> {
             user.addQRCode(qrCode);
-
+            
             FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
             t.replace(R.id.main_view, new MainFragment(user));
             t.addToBackStack(null);
