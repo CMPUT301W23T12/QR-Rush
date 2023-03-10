@@ -6,6 +6,19 @@
     tools:context=".MainFragment">
 
     <!-- TODO: Update blank fragment layout -->
+<<<<<<< HEAD
+=======
+    <TextView
+        android:id="@+id/scoreView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera" />
+>>>>>>> 241cc385cccd9644b775111018c27d6931307d8b
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/maps"
