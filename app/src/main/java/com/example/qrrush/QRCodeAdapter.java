@@ -37,7 +37,9 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         super(context, 0, objects);
         qrCodes = objects;
         this.user = user;
+
     }
+
 
     @NonNull
     @Override
@@ -56,12 +58,15 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         nameView.setText(qrCode.getName());
         pointView.setText(String.valueOf(qrCode.getScore()));
         Optional<Location> l = qrCode.getLocation();
+        commentsMap.clear();
+
         if (commentsMap.containsKey(qrCode)) {
-//            commentEditText.setVisibility(View.VISIBLE);
-//            commentEditText.setText(commentsMap.get(qrCode));
+            commentEditText.setVisibility(View.VISIBLE);
+            commentEditText.setText(commentsMap.get(qrCode));
+
         } else {
-//            commentEditText.setVisibility(View.GONE);
-//            commentEditText.setText("");
+            commentEditText.setVisibility(View.GONE);
+            commentEditText.setText("");
         }
         String location = "no location available";
         if (l.isPresent()) {
@@ -70,7 +75,32 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         locationView.setText(location);
         /**
          * Delete button instance for each QR code item
-         */
+         */// Fetch comments for the QR code from Firebase
+        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
+            if (!task.isSuccessful()) {
+                Log.d("Firebase User", "Error getting user data");
+                return;
+            }
+
+            DocumentSnapshot document = task.getResult();
+            if (!document.exists()) {
+                Log.e("Firebase User", "Document doesn't exist!");
+                return;
+            }
+
+            ArrayList<String> qrCodeComments = (ArrayList<String>) document.get("qrcodescomments");
+            if (qrCodeComments != null && position < qrCodeComments.size()) {
+                String comment = qrCodeComments.get(position);
+                if (comment != null && !comment.isEmpty()) {
+                    commentsMap.put(qrCode, comment);
+                    commentEditText.setVisibility(View.VISIBLE);
+                    commentEditText.setText(comment);
+                }
+            } else {
+                commentsMap.put(qrCode, ""); // Add empty string to commentsMap to keep track of which QR codes have comments
+            }
+        });
+
         Button deleteButton = view.findViewById(R.id.deleteButton);
 
         // Image will be fit into the size of the image view
@@ -83,25 +113,52 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 if (qrCodes.isEmpty()) {
                     return;
                 }
-                /**
-                 * Updates the users total score and number of QR codes
-                 * when the respective item is deleted
-                 */
-                user.setTotalScore(user.getTotalScore() - qrCodes.get(position).getScore());
-                FirebaseWrapper.deleteQrcode("profiles", user.getUserName(), qrCodes.get(position).getHash());
-                qrCodes.remove(position);
-                user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
-                // Clear the commentEditText view
-                qrCode.setComment(null); // Clear the comment when the QR code is deleted
-                commentsMap.remove(qrCode); // Remove the comment from the HashMap
-//                commentEditText.setText(""); // Clear the commentEditText view
-//                commentEditText.setVisibility(View.GONE);
 
+                // Get the QR code and its position in the list
+                QRCode qrCode = qrCodes.get(position);
+
+                // Remove the QR code from the list
+                qrCodes.remove(position);
+
+                // Remove the comment associated with the QR code from the comments map
+                commentsMap.remove(qrCode);
+
+                // Remove the comment for the QR code from Firebase
+                FirebaseWrapper.deleteQrcode("profiles", user.getUserName(), qrCode.getHash());
+
+                // Update the Firebase data with the new comments list
+                FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
+                    if (!task.isSuccessful()) {
+                        Log.d("Firebase User", "Error getting user data");
+                        return;
+                    }
+
+                    DocumentSnapshot document = task.getResult();
+                    if (!document.exists()) {
+                        Log.e("Firebase User", "Document doesn't exist!");
+                        return;
+                    }
+
+                    ArrayList<String> qrCodeComments = (ArrayList<String>) document.get("qrcodescomments");
+                    if (qrCodeComments != null && position < qrCodeComments.size()) {
+                        qrCodeComments.remove(position);
+
+                        HashMap<String, Object> data = new HashMap<>();
+                        data.put("qrcodescomments", qrCodeComments);
+                        FirebaseWrapper.updateData("profiles", user.getUserName(), data);
+                    }
+                });
+
+                // Update the user's score and number of QR codes
+                user.setTotalScore(user.getTotalScore() - qrCode.getScore());
+                user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
+
+                // Update the UI to reflect the changes
                 TextView qrScannedTextView = ((Activity) getContext()).findViewById(R.id.qrCodesView);
                 TextView scoreView = ((Activity) getContext()).findViewById(R.id.scoreView);
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 qrScannedTextView.setText(String.valueOf(user.getNumberOfQRCodes()));
-                notifyDataSetChanged();
+                notifyDataSetChanged(); // Notify the adapter that data has changed
             }
         });
         view.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +199,14 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                 qrCodeComments = new ArrayList<>();
                             }
 
-                            int index = qrCodes.indexOf(qrCode);
+                            int index = -1;
+                            for (int i = 0; i < qrCodes.size(); i++) {
+                                if (qrCodes.get(i).equals(qrCode)) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+
                             if (index >= 0 && index < qrCodeComments.size()) {
                                 qrCodeComments.set(index, comment);
                             } else {
