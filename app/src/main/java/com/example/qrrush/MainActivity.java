@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -20,11 +21,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
-    Button profileButton;
-    Button shopButton;
-    Button mainButton;
-    Button socialButton;
-    Button leaderboardButton;
+    ImageButton profileButton;
+    ImageButton shopButton;
+    ImageButton mainButton;
+    ImageButton socialButton;
+    ImageButton leaderboardButton;
     User user;
 
     private FirebaseFirestore firestore;
@@ -101,11 +102,11 @@ public class MainActivity extends AppCompatActivity {
             );
 
             mainView = findViewById(R.id.main_view);
-            profileButton = findViewById(R.id.profile_button);
-            shopButton = findViewById(R.id.shop_button);
-            socialButton = findViewById(R.id.social_button);
-            mainButton = findViewById(R.id.main_button);
-            leaderboardButton = findViewById(R.id.leaderboard_button);
+            profileButton = (ImageButton) findViewById(R.id.profile_button);
+            shopButton = (ImageButton) findViewById(R.id.shop_button);
+            socialButton = (ImageButton) findViewById(R.id.social_button);
+            mainButton = (ImageButton) findViewById(R.id.main_button);
+            leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
 
             profileButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
