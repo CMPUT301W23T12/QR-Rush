@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProfileFragment extends Fragment {
@@ -143,10 +144,17 @@ public class ProfileFragment extends Fragment {
                                             updatedProfile.put("phone-number", document.getString("phone-number"));
                                             updatedProfile.put("rank", document.getLong("rank").intValue());
                                             updatedProfile.put("score", document.getLong("score").intValue());
-                                            updatedProfile.put("qrcodes", document.get("qrcodes"));
+
+                                            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                            ArrayList<QRCode> qrCodes = new ArrayList<>();
+                                            for (String hash : hashes) {
+                                                qrCodes.add(new QRCode(hash));
+                                            }
                                             // Add name + UUID and phone number to FB
                                             FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+                                            user = new User(newUserName, document.getString("phone-number"), document.getLong("rank").intValue(), document.getLong("score").intValue(), qrCodes);
                                             FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+                                            Log.e("EditName", "Successfully edited username");
 
 
                                         });
