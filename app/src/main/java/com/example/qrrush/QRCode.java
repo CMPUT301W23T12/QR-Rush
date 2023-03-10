@@ -46,7 +46,7 @@ public class QRCode {
         this.location = Optional.of(location);
     }
 
-    private QRCode(String hash) {
+    public QRCode(String hash) {
         this.location = Optional.empty();
         this.hash = hash;
     }
