@@ -86,19 +86,17 @@ public class FirebaseWrapper {
     }
     public static void deleteQrcode(String collectionName, String documentName, String hash) {
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
-
         Map<String, Object> updates = new HashMap<>();
         updates.put("qrcodes", FieldValue.arrayRemove(hash));
-
         docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("QR Rush", "Document successfully updated!");
+                Log.d("FirebaseWrapper", "Document successfully updated!");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.w("QR Rush", "Error updating document", e);
+                Log.w("FirebaseWrapper", "Error updating document", e);
             }
         });
     }
