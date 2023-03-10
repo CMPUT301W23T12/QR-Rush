@@ -9,6 +9,8 @@
     <TextView
         android:id="@+id/scoreView"
         android:layout_width="match_parent"
+        android:fontFamily="@font/gatekept"
+        android:textColor="@color/black"
         android:layout_height="match_parent" />
 
     <Button
