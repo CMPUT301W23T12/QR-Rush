@@ -28,40 +28,58 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Button
+
+            <ImageButton
                 android:id="@+id/profile_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Profile" />
+                android:backgroundTint="#FFFFFF"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/profile" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/shop_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Shop" />
+                android:backgroundTint="#FFFFFF"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/shop" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/main_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Main" />
+                android:backgroundTint="#FFFFFF"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/main" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/social_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Social" />
+                android:backgroundTint="#FFFFFF"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/social" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/leaderboard_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Leaderboard" />
+                android:backgroundTint="#FFFFFF"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/leaderboard" />
+
         </LinearLayout>
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
