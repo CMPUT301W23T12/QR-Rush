@@ -1,6 +1,12 @@
 package com.example.qrrush;
 
+import android.util.Log;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // User class, should only be one user that can have multiple QR codes
 public class User {
@@ -67,10 +73,6 @@ public class User {
         return qrCodes;
     }
 
-    public void addQRCode(QRCode qrCode) {
-        qrCodes.add(qrCode);
-    }
-
     public int getNumberOfQRCodes() {
         return totalQRcodes;
     }
@@ -85,5 +87,35 @@ public class User {
 
     public void setTotalScore(int totalScores) {
         this.totalScore = totalScores;
+    }
+
+    public void addQRCode(QRCode code) {
+        HashMap<String, Object> data = new HashMap<>();
+        if (code.getLocation().isPresent()) {
+            data.put("location", code.getLocation().get());
+        }
+
+        FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+        FirebaseWrapper.getUserData(this.getUserName(), task -> {
+            if (!task.isSuccessful()) {
+                Log.e("addQRCode", "Failed to read from firebase!");
+                return;
+            }
+
+            DocumentSnapshot ds = task.getResult();
+            if (!ds.exists()) {
+                Log.e("addQRCode", "User was deleted from Firebase!");
+                return;
+            }
+
+            Map<String, Object> newData = ds.getData();
+            // TODO: check if they've already scanned this one before.
+            ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
+            codes.add(code.getHash());
+            newData.replace("qrcodes", codes);
+
+            FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            this.qrCodes.add(code);
+        });
     }
 }

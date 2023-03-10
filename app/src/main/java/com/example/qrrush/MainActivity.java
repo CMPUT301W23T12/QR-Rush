@@ -3,11 +3,11 @@ package com.example.qrrush;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -22,11 +22,11 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
-    Button profileButton;
-    Button shopButton;
-    Button mainButton;
-    Button socialButton;
-    Button leaderboardButton;
+    ImageButton profileButton;
+    ImageButton shopButton;
+    ImageButton mainButton;
+    ImageButton socialButton;
+    ImageButton leaderboardButton;
     User user;
 
     private FirebaseFirestore firestore;
@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
         }
 
+        Geo.initGeolocation(this);
+
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
@@ -71,35 +73,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
-        /**
-         * Test data for QR codes (Testing the sorting system) don't remove!
-         * TODO remove once users can scan QR codes into fire base
-         * ================================================
-         */
-        ArrayList<QRCode> qrCodes = new ArrayList<>();
-        byte[] b = new byte[20];
-        Random rand = new Random();
-        byte[][] sampleData = {
-                {1, 2, 3},
-                {4, 5, 6},
-                {7, 8, 9},
-                new byte[20],
-                new byte[20],
-                new byte[20],
-        };
-        rand.nextBytes(sampleData[0]);
-        rand.nextBytes(sampleData[1]);
-        rand.nextBytes(sampleData[2]);
-        qrCodes.add(new QRCode(sampleData[0]));
-        qrCodes.add(new QRCode(sampleData[1]));
-        qrCodes.add(new QRCode(sampleData[2]));
-        /**
-         * ================================================
-         */
-
-        /**
-         * Get everything from firebase
-         */
+        // Get everything from firebase
+        // TODO: show a loading animation while we get everything from firebase, then load the UI
+        //       once its done.
         FirebaseWrapper.getUserData(username, (Task<DocumentSnapshot> task) -> {
             if (!task.isSuccessful()) {
                 Log.d("Firebase User", "Error creating user");
@@ -112,46 +88,55 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            user = new User(username,
+            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+            ArrayList<QRCode> qrCodes = new ArrayList<>();
+            for (String hash : hashes) {
+                qrCodes.add(new QRCode(hash));
+            }
+
+            user = new User(
+                    username,
                     document.getString("phone-number"),
                     document.getLong("rank").intValue(),
                     document.getLong("score").intValue(),
-                    qrCodes);
-        });
+                    qrCodes
+            );
 
-        mainView = findViewById(R.id.main_view);
-        profileButton = findViewById(R.id.profile_button);
-        shopButton = findViewById(R.id.shop_button);
-        socialButton = findViewById(R.id.social_button);
-        mainButton = findViewById(R.id.main_button);
-        leaderboardButton = findViewById(R.id.leaderboard_button);
+            mainView = findViewById(R.id.main_view);
+            profileButton = (ImageButton) findViewById(R.id.profile_button);
+            shopButton = (ImageButton) findViewById(R.id.shop_button);
+            socialButton = (ImageButton) findViewById(R.id.social_button);
+            mainButton = (ImageButton) findViewById(R.id.main_button);
+            leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
 
-        profileButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ProfileFragment(user)).commit();
-        });
+            profileButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ProfileFragment(user)).commit();
+            });
 
-        shopButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new ShopFragment(user)).commit();
-        });
+            shopButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ShopFragment(user)).commit();
+            });
 
-        socialButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new SocialFragment(user)).commit();
-        });
+            socialButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new SocialFragment(user)).commit();
+            });
 
-        mainButton.setOnClickListener((v) -> {
+            mainButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new MainFragment(user)).commit();
+            });
+
+            leaderboardButton.setOnClickListener((v) -> {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
+            });
+
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_view, new MainFragment(user)).commit();
         });
 
-        leaderboardButton.setOnClickListener((v) -> {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
-        });
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_view, new MainFragment(user)).commit();
     }
 }

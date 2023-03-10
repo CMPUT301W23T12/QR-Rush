@@ -1,10 +1,6 @@
 package com.example.qrrush;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -28,6 +29,7 @@ public class ProfileFragment extends Fragment {
     int sortingTracker;
     /**
      * Grabs User object from the main activity
+     *
      * @param user
      */
     public ProfileFragment(User user) {
@@ -98,10 +100,15 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
+        ImageView profileView = view.findViewById(R.id.profileView);
+        //      Image will be fit into the size of the image view
+        Picasso
+                .get()
+                .load(user.getProfilePicture())
+                .fit()
+                .into(profileView);
 
-        /**
-         * Passes User object from main activity to the QR code adapter
-         */
+        // Passes User object from main activity to the QR code adapter
         QRCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(QRCodeAdapter);

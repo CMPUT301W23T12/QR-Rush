@@ -2,6 +2,7 @@ package com.example.qrrush;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Location;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,7 +18,7 @@ import java.util.Random;
  */
 public class QRCode {
     private final String hash;
-    private Optional<String> location;
+    private Optional<Location> location;
 
     /**
      * TODO Set the date so that when the QR code is scanned its date is set here
@@ -46,12 +47,12 @@ public class QRCode {
      * @param data     The data contained inside the QR Code.
      * @param location The location which the QR Code was scanned.
      */
-    public QRCode(byte[] data, String location) {
+    public QRCode(byte[] data, Location location) {
         this(data);
         this.location = Optional.of(location);
     }
 
-    private QRCode(String hash) {
+    public QRCode(String hash) {
         this.location = Optional.empty();
         this.hash = hash;
     }
@@ -104,8 +105,12 @@ public class QRCode {
         return result;
     }
 
-    public Optional<String> getLocation() {
+    public Optional<Location> getLocation() {
         return location;
+    }
+
+    public void setLocation(Location l) {
+        this.location = Optional.of(l);
     }
 
     /**

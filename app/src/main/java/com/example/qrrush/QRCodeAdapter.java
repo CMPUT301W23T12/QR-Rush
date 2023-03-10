@@ -3,6 +3,7 @@ package com.example.qrrush;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
+import java.util.Optional;
 
 // ArrayAdapter which displays QR Codes from the QRCode class.
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
+
     public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user) {
         super(context, 0, objects);
         qrCodes = objects;
@@ -41,7 +43,12 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         ImageView imageView = view.findViewById(R.id.imageView);
         nameView.setText(qrCode.getName());
         pointView.setText(String.valueOf(qrCode.getScore()));
-        locationView.setText(qrCode.getLocation().orElse("no location availible"));
+        Optional<Location> l = qrCode.getLocation();
+        String location = "no location available";
+        if (l.isPresent()) {
+            location = l.get().toString();
+        }
+        locationView.setText(location);
         /**
          * Delete button instance for each QR code item
          */
@@ -63,11 +70,11 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                  * Updates the users total score and number of QR codes
                  * when the respective item is deleted
                  */
-                user.setTotalScore(user.getTotalScore()-qrCodes.get(position).getScore());
+                user.setTotalScore(user.getTotalScore() - qrCodes.get(position).getScore());
                 qrCodes.remove(position);
-                user.setTotalQRcodes(user.getNumberOfQRCodes()-1);
-                TextView qrScannedTextView = ((Activity)getContext()).findViewById(R.id.qrCodesView);
-                TextView scoreView = ((Activity)getContext()).findViewById(R.id.scoreView);
+                user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
+                TextView qrScannedTextView = ((Activity) getContext()).findViewById(R.id.qrCodesView);
+                TextView scoreView = ((Activity) getContext()).findViewById(R.id.scoreView);
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 qrScannedTextView.setText(String.valueOf(user.getNumberOfQRCodes()));
                 notifyDataSetChanged();

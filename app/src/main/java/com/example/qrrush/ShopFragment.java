@@ -1,5 +1,6 @@
 package com.example.qrrush;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,6 @@ import androidx.fragment.app.Fragment;
 public class ShopFragment extends Fragment {
     private ImageView qrCode;
     private TextView scoreText;
-    private Button commonButton;
-    private Button rareButton;
-    private Button legendaryButton;
     private TextView qrContentText;
     private TextView nameContentText;
     User user;
@@ -39,44 +37,51 @@ public class ShopFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_shop, container, false);
 
         // Now you can call findViewById on the inflated view
+        Button commonButton = view.findViewById(R.id.common_button);
+        Button rareButton = view.findViewById(R.id.rare_button);
+        Button legendaryButton = view.findViewById(R.id.legendary_button);
+
         qrCode = view.findViewById(R.id.qr_code);
         scoreText = view.findViewById(R.id.score);
-        commonButton = view.findViewById(R.id.common_button);
-        rareButton = view.findViewById(R.id.rare_button);
-        legendaryButton = view.findViewById(R.id.legendary_button);
         qrContentText = view.findViewById(R.id.qr_content);
         nameContentText = view.findViewById(R.id.name_content);
 
         // Add click listeners to buttons
         // TODO: add these scores to the current User.
-        commonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QRCode code = QRCode.withRarity(Rarity.Common);
-                scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
-            }
+        commonButton.setOnClickListener(v -> {
+            QRCode code = QRCode.withRarity(Rarity.Common);
+            qrCode.setImageBitmap(
+                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+            );
+            scoreText.setText("Score: " + code.getScore());
+            qrContentText.setText("QR content: " + code.getHash());
+            nameContentText.setText("Name: " + code.getName());
+
+            user.addQRCode(code);
         });
 
-        rareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QRCode code = QRCode.withRarity(Rarity.Rare);
-                scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
-            }
+        rareButton.setOnClickListener(v -> {
+            QRCode code = QRCode.withRarity(Rarity.Rare);
+            qrCode.setImageBitmap(
+                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+            );
+            scoreText.setText("Score: " + code.getScore());
+            qrContentText.setText("QR content: " + code.getHash());
+            nameContentText.setText("Name: " + code.getName());
+
+            user.addQRCode(code);
         });
 
-        legendaryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QRCode code = QRCode.withRarity(Rarity.Legendary);
-                scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
-            }
+        legendaryButton.setOnClickListener(v -> {
+            QRCode code = QRCode.withRarity(Rarity.Legendary);
+            qrCode.setImageBitmap(
+                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+            );
+            scoreText.setText("Score: " + code.getScore());
+            qrContentText.setText("QR content: " + code.getHash());
+            nameContentText.setText("Name: " + code.getName());
+
+            user.addQRCode(code);
         });
 
         return view;
