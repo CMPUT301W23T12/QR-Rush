@@ -88,6 +88,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                  * when the respective item is deleted
                  */
                 user.setTotalScore(user.getTotalScore() - qrCodes.get(position).getScore());
+                FirebaseWrapper.deleteQrcode("profiles", user.getUserName(), qrCodes.get(position).getHash());
                 qrCodes.remove(position);
                 user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
                 // Clear the commentEditText view

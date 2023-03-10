@@ -2,9 +2,11 @@ package com.example.qrrush;
 
 import android.util.Log;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +78,9 @@ public class User {
     public int getNumberOfQRCodes() {
         return totalQRcodes;
     }
-
+    public void AddToTotalQRcodes(){
+        this.totalQRcodes += 1;
+    }
     public void setTotalQRcodes(int totalQRcodes) {
         this.totalQRcodes = totalQRcodes;
     }
@@ -84,19 +88,22 @@ public class User {
     public int getTotalScore() {
         return totalScore;
     }
-
+    public void AddToTotalScore(QRCode qrCode){
+        totalScore += qrCode.getScore();
+    }
     public void setTotalScore(int totalScores) {
         this.totalScore = totalScores;
     }
 
     public void addQRCode(QRCode code) {
+        AddToTotalQRcodes();
+        AddToTotalScore(code);
         HashMap<String, Object> data = new HashMap<>();
         if (code.getLocation().isPresent()) {
             data.put("location", code.getLocation().get());
         }
-
+        data.put("date", new Timestamp(new Date()));
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);
-
 
         FirebaseWrapper.getUserData(this.getUserName(), task -> {
             if (!task.isSuccessful()) {

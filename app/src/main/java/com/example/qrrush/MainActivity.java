@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -48,18 +49,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // TODO: Check if each permission is actually granted. Do we have to do this?
 
-        // TODO: If they say no, explain what the permissions are for and explain that they are
-        //  needed for the app to work?
+        Log.e("QR Rush", "here");
 
-        // TODO: Maybe ask for location separately since its not necessary?
-        if (!hasPermissions()) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
+        if (requestCode != 101) {
+            Log.e("MainActivity", "Permissions maybe not granted?");
+            return;
         }
 
+        main();
+    }
+
+    private void main() {
         Geo.initGeolocation(this);
 
         // Initialize Firebase
@@ -67,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Get Fire store instance
         firestore = FirebaseFirestore.getInstance();
+
+        setContentView(R.layout.activity_main);
 
         // Retrieve data from Firebase:
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
@@ -142,4 +148,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.wait_for_permission);
+
+        // TODO: If they say no, explain what the permissions are for and explain that they are
+        //  needed for the app to work?
+
+        // TODO: Maybe ask for location separately since its not necessary?
+        if (!hasPermissions()) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
+            Log.e("QR Rush", "bruh");
+            return;
+        }
+
+        main();
+    }
+
+
 }
