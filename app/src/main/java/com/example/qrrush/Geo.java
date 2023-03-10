@@ -34,7 +34,7 @@ public class Geo {
      */
     @SuppressLint("MissingPermission")
     public static void getCurrentLocation(Consumer<Location> onComplete) {
-        Geo.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, new CancellationToken() {
+        Geo.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
                     @NonNull
                     @Override
                     public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {

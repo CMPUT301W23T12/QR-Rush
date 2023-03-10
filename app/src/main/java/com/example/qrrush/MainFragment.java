@@ -77,6 +77,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         Geo.getCurrentLocation(location -> {
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.d("Location", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
         });
