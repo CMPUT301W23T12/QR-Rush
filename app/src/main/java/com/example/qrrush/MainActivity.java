@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,14 +19,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
-    Button profileButton;
-    Button shopButton;
-    Button mainButton;
-    Button socialButton;
-    Button leaderboardButton;
+    ImageButton profileButton;
+    ImageButton shopButton;
+    ImageButton mainButton;
+    ImageButton socialButton;
+    ImageButton leaderboardButton;
     User user;
 
     private FirebaseFirestore firestore;
@@ -77,8 +79,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
-        ArrayList<QRCode> qrCodes = new ArrayList<>();
         // Get everything from firebase
+        // TODO: show a loading animation while we get everything from firebase, then load the UI
+        //       once its done.
         FirebaseWrapper.getUserData(username, (Task<DocumentSnapshot> task) -> {
             if (!task.isSuccessful()) {
                 Log.d("Firebase User", "Error creating user");
@@ -91,18 +94,26 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            user = new User(username,
+            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+            ArrayList<QRCode> qrCodes = new ArrayList<>();
+            for (String hash : hashes) {
+                qrCodes.add(new QRCode(hash));
+            }
+
+            user = new User(
+                    username,
                     document.getString("phone-number"),
                     document.getLong("rank").intValue(),
                     document.getLong("score").intValue(),
-                    qrCodes);
+                    qrCodes
+            );
 
             mainView = findViewById(R.id.main_view);
-            profileButton = findViewById(R.id.profile_button);
-            shopButton = findViewById(R.id.shop_button);
-            socialButton = findViewById(R.id.social_button);
-            mainButton = findViewById(R.id.main_button);
-            leaderboardButton = findViewById(R.id.leaderboard_button);
+            profileButton = (ImageButton) findViewById(R.id.profile_button);
+            shopButton = (ImageButton) findViewById(R.id.shop_button);
+            socialButton = (ImageButton) findViewById(R.id.social_button);
+            mainButton = (ImageButton) findViewById(R.id.main_button);
+            leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
 
             profileButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()

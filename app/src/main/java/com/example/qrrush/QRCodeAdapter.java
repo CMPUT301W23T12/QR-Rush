@@ -45,7 +45,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         pointView.setText(String.valueOf(qrCode.getScore()));
         Optional<Location> l = qrCode.getLocation();
         String location = "no location available";
-        if (!l.isPresent()) {
+        if (l.isPresent()) {
             location = l.get().toString();
         }
         locationView.setText(location);
