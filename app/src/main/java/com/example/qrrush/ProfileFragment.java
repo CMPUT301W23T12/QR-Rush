@@ -1,18 +1,33 @@
 package com.example.qrrush;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -69,5 +84,93 @@ public class ProfileFragment extends Fragment {
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(QRCodeAdapter);
         QRCodeAdapter.notifyDataSetChanged();
+
+        Button editNameButton = view.findViewById(R.id.edit_name); // Get the button view from the layout
+        TextView errorText = view.findViewById(R.id.errorText);
+
+        editNameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+                alertDialogBuilder.setView(addNewName);
+                alertDialogBuilder.setMessage("Input New Name:");
+                alertDialogBuilder.setTitle("Alert!");
+
+                alertDialogBuilder.setPositiveButton("Confirm", null);
+
+                AlertDialog dialog = alertDialogBuilder.create();
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        //add a positive button on the alertdialog that tells user to confirm their input
+                        Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // store the new name input of the user
+                                EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+                                String newUserName = userNameEdit.getText().toString();
+
+                                FirebaseWrapper.checkUsernameAvailability(newUserName, new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (!task.isSuccessful()) {
+                                            // Error occurred while querying database
+                                            Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
+                                            return;
+                                        }
+
+                                        QuerySnapshot querySnapshot = task.getResult();
+                                        if (querySnapshot.size() > 0) {
+                                            // Username is taken, prompt user to pick a new name
+                                            errorText.setVisibility(View.VISIBLE);
+                                            return;
+                                        }
+
+//                                         Username is unique, continue with edit the process
+
+                                        FirebaseWrapper.getUserData(user.getUserName(),  (Task<DocumentSnapshot> task1) -> {
+                                            if (!task1.isSuccessful()) {
+                                                Log.d("Firebase User", "Error editting user");
+                                                return;
+                                            }
+
+                                            DocumentSnapshot document = task1.getResult();
+//                                            if (!document.exists()) {
+//                                                Log.e("Firebase User", "Document doesn't exist!");
+//                                                return;
+//                                            }
+                                            // Username is unique, continue with registration process
+                                            HashMap<String, Object> updatedProfile = new HashMap<>();
+                                            updatedProfile.put("UUID", document.getString(user.getUserName()));
+                                            updatedProfile.put("phone-number", document.getString("phone-number"));
+                                            updatedProfile.put("rank", document.getLong("rank").intValue());
+                                            updatedProfile.put("score", document.getLong("score").intValue());
+                                            updatedProfile.put("qrcodes", document.get("qrcodes"));
+                                            // Add name + UUID and phone number to FB
+                                            FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+                                            FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+
+
+                                        });
+
+
+
+                                    }
+                                });
+
+                                dialog.dismiss();
+                            }
+
+                        });
+                    }
+                });
+
+                dialog.show();
+            }
+
+        });
     }
 }
+
