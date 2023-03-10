@@ -60,7 +60,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             commentEditText.setText("");
         }
         String location = "no location available";
-        if (!l.isPresent()) {
+        if (l.isPresent()) {
             location = l.get().toString();
         }
         locationView.setText(location);

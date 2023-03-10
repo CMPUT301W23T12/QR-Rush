@@ -7,6 +7,7 @@ import android.location.Location;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
@@ -27,6 +28,11 @@ public class QRCode {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    /**
+     * TODO Set the date so that when the QR code is scanned its date is set here
+     */
+    Date date;
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
@@ -55,7 +61,7 @@ public class QRCode {
         this.location = Optional.of(location);
     }
 
-    private QRCode(String hash) {
+    public QRCode(String hash) {
         this.location = Optional.empty();
         this.hash = hash;
     }
@@ -302,4 +308,7 @@ public class QRCode {
         return result;
     }
 
+    public Date getDate() {
+        return date;
+    }
 }
