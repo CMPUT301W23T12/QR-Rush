@@ -12,10 +12,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +50,7 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method updates a document in a collection.
+     * This method deletes a field in a array.
      *
      * @param collectionName
      * @param documentID
@@ -64,32 +68,6 @@ public class FirebaseWrapper {
                 });
     }
 
-    /**
-     * Reads data from a collection, works fine, just kinda useless since it stores it in the log, maybe figure out a new way to output it? idk might be fine as is.
-     * <p>
-     * ASYNC Function so can't really return an array of contents etc.
-     *
-     * @param collectionName
-     */
-    public static void readData(String collectionName, String documentID) {
-        DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentID);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("FirebaseWrapper", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("FirebaseWrapper", "No such document");
-                    }
-                } else {
-                    Log.d("FirebaseWrapper", "get failed with ", task.getException());
-                }
-            }
-        });
-    }
-
     public static void deleteDocument(String collectionName, String documentName) {
         FirebaseFirestore.getInstance().collection(collectionName).document(documentName)
                 .delete()
@@ -105,6 +83,24 @@ public class FirebaseWrapper {
                         Log.w("FirebaseWrapper", "Error deleting document", e);
                     }
                 });
+    }
+    public static void deleteQrcode(String collectionName, String documentName, String hash) {
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("qrcodes", FieldValue.arrayRemove(hash));
+
+        docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("QR Rush", "Document successfully updated!");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("QR Rush", "Error updating document", e);
+            }
+        });
     }
 
     public static void checkUsernameAvailability(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {

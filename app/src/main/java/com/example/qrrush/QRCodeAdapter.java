@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,10 +72,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                  * when the respective item is deleted
                  */
                 user.setTotalScore(user.getTotalScore() - qrCodes.get(position).getScore());
+                FirebaseWrapper.deleteQrcode("profiles",user.getUserName(),qrCodes.get(position).getHash());
                 qrCodes.remove(position);
-//                TODO DELETE THE FEILD NOT THE DOC WAITING ON FIREBASE UPDATE!
-                FirebaseWrapper firebaseWrapper = new FirebaseWrapper();
-                firebaseWrapper.deleteDocument("qrcodes",qrCodes.get(position).getHash());
                 user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
                 TextView qrScannedTextView = ((Activity) getContext()).findViewById(R.id.qrCodesView);
                 TextView scoreView = ((Activity) getContext()).findViewById(R.id.scoreView);
