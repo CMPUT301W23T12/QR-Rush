@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,7 +43,7 @@ public class SocialFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        Button searchButton = view.findViewById(R.id.searchButton);
+        ImageButton searchButton = (ImageButton) view.findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
