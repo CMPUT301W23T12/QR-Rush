@@ -18,6 +18,15 @@ import java.util.Random;
 public class QRCode {
     private final String hash;
     private Optional<Location> location;
+    private String comment;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
