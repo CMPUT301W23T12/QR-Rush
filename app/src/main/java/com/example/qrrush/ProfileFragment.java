@@ -52,11 +52,11 @@ public class ProfileFragment extends Fragment {
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
         ImageView profileView = view.findViewById(R.id.profileView);
-        contactView.setText(user.getPhoneNumber());
+        contactView.setText("Phone Number: " + user.getPhoneNumber());
         nameView.setText(user.getUserName());
-        rankView.setText(String.valueOf(user.getRank()));
-        scoreView.setText(String.valueOf(user.getTotalScore()));
-        QRScanned.setText(String.valueOf(user.getNumberOfQRCodes()));
+        rankView.setText("Rank: " + String.valueOf(user.getRank()));
+        scoreView.setText("Score: " + String.valueOf(user.getTotalScore()));
+        QRScanned.setText("Number of QR Codes Scanned: " + String.valueOf(user.getNumberOfQRCodes()));
         //      Image will be fit into the size of the image view
         Picasso
                 .get()
