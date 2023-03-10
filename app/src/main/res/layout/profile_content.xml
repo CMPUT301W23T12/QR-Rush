@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/pointView"
         android:layout_width="111dp"
-        android:layout_height="27dp"
+        android:layout_height="wrap_content"
         android:text="points"
         app:layout_constraintBottom_toBottomOf="@+id/nameView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,14 +39,14 @@
 
     <TextView
         android:id="@+id/locationView"
-        android:layout_width="125dp"
-        android:layout_height="27dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_weight="1"
         android:text="location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.518"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/deleteButton"
         app:layout_constraintTop_toBottomOf="@+id/pointView" />
 
     <Button
@@ -55,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:text="Delete"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.472"
         app:layout_constraintStart_toEndOf="@+id/imageView"
