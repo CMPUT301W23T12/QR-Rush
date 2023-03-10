@@ -4,10 +4,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomappbar.BottomAppBarTopEdgeTreatment;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Random;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,6 +26,7 @@ public class ProfileFragment extends Fragment {
     User user;
     QRCodeAdapter QRCodeAdapter;
 
+    int sortingTracker;
     /**
      * Grabs User object from the main activity
      *
@@ -51,12 +60,47 @@ public class ProfileFragment extends Fragment {
         TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
+        Button sortingButton = view.findViewById(R.id.sortingButton);
+        contactView.setText("Contact: "+user.getPhoneNumber());
+        nameView.setText("Name: "+user.getUserName());
+        rankView.setText("Rank: "+String.valueOf(user.getRank()));
+        scoreView.setText("Score: "+String.valueOf(user.getTotalScore()));
+        QRScanned.setText("Found: "+ String.valueOf(user.getNumberOfQRCodes()));
+        /**
+         * On launch sorting is set by date (sortingTracker = 1)
+         *      by points (sortingTracker = 2)
+         *      by score (sortingTracker = 0)
+         */
+        sortingTracker = 1;
+        /**
+         * Sorting button sorts arraylist of QR codes using custom comparators
+         * Adapter gets updated each time the list gets sorted
+         */
+        sortingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sortingTracker == 0) {
+                    sortingButton.setText("By Date");
+                    sortingTracker += 1;
+                    DateComparator dateComparator = new DateComparator();
+                    Collections.sort(user.getQRCodes(), dateComparator);
+                    QRCodeAdapter.notifyDataSetChanged();
+                } else if (sortingTracker == 1){
+                    sortingButton.setText("By Points");
+                    sortingTracker += 1;
+                    ScoreComparator scoreComparator = new ScoreComparator();
+                    Collections.sort(user.getQRCodes(), scoreComparator);
+                    QRCodeAdapter.notifyDataSetChanged();
+                } else if (sortingTracker == 2){
+                    sortingButton.setText("By Name");
+                    sortingTracker = 0;
+                    NameComparator nameComparator = new NameComparator();
+                    Collections.sort(user.getQRCodes(), nameComparator);
+                    QRCodeAdapter.notifyDataSetChanged();
+                }
+            }
+        });
         ImageView profileView = view.findViewById(R.id.profileView);
-        contactView.setText("Phone Number: " + user.getPhoneNumber());
-        nameView.setText(user.getUserName());
-        rankView.setText("Rank: " + String.valueOf(user.getRank()));
-        scoreView.setText("Score: " + String.valueOf(user.getTotalScore()));
-        QRScanned.setText("Number of QR Codes Scanned: " + String.valueOf(user.getNumberOfQRCodes()));
         //      Image will be fit into the size of the image view
         Picasso
                 .get()
