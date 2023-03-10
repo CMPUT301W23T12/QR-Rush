@@ -2,9 +2,11 @@ package com.example.qrrush;
 
 import android.util.Log;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,8 +102,9 @@ public class User {
         if (code.getLocation().isPresent()) {
             data.put("location", code.getLocation().get());
         }
-
+        data.put("date", new Timestamp(new Date()));
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+
         FirebaseWrapper.getUserData(this.getUserName(), task -> {
             if (!task.isSuccessful()) {
                 Log.e("addQRCode", "Failed to read from firebase!");

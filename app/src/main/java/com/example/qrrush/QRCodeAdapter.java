@@ -72,6 +72,9 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                  */
                 user.setTotalScore(user.getTotalScore() - qrCodes.get(position).getScore());
                 qrCodes.remove(position);
+//                TODO DELETE THE FEILD NOT THE DOC WAITING ON FIREBASE UPDATE!
+                FirebaseWrapper firebaseWrapper = new FirebaseWrapper();
+                firebaseWrapper.deleteDocument("qrcodes",qrCodes.get(position).getHash());
                 user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
                 TextView qrScannedTextView = ((Activity) getContext()).findViewById(R.id.qrCodesView);
                 TextView scoreView = ((Activity) getContext()).findViewById(R.id.scoreView);
