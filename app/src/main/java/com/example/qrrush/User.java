@@ -76,7 +76,9 @@ public class User {
     public int getNumberOfQRCodes() {
         return totalQRcodes;
     }
-
+    public void AddToTotalQRcodes(){
+        this.totalQRcodes += 1;
+    }
     public void setTotalQRcodes(int totalQRcodes) {
         this.totalQRcodes = totalQRcodes;
     }
@@ -84,12 +86,16 @@ public class User {
     public int getTotalScore() {
         return totalScore;
     }
-
+    public void AddToTotalScore(QRCode qrCode){
+        totalScore += qrCode.getScore();
+    }
     public void setTotalScore(int totalScores) {
         this.totalScore = totalScores;
     }
 
     public void addQRCode(QRCode code) {
+        AddToTotalQRcodes();
+        AddToTotalScore(code);
         HashMap<String, Object> data = new HashMap<>();
         if (code.getLocation().isPresent()) {
             data.put("location", code.getLocation().get());
