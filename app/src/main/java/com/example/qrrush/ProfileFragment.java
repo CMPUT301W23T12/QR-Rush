@@ -19,15 +19,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ProfileFragment extends Fragment {
     User user;
@@ -117,7 +113,7 @@ public class ProfileFragment extends Fragment {
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (!task.isSuccessful()) {
                                             // Error occurred while querying database
-                                            Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
+                                            Log.e("EditName", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
                                             return;
                                         }
 
@@ -130,9 +126,9 @@ public class ProfileFragment extends Fragment {
 
 //                                         Username is unique, continue with edit the process
 
-                                        FirebaseWrapper.getUserData(user.getUserName(),  (Task<DocumentSnapshot> task1) -> {
+                                        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task1) -> {
                                             if (!task1.isSuccessful()) {
-                                                Log.d("Firebase User", "Error editting user");
+                                                Log.d("EditName", "Error editting user");
                                                 return;
                                             }
 
@@ -154,7 +150,6 @@ public class ProfileFragment extends Fragment {
 
 
                                         });
-
 
 
                                     }
