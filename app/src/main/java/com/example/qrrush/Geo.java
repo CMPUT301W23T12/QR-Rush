@@ -42,21 +42,16 @@ public class Geo {
         Geo.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
                 .addOnSuccessListener(location -> {
                     onComplete.accept(location);
-                    Log.e("Permission", "Accepted Location: " + location);
+                    Log.e("LocationRequest", "Location successfully sent ");
                 })
                 .addOnCanceledListener(() -> {
-                    Log.e("Permission", "Cancellation requested");
+                    Log.e("LocationRequest", "Cancellation requested");
                 })
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
-                        Log.e("Permission", "Location request timed out");
+                        Log.e("LocationRequest", "Location request timed out");
                     }
                 });
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            cancellationTokenSource.cancel();
-            Log.e("Permission", "Timeout triggered");
-        }, 1000000);
     }
 
 

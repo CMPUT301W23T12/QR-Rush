@@ -42,11 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasPermissions() {
         for (String permission : MainActivity.PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+                Log.e("Permission", "Error with permissions");
                 return false;
             }
         }
-//        Log.e("Permission", "Visited hasPermissions()");
-
         return true;
     }
 
@@ -54,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
-
-        Log.e("Permission", "onRequestPermissionsResult()");
 
         if (requestCode != 101) {
             Log.e("MainActivity", "Permissions maybe not granted?");

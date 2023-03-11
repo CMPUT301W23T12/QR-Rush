@@ -85,8 +85,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         //when map is loaded
-        Log.e("MainFragment", "onMapReady method called");
-
         Geo.getCurrentLocation(location -> {
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
