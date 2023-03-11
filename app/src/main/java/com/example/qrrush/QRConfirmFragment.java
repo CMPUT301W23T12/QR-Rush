@@ -79,7 +79,7 @@ public class QRConfirmFragment extends Fragment {
         locationView.setText("Location: getting location...");
         Geo.getCurrentLocation(l -> {
             qrCode.setLocation(l);
-            locationView.setText("Location: " + qrCode.getLocation().get());
+            locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
         });
 
         geolocationToggle.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -90,7 +90,7 @@ public class QRConfirmFragment extends Fragment {
 
             Geo.getCurrentLocation(l -> {
                 qrCode.setLocation(l);
-                locationView.setText("Location: " + qrCode.getLocation().get());
+                locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
             });
         });
     }

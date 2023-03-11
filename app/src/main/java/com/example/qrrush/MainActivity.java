@@ -1,7 +1,9 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.Manifest;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +100,15 @@ public class MainActivity extends AppCompatActivity {
             HashMap<String, ArrayList<String>> firebaseComment = new HashMap<>();
 
             for (String hash : hashes) {
-                qrCodes.add(new QRCode(hash));
+                QRCode code = new QRCode(hash);
+                GeoPoint g = (GeoPoint) document.get("location");
+                if (g != null) {
+                    Location l = new Location("");
+                    l.setLatitude(g.getLatitude());
+                    l.setLongitude(g.getLongitude());
+                    code.setLocation(l);
+                }
+                qrCodes.add(code);
                 comments.add("");
 
             }
