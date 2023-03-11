@@ -19,4 +19,11 @@
         android:text="This name is already taken!"
         android:textColor="#EC1010"
         android:visibility="gone" />
+    <TextView
+        android:id="@+id/errorText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter a new name!"
+        android:textColor="#EC1010"
+        android:visibility="gone" />
 </LinearLayout>
