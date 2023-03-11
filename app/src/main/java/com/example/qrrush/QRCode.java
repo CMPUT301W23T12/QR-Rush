@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 
+import com.google.firebase.Timestamp;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +25,7 @@ public class QRCode {
     /**
      * TODO Set the date so that when the QR code is scanned its date is set here
      */
-    Date date;
+    Timestamp timestamp;
 
     /**
      * Makes a new QRCode from some data without specifying a Location.
@@ -31,7 +33,6 @@ public class QRCode {
      * @param data The data contained inside the QR Code.
      */
     public QRCode(byte[] data) {
-        this.date = date;
         this.location = Optional.empty();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -53,7 +54,8 @@ public class QRCode {
         this.location = Optional.of(location);
     }
 
-    public QRCode(String hash) {
+    public QRCode(String hash, Timestamp timestamp) {
+        this.timestamp = timestamp;
         this.location = Optional.empty();
         this.hash = hash;
     }
@@ -94,7 +96,7 @@ public class QRCode {
         // If the score isn't high enough, keep adding more fs to the hash, since that's the
         // highest digit.
         for (int i = numZeroes; i < data.length; i += 1) {
-            result = new QRCode(new String(data, StandardCharsets.US_ASCII));
+            result = new QRCode(new String(data, StandardCharsets.US_ASCII), new Timestamp(new Date()));
 
             if (result.getRarity() == r) {
                 break;
@@ -300,11 +302,11 @@ public class QRCode {
         return result;
     }
 
-    public Date getDate() {
-        return date;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

@@ -22,6 +22,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -82,6 +83,8 @@ public class ProfileFragment extends Fragment {
                     sortingTracker += 1;
                     DateComparator dateComparator = new DateComparator();
                     Collections.sort(user.getQRCodes(), dateComparator);
+                    // Sorts by newest to oldest (newest codes being at the top)
+                    Collections.reverse(user.getQRCodes());
                     QRCodeAdapter.notifyDataSetChanged();
                 } else if (sortingTracker == 1) {
                     sortingButton.setText("By Points");

@@ -112,9 +112,7 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             }
                     Timestamp timestamp = (Timestamp) document1.get("date");
-                            Date date = new Date(timestamp.getSeconds());
-                    Log.e("Cringe",date.toString());
-                    qrCodes.add(new QRCode(hash));
+                    qrCodes.add(new QRCode(hash, timestamp));
                         });
             }
 

@@ -11,15 +11,15 @@ public class DateComparator implements Comparator<QRCode> {
 
     @Override
     public int compare(QRCode QR1, QRCode QR2) {
-        if (QR1.getDate() == QR2.getDate()) {
+        if (QR1.getTimestamp() == QR2.getTimestamp()) {
             return 0;
         }
-        if (QR1.getDate() == null) {
+        if (QR1.getTimestamp() == null) {
             return -1;
         }
-        if (QR2.getDate() == null) {
+        if (QR2.getTimestamp() == null) {
             return 1;
         }
-        return QR1.getDate().compareTo(QR2.getDate());
+        return QR1.getTimestamp().compareTo(QR2.getTimestamp());
     }
 }
