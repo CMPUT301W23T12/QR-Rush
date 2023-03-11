@@ -1,7 +1,6 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasPermissions() {
         for (String permission : MainActivity.PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+                Log.e("Permission", "Error with permissions");
                 return false;
             }
         }
@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
-
-        Log.e("QR Rush", "here");
 
         if (requestCode != 101) {
             Log.e("MainActivity", "Permissions maybe not granted?");
@@ -160,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
-            Log.e("QR Rush", "bruh");
+            Log.e("Permission", "!hasPermissions line 166");
             return;
         }
 

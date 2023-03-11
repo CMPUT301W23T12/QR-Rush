@@ -3,14 +3,11 @@ package com.example.qrrush;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.location.Location;
-
-import androidx.annotation.NonNull;
-
+import android.util.Log;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
+import com.google.android.gms.tasks.CancellationTokenSource;
 
 import java.util.function.Consumer;
 
@@ -34,18 +31,22 @@ public class Geo {
      */
     @SuppressLint("MissingPermission")
     public static void getCurrentLocation(Consumer<Location> onComplete) {
-        Geo.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, new CancellationToken() {
-                    @NonNull
-                    @Override
-                    public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isCancellationRequested() {
-                        return false;
-                    }
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        Geo.fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
+                .addOnSuccessListener(location -> {
+                    onComplete.accept(location);
+                    Log.e("LocationRequest", "Location successfully sent ");
                 })
-                .addOnSuccessListener(onComplete::accept);
+                .addOnCanceledListener(() -> {
+                    Log.e("LocationRequest", "Cancellation requested");
+                })
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.e("LocationRequest", "Location request timed out");
+                    }
+                });
     }
+
+
+
 }
