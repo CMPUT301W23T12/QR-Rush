@@ -28,11 +28,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
 
-    FusedLocationProviderClient fusedLocationProviderClient;
 
-    // Location request
-
-    LocationRequest locationRequest;
 
     /**
      * Grabs the User object from the main activity
