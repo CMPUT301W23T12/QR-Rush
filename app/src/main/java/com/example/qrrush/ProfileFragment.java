@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * The fragment which displays the profile.
+ */
 public class ProfileFragment extends Fragment {
     User user;
     QRCodeAdapter QRCodeAdapter;
@@ -34,7 +37,7 @@ public class ProfileFragment extends Fragment {
     /**
      * Grabs User object from the main activity
      *
-     * @param user
+     * @param user The user who's profile should be displayed.
      */
     public ProfileFragment(User user) {
         // Required empty public constructor
@@ -56,7 +59,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);

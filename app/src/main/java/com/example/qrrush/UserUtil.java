@@ -17,6 +17,7 @@ public class UserUtil {
 
     /**
      * This method checks if it's the user's first time logging in.
+     *
      * @param context the context used to access the SharedPreferences file
      * @return true if the user has not set a username before, false otherwise
      */
@@ -27,6 +28,7 @@ public class UserUtil {
 
     /**
      * Generates a UUID and returns a String representation of the UUID.
+     *
      * @return a String representation of the generated UUID
      */
     public static String generateUUID() {
@@ -35,6 +37,7 @@ public class UserUtil {
 
     /**
      * Gets the username stored in SharedPreferences.
+     *
      * @param context the context used to access the SharedPreferences file
      * @return the username stored in SharedPreferences, or "null" if not found
      */
@@ -45,7 +48,8 @@ public class UserUtil {
 
     /**
      * Sets the username in SharedPreferences.
-     * @param context the context used to access the SharedPreferences file
+     *
+     * @param context  the context used to access the SharedPreferences file
      * @param username the username to set in SharedPreferences
      */
     public static void setUsername(Context context, String username) {
@@ -57,6 +61,7 @@ public class UserUtil {
 
     /**
      * Gets the UUID stored in SharedPreferences. If the UUID is not found, generates a new one and stores it.
+     *
      * @param context the context used to access the SharedPreferences file
      * @return the UUID stored in SharedPreferences, or a new generated UUID if not found
      */
@@ -71,9 +76,11 @@ public class UserUtil {
         }
         return uuid;
     }
+
     /**
      * Sets the "hasUsername" flag in SharedPreferences to indicate whether the user has set a username before.
-     * @param context the context used to access the SharedPreferences file
+     *
+     * @param context     the context used to access the SharedPreferences file
      * @param hasUsername true if the user has set a username before, false otherwise
      */
     public static void setFirstTime(Context context, boolean hasUsername) {
