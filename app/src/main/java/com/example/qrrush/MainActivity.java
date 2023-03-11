@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
                     comments.add("");
 
                         });
-            }
 
             }
             user = new User(
