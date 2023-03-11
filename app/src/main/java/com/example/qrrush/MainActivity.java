@@ -1,7 +1,6 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
