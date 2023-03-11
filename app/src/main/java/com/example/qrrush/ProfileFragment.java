@@ -55,6 +55,22 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+//        ArrayList<QRCode> qrCodes = new ArrayList<>();
+//        byte[] data1 = "example data 1".getBytes();
+//        Location location1 = new Location("");
+//        byte[] data2 = "example data 2".getBytes();
+//        Location location2 = new Location("");
+//        byte[] data3 = "example data 3".getBytes();
+//        Location location3 = new Location("");
+//        QRCode qrCode1 = new QRCode(data1, location1);
+//        QRCode qrCode2 = new QRCode(data2, location2);
+//        QRCode qrCode3 = new QRCode(data3, location3);
+//        qrCodes.add(qrCode1);
+//        qrCodes.add(qrCode2);
+//        qrCodes.add(qrCode3);
+//        user = new User("TheLegend27",
+//                "987-6543-321", 1, 25412, qrCodes);
+
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);

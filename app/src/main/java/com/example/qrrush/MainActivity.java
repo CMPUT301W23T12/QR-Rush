@@ -1,12 +1,10 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -19,7 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -43,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasPermissions() {
         for (String permission : MainActivity.PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+                Log.e("Permission", "Error with permissions");
                 return false;
             }
         }
@@ -53,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
-
-        Log.e("QR Rush", "here");
 
         if (requestCode != 101) {
             Log.e("MainActivity", "Permissions maybe not granted?");
@@ -96,10 +93,14 @@ public class MainActivity extends AppCompatActivity {
 
             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
             ArrayList<QRCode> qrCodes = new ArrayList<>();
+            ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
+            HashMap<String, ArrayList<String>> firebaseComment = new HashMap<>();
+
             for (String hash : hashes) {
                 qrCodes.add(new QRCode(hash));
-            }
+                comments.add("");
 
+            }
             user = new User(
                     username,
                     document.getString("phone-number"),
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
-            Log.e("QR Rush", "bruh");
+            Log.e("Permission", "!hasPermissions line 166");
             return;
         }
 
