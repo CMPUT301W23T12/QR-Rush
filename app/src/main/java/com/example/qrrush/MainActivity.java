@@ -1,7 +1,6 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +18,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ * The main activity class for the QR Rush app.
+ * This activity serves as the entry point to the app and handles the main UI and user interactions.
+ */
 public class MainActivity extends AppCompatActivity {
     View mainView;
     ImageButton profileButton;
@@ -38,22 +40,30 @@ public class MainActivity extends AppCompatActivity {
             android.Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
     };
-
+    /**
+     * Checks if the necessary permissions for the app have been granted by the user.
+     * @return true if all permissions have been granted, false otherwise
+     */
     private boolean hasPermissions() {
         for (String permission : MainActivity.PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+                Log.e("Permission", "Error with permissions");
                 return false;
             }
         }
         return true;
     }
-
+    /**
+     * Called when the user responds to the permission request dialog.
+     * Checks if the necessary permissions have been granted and initializes the app if so.
+     * @param requestCode The code that was used to make the permission request
+     * @param permissions The requested permissions
+     * @param grantResults The grant results for the corresponding permissions
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
-
-        Log.e("QR Rush", "here");
 
         if (requestCode != 101) {
             Log.e("MainActivity", "Permissions maybe not granted?");
@@ -62,7 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         main();
     }
-
+    /**
+     * Initializes the app and sets up the main UI components.
+     * Retrieves user data from Firebase and populates the UI with it.
+     */
     private void main() {
         Geo.initGeolocation(this);
 
@@ -160,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
-            Log.e("QR Rush", "bruh");
+            Log.e("Permission", "!hasPermissions line 166");
             return;
         }
 

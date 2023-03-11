@@ -18,7 +18,10 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-
+/**
+ * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
+ * other player's profiles. It retrieves the user's search input and fetches the corresponding profile
+ */
 public class SocialFragment extends Fragment {
     User user;
 
@@ -38,6 +41,12 @@ public class SocialFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_social, container, false);
     }
 
+    /**
+     * This method is called once the View is created, it handles the search button click events
+     * and retrieves the searched player's data from Firebase.
+     * @param view the created view that contains the UI components.
+     * @param savedInstanceState the previous saved state of the app.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
