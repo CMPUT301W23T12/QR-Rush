@@ -54,6 +54,11 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        /**
+         * Allows users to change their username if not already taken
+         *
+         * Allows users to sort their QRcodes by either Date/Points/Names
+         */
         super.onViewCreated(view, savedInstanceState);
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
