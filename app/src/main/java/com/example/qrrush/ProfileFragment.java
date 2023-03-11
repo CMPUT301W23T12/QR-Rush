@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -114,7 +115,7 @@ public class ProfileFragment extends Fragment {
         QRCodeAdapter.notifyDataSetChanged();
 
         // Get the button view from the layout
-        Button editNameButton = view.findViewById(R.id.edit_name);
+        ImageButton editNameButton = view.findViewById(R.id.edit_name);
 
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
