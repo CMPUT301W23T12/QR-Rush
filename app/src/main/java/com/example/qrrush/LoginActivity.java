@@ -16,12 +16,22 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * LoginActivity is responsible for managing user login and registration.
+ * If the user has already logged in before, the app will skip the login page.
+ */
 public class LoginActivity extends AppCompatActivity {
     EditText usernameInput;
     Button confirmButton;
     EditText phoneNumberInput;
     TextView errorText;
-
+    /**
+     * Initializes the activity and checks if the user has already logged in before. If the user
+     * has logged in before, the app will skip the login page and direct the user to the main
+     * activity. If the user has not logged in before, the login page will be displayed and register the user
+     *
+     * @param savedInstanceState the saved state of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
