@@ -3,7 +3,7 @@ package com.example.qrrush;
 import java.util.Comparator;
 
 /**
- * Custom Comparator to sort the QR codes by score
+ * Custom Comparator to sort the QR codes by score.
  */
 public class ScoreComparator implements Comparator<QRCode> {
     @Override

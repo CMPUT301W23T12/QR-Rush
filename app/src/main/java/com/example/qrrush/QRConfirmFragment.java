@@ -17,6 +17,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.mlkit.vision.barcode.common.Barcode;
 
+/**
+ * The fragment displaying the screen after a QR code is scanned, asking the user to confirm that
+ * they want to add the QR code to their account.
+ */
 public class QRConfirmFragment extends Fragment {
     User user;
     Barcode code;
