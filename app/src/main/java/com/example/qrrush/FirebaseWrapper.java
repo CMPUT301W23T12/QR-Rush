@@ -150,6 +150,13 @@ public class FirebaseWrapper {
                 .get()
                 .addOnCompleteListener(listener);
     }
+    public static void getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener(listener);
+    }
 
     /**
      * This method will delete a given username under the "profiles" collection, this method should

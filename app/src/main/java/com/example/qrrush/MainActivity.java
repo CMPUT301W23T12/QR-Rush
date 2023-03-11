@@ -14,11 +14,15 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 import java.util.HashMap;
+
 
 /**
  * The main activity class for the QR Rush app.
@@ -117,10 +121,25 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<QRCode> qrCodes = new ArrayList<>();
             ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
             HashMap<String, ArrayList<String>> firebaseComment = new HashMap<>();
-
+            Log.e("Cringe",String.valueOf(hashes.size()));
             for (String hash : hashes) {
-                qrCodes.add(new QRCode(hash));
-                comments.add("");
+                FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
+                            if (!task1.isSuccessful()) {
+                                Log.d("Firebase User", "Error creating user");
+                                return;
+                            }
+
+                            DocumentSnapshot document1 = task1.getResult();
+                            if (!document1.exists()) {
+                                Log.e("Firebase User", "Document doesn't exist!");
+                                return;
+                            }
+                    Timestamp timestamp = (Timestamp) document1.get("date");
+                    qrCodes.add(new QRCode(hash, timestamp));
+                    comments.add("");
+
+                        });
+            }
 
             }
             user = new User(
