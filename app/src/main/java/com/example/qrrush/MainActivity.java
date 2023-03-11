@@ -15,10 +15,12 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -96,8 +98,24 @@ public class MainActivity extends AppCompatActivity {
 
             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
             ArrayList<QRCode> qrCodes = new ArrayList<>();
+            Log.e("Cringe",String.valueOf(hashes.size()));
             for (String hash : hashes) {
-                qrCodes.add(new QRCode(hash));
+                FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
+                            if (!task1.isSuccessful()) {
+                                Log.d("Firebase User", "Error creating user");
+                                return;
+                            }
+
+                            DocumentSnapshot document1 = task1.getResult();
+                            if (!document1.exists()) {
+                                Log.e("Firebase User", "Document doesn't exist!");
+                                return;
+                            }
+                    Timestamp timestamp = (Timestamp) document1.get("date");
+                            Date date = new Date(timestamp.getSeconds());
+                    Log.e("Cringe",date.toString());
+                    qrCodes.add(new QRCode(hash));
+                        });
             }
 
             user = new User(

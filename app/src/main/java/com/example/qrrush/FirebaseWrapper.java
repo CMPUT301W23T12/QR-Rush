@@ -116,6 +116,13 @@ public class FirebaseWrapper {
                 .get()
                 .addOnCompleteListener(listener);
     }
+    public static void getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener(listener);
+    }
 
     public static void removeUserProfile(String username) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

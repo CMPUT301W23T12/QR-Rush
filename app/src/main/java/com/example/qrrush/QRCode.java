@@ -31,6 +31,7 @@ public class QRCode {
      * @param data The data contained inside the QR Code.
      */
     public QRCode(byte[] data) {
+        this.date = date;
         this.location = Optional.empty();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
