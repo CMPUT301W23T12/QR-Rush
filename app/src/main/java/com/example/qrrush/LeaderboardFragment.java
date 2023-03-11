@@ -1,5 +1,7 @@
 package com.example.qrrush;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
@@ -56,8 +58,9 @@ public class LeaderboardFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String userName = document.getString("name");
-                            userNames.add(userName);
+                            String docUserName = document.getId();
+                            System.out.println("Document name: " + docUserName);
+                            userNames.add(docUserName);
                         }
                         LeaderboardAdapter adapter = new LeaderboardAdapter(getContext(), userNames);
                         LeaderList.setAdapter(adapter);
