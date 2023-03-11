@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         }
+//        Log.e("Permission", "Visited hasPermissions()");
+
         return true;
     }
 
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
 
-        Log.e("QR Rush", "here");
+        Log.e("Permission", "onRequestPermissionsResult()");
 
         if (requestCode != 101) {
             Log.e("MainActivity", "Permissions maybe not granted?");
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
-            Log.e("QR Rush", "bruh");
+            Log.e("Permission", "!hasPermissions line 166");
             return;
         }
 

@@ -10,9 +10,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,6 +27,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
+
+    FusedLocationProviderClient fusedLocationProviderClient;
+
+    // Location request
+
+    LocationRequest locationRequest;
 
     /**
      * Grabs the User object from the main activity
@@ -37,6 +47,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -77,9 +89,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         Geo.getCurrentLocation(location -> {
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
         });
+
     }
 }
 
