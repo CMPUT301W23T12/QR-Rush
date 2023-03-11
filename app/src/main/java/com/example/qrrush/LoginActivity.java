@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button confirmButton;
     EditText phoneNumberInput;
     TextView errorText;
+
     /**
      * Initializes the activity and checks if the user has already logged in before. If the user
      * has logged in before, the app will skip the login page and direct the user to the main

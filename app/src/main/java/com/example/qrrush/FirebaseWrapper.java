@@ -27,15 +27,16 @@ import java.util.Map;
 public class FirebaseWrapper {
     /**
      * This methods creates a new collection (collectionName) and new Document (documentName)
-     * you must create a hashmap of type <String, Object> and populate the data before adding it
+     * you must create a hashmap of type &lt;String, Object&gt; and populate the data before adding
+     * it.
      * <p>
      * WARNING: THIS METHOD SHOULD ONLY EVERY BE CALLED IF ITS THE FIRST TIME CREATING THE DOCUMENT
      * OTHERWISE THIS WILL OVERWRITE THE GIVEN DOCUMENT WITH THE NEW DATA YOU GIVE IT.
      * LOOK AT updateData IF YOU WANT TO UPDATE AN EXISTING DOCUMENT
      *
-     * @param collectionName
-     * @param documentID
-     * @param data
+     * @param collectionName The collection to add to.
+     * @param documentID     The document name to add.
+     * @param data           The data to add to firebase.
      */
     public static void addData(String collectionName, String documentID, Map<String, Object> data) {
         FirebaseFirestore.getInstance().collection(collectionName)
@@ -50,12 +51,13 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method updates an existing document to add a new field/update an existing field. You can use this method to
-     * delete a field but its highly discouraged as you can use one of the delete methods below.
+     * This method updates an existing document to add a new field/update an existing field. You
+     * can use this method to delete a field but its highly discouraged as you can use one of the
+     * delete methods below.
      *
-     * @param collectionName
-     * @param documentID
-     * @param data
+     * @param collectionName The name of the collection to update.
+     * @param documentID     The name of the document to update.
+     * @param data           The data to update the document with.
      */
     public static void updateData(String collectionName, String documentID, Map<String, Object> data) {
         FirebaseFirestore.getInstance().collection(collectionName)
@@ -70,11 +72,11 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method deletes a given document name, data will be lost upon delete so look into different methods if you want to save
-     * the document information (getUserData) and then delete
+     * This method deletes a given document name, data will be lost upon delete so look into
+     * different methods if you want to save the document information (getUserData) and then delete.
      *
-     * @param collectionName
-     * @param documentName
+     * @param collectionName The name of the document to delete.
+     * @param documentName   The name of the document to delete.
      */
     public static void deleteDocument(String collectionName, String documentName) {
         FirebaseFirestore.getInstance().collection(collectionName).document(documentName)
@@ -118,26 +120,28 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method checks if the username is already inside the firebase collection under "profiles", this is mainly used
-     * for edit name on profile page or create name on first time login
+     * This method checks if the username is already inside the firebase collection under
+     * "profiles", this is mainly used for edit name on profile page or create name on first time
+     * login.
      *
-     * @param username
-     * @param onCompleteListener
+     * @param username           The username to check availability for.
+     * @param onCompleteListener The OnCompleteListener which will receive the result.
      */
     public static void checkUsernameAvailability(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // if you want to change the collection name that stores profile information, change it in here too
+        // if you want to change the collection name that stores profile information, change it in
+        // here too
         CollectionReference usersRef = db.collection("profiles");
         Query query = usersRef.whereEqualTo(FieldPath.documentId(), username);
         query.get().addOnCompleteListener(onCompleteListener);
     }
 
     /**
-     * This method will retrieve all the data under a given name and you can access optionally store the data
-     * check the documentation for example code usage
+     * This method will retrieve all the data under a given name and you can access optionally
+     * store the data check the documentation for example code usage
      *
-     * @param username
-     * @param listener
+     * @param username The username to retrieve the data for.
+     * @param listener The OnCompleteListener which will get the data for the user.
      */
     public static void getUserData(String username, OnCompleteListener<DocumentSnapshot> listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -148,10 +152,11 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method will delete a given username under the "profiles" collection, this method should not be used unless you are
-     * 100% certain you wish to delete that user, this method was implemented for the case where edit name was used.
+     * This method will delete a given username under the "profiles" collection, this method should
+     * not be used unless you are 100% certain you wish to delete that user, this method was
+     * implemented for the case where edit name was used.
      *
-     * @param username
+     * @param username The username of the profile to remove.
      */
     public static void removeUserProfile(String username) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
