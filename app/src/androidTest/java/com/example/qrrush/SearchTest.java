@@ -13,6 +13,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * The SearchTest class is used to test the search functionality in the MainActivity.
+ */
 public class SearchTest {
 
     private Solo solo;
@@ -20,21 +23,37 @@ public class SearchTest {
     @Rule
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
 
+    /**
+     * This method sets up the test environment by initializing the Solo object.
+     *
+     * @throws Exception if an error occurs during the setup.
+     */
     @Before
     public void setUp() throws Exception {
         solo = new Solo(getInstrumentation(), activityRule.getActivity());
     }
 
+    /**
+     * This method tears down the test environment by finishing all opened activities.
+     *
+     * @throws Exception if an error occurs during the teardown.
+     */
     @After
     public void tearDown() throws Exception {
         solo.finishOpenedActivities();
     }
 
+    /**
+     * This method resets the app by going back to the MainActivity.
+     */
     @Before
     public void resetApp() {
         solo.goBackToActivity("MainActivity");
     }
 
+    /**
+     * This method tests a failed search by entering an invalid player and checking that the profile is not displayed.
+     */
     @Test
     public void testFailedSearch() {
         // Click the social button
@@ -50,6 +69,9 @@ public class SearchTest {
         assertTrue(solo.waitForText("Rank", 1, 2000));
     }
 
+    /**
+     * This method tests a successful search by entering a valid player and checking that the profile is displayed.
+     */
     @Test
     public void testSuccessfulSearch() {
         // Click the social button
