@@ -1,6 +1,7 @@
 package com.example.qrrush;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 /**
  * The main activity class for the QR Rush app.
  * This activity serves as the entry point to the app and handles the main UI and user interactions.
@@ -40,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
             android.Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
     };
+
     /**
      * Checks if the necessary permissions for the app have been granted by the user.
+     *
      * @return true if all permissions have been granted, false otherwise
      */
     private boolean hasPermissions() {
@@ -53,11 +57,13 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     /**
      * Called when the user responds to the permission request dialog.
      * Checks if the necessary permissions have been granted and initializes the app if so.
-     * @param requestCode The code that was used to make the permission request
-     * @param permissions The requested permissions
+     *
+     * @param requestCode  The code that was used to make the permission request
+     * @param permissions  The requested permissions
      * @param grantResults The grant results for the corresponding permissions
      */
     @Override
@@ -72,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         main();
     }
+
     /**
      * Initializes the app and sets up the main UI components.
      * Retrieves user data from Firebase and populates the UI with it.
@@ -179,6 +186,5 @@ public class MainActivity extends AppCompatActivity {
 
         main();
     }
-
 
 }
