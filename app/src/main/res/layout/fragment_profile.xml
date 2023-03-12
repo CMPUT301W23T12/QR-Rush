@@ -84,7 +84,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Contact"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/scoreView"
