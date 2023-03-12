@@ -73,11 +73,12 @@ public class ProfileFragment extends Fragment {
         TextView scoreText = view.findViewById(R.id.scoreText);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         //contactView.setText("Contact: " + user.getPhoneNumber());
+        nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
-        QRScanned.setText(String.valueOf(user.getQRCodes()));
+        QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         rankText.setText("RANK");
-        QRText.setText("QRCODES");
+        QRText.setText("QRCODES FOUND");
         scoreText.setText("SCORE");
 
 
@@ -129,9 +130,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText("Rank: " + user.getRank());
-                QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
-                scoreView.setText("Total Score: " + user.getTotalScore());
+                rankView.setText(String.valueOf(user.getRank()));
+                QRScanned.setText(String.valueOf(user.getQRCodes().size()));
+                scoreView.setText(String.valueOf(user.getTotalScore()));
             }
         });
 
@@ -188,7 +189,7 @@ public class ProfileFragment extends Fragment {
                             user.setUserName(newUserName);
                             UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
 
-                            nameView.setText("Name: " + user.getUserName());
+                            nameView.setText(user.getUserName());
                             dialog.dismiss();
                         });
                     });
