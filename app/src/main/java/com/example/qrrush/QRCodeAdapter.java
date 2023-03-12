@@ -27,19 +27,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-// ArrayAdapter which displays QR Codes from the QRCode class.
+/**
+ * ArrayAdapter which displays QR Codes from the QRCode class.
+ */
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
     HashMap<QRCode, String> commentsMap = new HashMap<>();
 
+    /**
+     * Creates a QRCodeAdapter given a list of QR Codes and a user.
+     *
+     * @param context The context object to pass to the super constructor.
+     * @param objects The QR codes to display.
+     * @param user    The user which is associated with the QR Codes.
+     */
     public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user) {
         super(context, 0, objects);
         qrCodes = objects;
         this.user = user;
 
     }
-
 
     @NonNull
     @Override
@@ -98,7 +106,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                     commentEditText.setText(comment);
                 }
             } else {
-                commentsMap.put(qrCode, ""); // Add empty string to commentsMap to keep track of which QR codes have comments
+                // Add empty string to commentsMap to keep track of which QR codes have comments
+                commentsMap.put(qrCode, "");
             }
         });
 

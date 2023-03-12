@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,9 +23,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * The fragment which displays the profile.
+ */
 public class ProfileFragment extends Fragment {
     User user;
     QRCodeAdapter QRCodeAdapter;
@@ -33,7 +38,7 @@ public class ProfileFragment extends Fragment {
     /**
      * Grabs User object from the main activity
      *
-     * @param user
+     * @param user The user who's profile should be displayed.
      */
     public ProfileFragment(User user) {
         // Required empty public constructor
@@ -55,21 +60,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        ArrayList<QRCode> qrCodes = new ArrayList<>();
-//        byte[] data1 = "example data 1".getBytes();
-//        Location location1 = new Location("");
-//        byte[] data2 = "example data 2".getBytes();
-//        Location location2 = new Location("");
-//        byte[] data3 = "example data 3".getBytes();
-//        Location location3 = new Location("");
-//        QRCode qrCode1 = new QRCode(data1, location1);
-//        QRCode qrCode2 = new QRCode(data2, location2);
-//        QRCode qrCode3 = new QRCode(data3, location3);
-//        qrCodes.add(qrCode1);
-//        qrCodes.add(qrCode2);
-//        qrCodes.add(qrCode3);
-//        user = new User("TheLegend27",
-//                "987-6543-321", 1, 25412, qrCodes);
 
         TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
@@ -98,6 +88,8 @@ public class ProfileFragment extends Fragment {
                     sortingTracker += 1;
                     DateComparator dateComparator = new DateComparator();
                     Collections.sort(user.getQRCodes(), dateComparator);
+                    // Sorts by newest to oldest (newest codes being at the top)
+                    Collections.reverse(user.getQRCodes());
                     QRCodeAdapter.notifyDataSetChanged();
                 } else if (sortingTracker == 1) {
                     sortingButton.setText("By Points");
@@ -129,7 +121,7 @@ public class ProfileFragment extends Fragment {
         QRCodeAdapter.notifyDataSetChanged();
 
         // Get the button view from the layout
-        Button editNameButton = view.findViewById(R.id.edit_name);
+        ImageButton editNameButton = view.findViewById(R.id.edit_name);
 
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
