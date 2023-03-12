@@ -3,6 +3,7 @@ package com.example.qrrush;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The class representing a user in the game.
@@ -23,6 +25,7 @@ public class User {
     private ArrayList<QRCode> qrCodes;
     // unsure of data type for now
     private String profilePicture;
+    private HashMap<QRCode, String> commentMap = new HashMap<>();
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -103,6 +106,114 @@ public class User {
         this.qrCodes.remove(code);
     }
 
+    public void setCommentWithoutUsingFirebase(QRCode code, String text) {
+        if (text == null) {
+            return;
+        }
+
+        if (this.commentMap.containsKey(code)) {
+            this.commentMap.replace(code, text);
+            return;
+        }
+
+        this.commentMap.put(code, text);
+    }
+
+    /**
+     * Removes the comment for the given QR code.
+     *
+     * @param code The QRCode to remove the comment for.
+     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     */
+    public void removeCommentFor(QRCode code) {
+        if (!this.getQRCodes().contains(code)) {
+            throw new InvalidParameterException("The QR Code specified to remove was not in the user's account!");
+        }
+
+        this.commentMap.remove(code);
+        FirebaseWrapper.getUserData(this.getUserName(), (Task<DocumentSnapshot> task) -> {
+            if (!task.isSuccessful()) {
+                Log.e("addCommentFor", "Failed to read user data!");
+                return;
+            }
+
+            DocumentSnapshot ds = task.getResult();
+            if (!ds.exists()) {
+                Log.e("addCommentFor", "User was deleted from Firebase!");
+                return;
+            }
+
+            Map<String, Object> data = ds.getData();
+            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+
+            comments.set(hashes.indexOf(code.getHash()), null);
+            data.replace("qrcodescomments", comments);
+
+            FirebaseWrapper.updateData("profiles", this.getUserName(), data);
+        });
+    }
+
+    /**
+     * Adds a comment to the QRCode code.
+     *
+     * @param code        The QRCode to add a comment to.
+     * @param commentText The text to set the comment to.
+     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     */
+    public void setCommentFor(QRCode code, String commentText) {
+        if (!this.getQRCodes().contains(code)) {
+            throw new InvalidParameterException("The QR Code specified to remove was not in the user's account!");
+        }
+
+        setCommentWithoutUsingFirebase(code, commentText);
+        FirebaseWrapper.getUserData(this.getUserName(), (Task<DocumentSnapshot> task) -> {
+            if (!task.isSuccessful()) {
+                Log.e("addCommentFor", "Failed to read user data!");
+                return;
+            }
+
+            DocumentSnapshot ds = task.getResult();
+            if (!ds.exists()) {
+                Log.e("addCommentFor", "User was deleted from Firebase!");
+                return;
+            }
+
+            Map<String, Object> data = ds.getData();
+            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+
+            comments.set(hashes.indexOf(code.getHash()), commentText);
+            data.replace("qrcodescomments", comments);
+
+            FirebaseWrapper.updateData("profiles", this.getUserName(), data);
+        });
+    }
+
+
+    /**
+     * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a
+     * comment.
+     *
+     * @param code The QR code to get the comment for.
+     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     */
+    public Optional<String> getCommentFor(QRCode code) {
+        if (!this.getQRCodes().contains(code)) {
+            throw new InvalidParameterException("The QR Code specified to remove was not in the user's account!");
+        }
+
+        if (!commentMap.containsKey(code)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(commentMap.get(code));
+    }
+
+    public void addQRCodeWithoutFirebase(QRCode code) {
+        this.qrCodes.add(code);
+    }
+
     /**
      * Adds a QR Code to the user, both locally and in Firebase.
      *
@@ -135,12 +246,11 @@ public class User {
             ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
             codes.add(code.getHash());
-            comments.add("");
+            comments.add(null);
             newData.replace("qrcodescomments", comments);
             newData.replace("qrcodes", codes);
             newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
-            FirebaseWrapper.updateData("qrcodescomments", this.getUserName(), data);
             this.qrCodes.add(code);
         });
     }

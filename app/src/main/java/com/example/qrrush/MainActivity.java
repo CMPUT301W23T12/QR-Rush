@@ -116,11 +116,18 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            user = new User(
+                    username,
+                    document.getString("phone-number"),
+                    document.getLong("rank").intValue(),
+                    document.getLong("score").intValue(),
+                    new ArrayList<>()
+            );
+
             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
-            ArrayList<QRCode> qrCodes = new ArrayList<>();
             ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
             for (String hash : hashes) {
-                FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
+                Task<DocumentSnapshot> t = FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
                     if (!task1.isSuccessful()) {
                         Log.d("Firebase User", "Error creating user");
                         return;
@@ -142,18 +149,16 @@ public class MainActivity extends AppCompatActivity {
                         code.setLocation(l);
                     }
 
-                    qrCodes.add(code);
-                    comments.add("");
+                    user.addQRCodeWithoutFirebase(code);
+                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                    }
                 });
 
+                while (!t.isComplete()) {
+                    // Empty loop is on purpose. We need to wait for these to finish.
+                }
             }
-            user = new User(
-                    username,
-                    document.getString("phone-number"),
-                    document.getLong("rank").intValue(),
-                    document.getLong("score").intValue(),
-                    qrCodes
-            );
 
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
