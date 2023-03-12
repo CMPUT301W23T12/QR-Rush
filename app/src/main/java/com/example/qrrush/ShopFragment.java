@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 /**
- * Shop Fragment for QR codes
+ * Shop Fragment for QR codes.
  */
 public class ShopFragment extends Fragment {
     private ImageView qrCode;
@@ -86,13 +86,4 @@ public class ShopFragment extends Fragment {
 
         return view;
     }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-
 }

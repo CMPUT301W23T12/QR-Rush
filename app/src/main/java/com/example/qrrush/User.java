@@ -1,16 +1,20 @@
 package com.example.qrrush;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-// User class, should only be one user that can have multiple QR codes
+/**
+ * The class representing a user in the game.
+ */
 public class User {
     private String userName;
     private String phoneNumber;
@@ -22,6 +26,15 @@ public class User {
 
     private int totalQRcodes;
 
+    /**
+     * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
+     *
+     * @param userName    The username to initialize the user with.
+     * @param phoneNumber The phone number to initialize the user with.
+     * @param rank        The rank to initialize the user with.
+     * @param totalScore  The score to initialize the user with.
+     * @param qrCodes     The list of QR Codes to initialize the user with.
+     */
     public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
@@ -78,9 +91,11 @@ public class User {
     public int getNumberOfQRCodes() {
         return totalQRcodes;
     }
-    public void AddToTotalQRcodes(){
+
+    public void AddToTotalQRcodes() {
         this.totalQRcodes += 1;
     }
+
     public void setTotalQRcodes(int totalQRcodes) {
         this.totalQRcodes = totalQRcodes;
     }
@@ -88,19 +103,27 @@ public class User {
     public int getTotalScore() {
         return totalScore;
     }
-    public void AddToTotalScore(QRCode qrCode){
+
+    public void AddToTotalScore(QRCode qrCode) {
         totalScore += qrCode.getScore();
     }
+
     public void setTotalScore(int totalScores) {
         this.totalScore = totalScores;
     }
 
+    /**
+     * Adds a QR Code to the user, both locally and in Firebase.
+     *
+     * @param code The QR code to add to the user's account.
+     */
     public void addQRCode(QRCode code) {
         AddToTotalQRcodes();
         AddToTotalScore(code);
         HashMap<String, Object> data = new HashMap<>();
         if (code.getLocation().isPresent()) {
-            data.put("location", code.getLocation().get());
+            Location l = code.getLocation().get();
+            data.put("location", new GeoPoint(l.getLatitude(), l.getLongitude()));
         }
         data.put("date", new Timestamp(new Date()));
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);

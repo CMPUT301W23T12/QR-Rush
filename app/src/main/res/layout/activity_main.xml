@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:layout_gravity="top"
     tools:context=".MainActivity">
 
 
@@ -21,6 +23,7 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="409dp"
         android:layout_height="100dp"
+        android:background="@color/white_wash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -36,7 +39,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/white_wash"
                 android:scaleType="centerCrop"
                 android:scaleX="1"
                 android:scaleY="1"
@@ -47,7 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/white_wash"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/shop" />
 
@@ -56,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/white_wash"
                 android:scaleType="centerCrop"
                 android:scaleX="1"
                 android:scaleY="1"
@@ -67,7 +70,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/white_wash"
                 android:scaleType="centerCrop"
                 android:scaleX="1"
                 android:scaleY="1"
@@ -78,7 +81,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="@color/white_wash"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/leaderboard" />
 

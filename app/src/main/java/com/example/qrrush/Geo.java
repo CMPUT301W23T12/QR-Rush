@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.location.Location;
 import android.util.Log;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -11,8 +12,10 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 
 import java.util.function.Consumer;
 
+/**
+ * The Geolocation API used in QR Rush.
+ */
 public class Geo {
-    private static boolean initialized = false;
     private static FusedLocationProviderClient fusedLocationClient;
 
     /**
@@ -46,7 +49,6 @@ public class Geo {
                     }
                 });
     }
-
 
 
 }

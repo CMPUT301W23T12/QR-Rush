@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,9 +23,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * The fragment which displays the profile.
+ */
 public class ProfileFragment extends Fragment {
     User user;
     QRCodeAdapter QRCodeAdapter;
@@ -33,7 +38,7 @@ public class ProfileFragment extends Fragment {
     /**
      * Grabs User object from the main activity
      *
-     * @param user
+     * @param user The user who's profile should be displayed.
      */
     public ProfileFragment(User user) {
         // Required empty public constructor
@@ -83,6 +88,8 @@ public class ProfileFragment extends Fragment {
                     sortingTracker += 1;
                     DateComparator dateComparator = new DateComparator();
                     Collections.sort(user.getQRCodes(), dateComparator);
+                    // Sorts by newest to oldest (newest codes being at the top)
+                    Collections.reverse(user.getQRCodes());
                     QRCodeAdapter.notifyDataSetChanged();
                 } else if (sortingTracker == 1) {
                     sortingButton.setText("By Points");
@@ -114,7 +121,7 @@ public class ProfileFragment extends Fragment {
         QRCodeAdapter.notifyDataSetChanged();
 
         // Get the button view from the layout
-        Button editNameButton = view.findViewById(R.id.edit_name);
+        ImageButton editNameButton = view.findViewById(R.id.edit_name);
 
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
