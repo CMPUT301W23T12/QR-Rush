@@ -72,22 +72,6 @@ public class ProfileFragment extends Fragment {
         QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
         scoreView.setText("Total Score: " + user.getTotalScore());
 
-
-        // Delete button instance for each QR code item
-        // Fetch comments for the QR code from Firebase
-        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
-            if (!task.isSuccessful()) {
-                Log.d("Firebase User", "Error getting user data");
-                return;
-            }
-            DocumentSnapshot document = task.getResult();
-            if (!document.exists()) {
-                Log.e("Firebase User", "Document doesn't exist!");
-                return;
-            }
-        });
-
-
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
         //      by score (sortingTracker = 0)

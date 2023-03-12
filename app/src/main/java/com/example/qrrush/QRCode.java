@@ -3,7 +3,6 @@ package com.example.qrrush;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
@@ -22,15 +21,6 @@ import java.util.Random;
 public class QRCode {
     private final String hash;
     private Optional<Location> location;
-    private String comment = "";
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
 
     /**
      * TODO Set the date so that when the QR code is scanned its date is set here
