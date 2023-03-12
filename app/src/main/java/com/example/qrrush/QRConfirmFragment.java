@@ -62,12 +62,15 @@ public class QRConfirmFragment extends Fragment {
         });
 
         confirmButton.setOnClickListener(v -> {
-            user.addQRCode(qrCode);
+            Geo.getCurrentLocation(l -> {
+                qrCode.setLocation(l);
+                user.addQRCode(qrCode);
 
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new MainFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+                FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+                t.replace(R.id.main_view, new MainFragment(user));
+                t.addToBackStack(null);
+                t.commit();
+            });
         });
 
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 200, 200, false);
