@@ -78,7 +78,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         }
         String location = "no location available";
         if (l.isPresent()) {
-            location = l.get().toString();
+            Location loc = l.get();
+            location = loc.getLongitude() + ", " + loc.getLatitude();
         }
         locationView.setText(location);
 

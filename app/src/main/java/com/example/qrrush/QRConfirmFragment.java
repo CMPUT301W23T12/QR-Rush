@@ -66,12 +66,15 @@ public class QRConfirmFragment extends Fragment {
         });
 
         confirmButton.setOnClickListener(v -> {
-            user.addQRCode(qrCode);
+            Geo.getCurrentLocation(l -> {
+                qrCode.setLocation(l);
+                user.addQRCode(qrCode);
 
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new MainFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+                FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
+                t.replace(R.id.main_view, new MainFragment(user));
+                t.addToBackStack(null);
+                t.commit();
+            });
         });
 
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 200, 200, false);
@@ -83,7 +86,7 @@ public class QRConfirmFragment extends Fragment {
         locationView.setText("Location: getting location...");
         Geo.getCurrentLocation(l -> {
             qrCode.setLocation(l);
-            locationView.setText("Location: " + qrCode.getLocation().get());
+            locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
         });
 
         geolocationToggle.setOnCheckedChangeListener((compoundButton, isChecked) -> {
@@ -94,7 +97,7 @@ public class QRConfirmFragment extends Fragment {
 
             Geo.getCurrentLocation(l -> {
                 qrCode.setLocation(l);
-                locationView.setText("Location: " + qrCode.getLocation().get());
+                locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
             });
         });
     }
