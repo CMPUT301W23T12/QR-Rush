@@ -1,144 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:background="@color/white_wash"
     tools:context=".ProfileFragment">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/profileView"
-            android:layout_width="242dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:src="@drawable/discordpic"
-            android:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/edit_name"
-            android:layout_width="52dp"
-            android:layout_height="115dp"
-            android:layout_weight="1"
-            android:scaleType="fitXY"
-            android:src="@drawable/edit" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:fontFamily="@font/gatekept"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:text="Contact Information" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/nameView"
-            android:layout_width="413dp"
-            android:layout_height="40dp"
-            android:layout_weight="0"
-            android:fontFamily="@font/gatekept"
-            android:text="Name"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
-            android:textSize="30sp" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/rankView"
-        android:layout_width="112dp"
-        android:layout_height="40dp"
-        android:layout_weight="0"
-        android:fontFamily="@font/gatekept"
-        android:text="Rank"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:textSize="30sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/contactView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Contact"
-            android:textAlignment="textStart"
-            android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/scoreView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/gatekept"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
-            android:text="Score"
-            android:gravity="right"
-            android:textAlignment="gravity" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/qrCodesView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#3c6f83"
-                android:textColorHint="#3c6f83"
-                android:text="QR Codes Found: x" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/sortingButton"
-            style="@style/Widget.AppCompat.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="By Date" />
-
-    </LinearLayout>
 
     <ListView
         android:id="@+id/listy"
         android:layout_width="match_parent"
-        android:layout_height="500dip"
-        android:layout_weight="1"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"/>
+        android:layout_height="400dp"
+        android:layout_marginTop="332dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileView"
+        android:layout_width="166dp"
+        android:layout_height="160dp"
+        android:src="@drawable/discordpic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.028" />
+
+    <ImageButton
+        android:id="@+id/edit_name"
+        android:layout_width="33dp"
+        android:layout_height="42dp"
+        android:backgroundTint="#00000000"
+        android:scaleType="centerCrop"
+        android:src="@drawable/editpr"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.951"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.025" />
+
+    <TextView
+        android:id="@+id/nameView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekeptbold"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="35sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileView"
+        app:layout_constraintVertical_bias="0.012" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:fontFamily="@font/gatekept"
+        android:text="SCORE"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.43" />
+
+    <TextView
+        android:id="@+id/scoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekeptsemibold"
+        android:gravity="center"
+        android:text="Score"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/scoreText"
+        app:layout_constraintEnd_toStartOf="@+id/rankView"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.992" />
+
+    <TextView
+        android:id="@+id/rankText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="RANK"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.43" />
+
+    <TextView
+        android:id="@+id/rankView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekeptsemibold"
+        android:gravity="center"
+        android:text="Rank"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/rankText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.992" />
+
+    <Button
+        android:id="@+id/sortingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.197" />
+
+    <TextView
+        android:id="@+id/qrCodesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="QRCODES FOUND"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rankText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.429" />
+
+    <TextView
+        android:id="@+id/qrCodesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekeptsemibold"
+        android:gravity="center"
+        android:text="QRCodes"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        app:layout_constraintBottom_toTopOf="@+id/qrCodesText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.532"
+        app:layout_constraintStart_toEndOf="@+id/rankView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.989" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

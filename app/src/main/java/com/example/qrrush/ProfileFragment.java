@@ -23,6 +23,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -60,20 +62,24 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView contactView = view.findViewById(R.id.contactView);
+        ImageView profileView = view.findViewById(R.id.profileView);
+        //TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
+        TextView rankText = view.findViewById(R.id.rankText);
+        TextView QRText = view.findViewById(R.id.qrCodesText);
+        TextView scoreText = view.findViewById(R.id.scoreText);
         Button sortingButton = view.findViewById(R.id.sortingButton);
-        contactView.setText("Contact: " + user.getPhoneNumber());
-        if (!user.getPhoneNumber().matches("")) {
-            contactView.setVisibility(View.VISIBLE);
-        }
-        nameView.setText("Name: " + user.getUserName());
-        rankView.setText("Rank: " + user.getRank());
-        QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
-        scoreView.setText("Total Score: " + user.getTotalScore());
+        //contactView.setText("Contact: " + user.getPhoneNumber());
+        nameView.setText(user.getUserName());
+        rankView.setText(String.valueOf(user.getRank()));
+        QRScanned.setText(String.valueOf(user.getQRCodes().size()));
+        scoreView.setText(String.valueOf(user.getTotalScore()));
+        rankText.setText("RANK");
+        QRText.setText("QRCODES FOUND");
+        scoreText.setText("SCORE");
 
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
@@ -105,13 +111,12 @@ public class ProfileFragment extends Fragment {
                 qrCodeAdapter.notifyDataSetChanged();
             }
         });
-        ImageView profileView = view.findViewById(R.id.profileView);
         // Image will be fit into the size of the image view
-        Picasso
-                .get()
-                .load(user.getProfilePicture())
-                .fit()
-                .into(profileView);
+//        Picasso
+//                .get()
+//                .load(user.getProfilePicture())
+//                .fit()
+//                .into(profileView);
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
@@ -124,9 +129,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText("Rank: " + user.getRank());
-                QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
-                scoreView.setText("Total Score: " + user.getTotalScore());
+                rankView.setText(String.valueOf(user.getRank()));
+                QRScanned.setText(String.valueOf(user.getQRCodes().size()));
+                scoreView.setText(String.valueOf(user.getTotalScore()));
             }
         });
 
@@ -183,7 +188,7 @@ public class ProfileFragment extends Fragment {
                             user.setUserName(newUserName);
                             UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
 
-                            nameView.setText("Name: " + user.getUserName());
+                            nameView.setText(user.getUserName());
                             dialog.dismiss();
                         });
                     });
