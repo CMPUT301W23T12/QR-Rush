@@ -67,6 +67,9 @@ public class ProfileFragment extends Fragment {
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         contactView.setText("Contact: " + user.getPhoneNumber());
+        if (!user.getPhoneNumber().matches("")) {
+            contactView.setVisibility(View.VISIBLE);
+        }
         nameView.setText("Name: " + user.getUserName());
         rankView.setText("Rank: " + user.getRank());
         QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
