@@ -1,10 +1,19 @@
 package com.example.qrrush;
 
+/**
+ * Represents a Rarity for a QR code.
+ */
 public enum Rarity {
     Common,
     Rare,
     Legendary;
 
+    /**
+     * Calculates the rarity for a given QR code hash.
+     *
+     * @param hash The hash to calculate the rarity of.
+     * @return The rarity of the hash given.
+     */
     public static Rarity fromHash(String hash) {
         int numZeroes = QRCode.getMaxConsecutiveZeroes(hash);
         if (numZeroes >= Rarity.minConsecutiveZeroesFor(Legendary)) {
