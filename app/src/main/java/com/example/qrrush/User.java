@@ -104,6 +104,10 @@ public class User {
 
         FirebaseWrapper.deleteQrcode("profiles", this.getUserName(), code.getHash());
         this.qrCodes.remove(code);
+        HashMap<String, Object> updatedScore = new HashMap<>();
+        updatedScore.put("score", this.getTotalScore());
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedScore);
+
     }
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
@@ -241,7 +245,7 @@ public class User {
             }
 
             Map<String, Object> newData = ds.getData();
-
+            this.qrCodes.add(code);
             // TODO: check if they've already scanned this one before.
             ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
@@ -251,7 +255,6 @@ public class User {
             newData.replace("qrcodes", codes);
             newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
-            this.qrCodes.add(code);
         });
     }
 }
