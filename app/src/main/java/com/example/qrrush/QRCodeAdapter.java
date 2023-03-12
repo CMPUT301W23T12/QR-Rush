@@ -64,7 +64,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         ImageView imageView = view.findViewById(R.id.imageView);
         TextView commentEditText = view.findViewById(R.id.commentEditText);
         nameView.setText(qrCode.getName());
-        pointView.setText(String.valueOf(qrCode.getScore()));
+
         Optional<Location> l = qrCode.getLocation();
         commentsMap.clear();
 
@@ -96,7 +96,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 Log.e("Firebase User", "Document doesn't exist!");
                 return;
             }
-
+            pointView.setText(String.valueOf(document.getLong("score").intValue()));
             ArrayList<String> qrCodeComments = (ArrayList<String>) document.get("qrcodescomments");
             if (qrCodeComments != null && position < qrCodeComments.size()) {
                 String comment = qrCodeComments.get(position);

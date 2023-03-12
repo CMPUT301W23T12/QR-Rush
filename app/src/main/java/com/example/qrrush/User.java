@@ -149,7 +149,7 @@ public class User {
             comments.add("");
             newData.replace("qrcodescomments", comments);
             newData.replace("qrcodes", codes);
-
+            newData.put("score", totalScore);
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
             FirebaseWrapper.updateData("qrcodescomments", this.getUserName(), data);
             this.qrCodes.add(code);

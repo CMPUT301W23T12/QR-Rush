@@ -70,8 +70,27 @@ public class ProfileFragment extends Fragment {
         contactView.setText("Contact: " + user.getPhoneNumber());
         nameView.setText("Name: " + user.getUserName());
         rankView.setText("Rank: " + String.valueOf(user.getRank()));
-        scoreView.setText("Score: " + String.valueOf(user.getTotalScore()));
         QRScanned.setText("QR Codes Found: " + String.valueOf(user.getNumberOfQRCodes()));
+
+
+        // Delete button instance for each QR code item
+        // Fetch comments for the QR code from Firebase
+        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
+            if (!task.isSuccessful()) {
+                Log.d("Firebase User", "Error getting user data");
+                return;
+            }
+            DocumentSnapshot document = task.getResult();
+            if (!document.exists()) {
+                Log.e("Firebase User", "Document doesn't exist!");
+                return;
+            }
+            scoreView.setText(String.valueOf(document.getLong("score").intValue()));
+
+        });
+
+
+
 
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
