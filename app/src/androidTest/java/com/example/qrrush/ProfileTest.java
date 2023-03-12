@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.MissingFormatArgumentException;
 
 public class ProfileTest {
     //public User user = new User("attn", "123")
@@ -48,35 +49,59 @@ public class ProfileTest {
 
     @Test
     public void testQRcount(){
+        try {
+            Thread.sleep(10000); // waits for 1 second
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         solo.clickOnView(solo.getView(R.id.shop_button));
         solo.clickOnView(solo.getView(R.id.common_button));
         solo.clickOnView(solo.getView(R.id.rare_button));
         solo.clickOnView(solo.getView(R.id.profile_button));
+        solo.waitForView(R.id.qrCodesView);
+
+
+// Check if the view appeared within the timeout period
+        //assertTrue(viewAppeared);
 
         // Get the QR code count view
         TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
 
-        // Get the QR code count value
-        int qrCount = Integer.parseInt(qrCountView.getText().toString());
+        // Get the text from the QR code count view
+        String qrCountText = qrCountView.getText().toString();
+
+        // Extract the numeric part of the text
+        String numericPart = qrCountText.replaceAll("[^0-9]", "");
+
+        // Convert the numeric part to an integer
+        int qrCount = Integer.parseInt(numericPart);
 
         // Compare the QR code count value to the expected value
         assertEquals(2, qrCount);
+        //edit name
+        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
+        solo.clickOnView(solo.getView(R.id.edit_name));
+        // Enter "Bruh123" as the search term
+        solo.enterText(0, "Bruh1234");
+        solo.clickOnText("Confirm");
 
+        // Wait for the AlertDialog to close
+        solo.waitForDialogToClose();
+        TextView newName = (TextView) solo.getView(R.id.nameView);
+        String name = newName.getText().toString().substring(6);
+        assertEquals("Bruh1234", name);
+        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
 
-
-//        int totalScore = user1.getTotalScore();
-//        int numQRcodes = user1.getNumberOfQRCodes();
-//        int countQR = 0;
-//        int countScore = 0;
-//        ArrayList<QRCode> qrCodes = user1.getQRCodes();
-//        for (QRCode qrCode : qrCodes) {
-//            countScore += qrCode.getScore();
-//            countQR += 1;
-//        }
-//
-//        assertTrue(countQR == numQRcodes);
-//        assertTrue(countScore == totalScore);
-
+        solo.clickOnView(solo.getView(R.id.edit_name));
+        // Enter "Bruh123" as the search term
+        solo.enterText(0, "attn");
+        solo.clickOnText("Confirm");
+        solo.waitForDialogToClose();
+        TextView newName2 = (TextView) solo.getView(R.id.nameView);
+        String name2 = newName.getText().toString().substring(6);
+        assertEquals("attn", name2);
 
     }
 }
+
