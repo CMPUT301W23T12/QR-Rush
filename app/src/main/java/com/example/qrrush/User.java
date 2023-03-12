@@ -7,6 +7,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,11 +21,8 @@ public class User {
     private String phoneNumber;
     private int rank;
     private ArrayList<QRCode> qrCodes;
-    private int totalScore;
     // unsure of data type for now
     private String profilePicture;
-
-    private int totalQRcodes;
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -40,16 +38,6 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
-        totalQRcodes = qrCodes.size();
-
-        if (totalQRcodes == 0) {
-            totalScore = 0;
-        } else {
-            for (int i = 0; i < qrCodes.size(); i++) {
-                totalScore += qrCodes.get(i).getScore();
-            }
-            this.totalScore = totalScore;
-        }
     }
 
     public String getUserName() {
@@ -88,28 +76,31 @@ public class User {
         return qrCodes;
     }
 
-    public int getNumberOfQRCodes() {
-        return totalQRcodes;
-    }
-
-    public void AddToTotalQRcodes() {
-        this.totalQRcodes += 1;
-    }
-
-    public void setTotalQRcodes(int totalQRcodes) {
-        this.totalQRcodes = totalQRcodes;
-    }
-
+    /**
+     * Returns the user's total score.
+     */
     public int getTotalScore() {
-        return totalScore;
+        int result = 0;
+        for (QRCode code : this.qrCodes) {
+            result += code.getScore();
+        }
+
+        return result;
     }
 
-    public void AddToTotalScore(QRCode qrCode) {
-        totalScore += qrCode.getScore();
-    }
+    /**
+     * Removes a QR Code from the user's account, both locally and in Firebase.
+     *
+     * @param code The QR code to remove from the user's account.
+     * @throws InvalidParameterException The QR code given was not already in the user's account.
+     */
+    public void removeQRCode(QRCode code) {
+        if (!this.qrCodes.contains(code)) {
+            throw new InvalidParameterException("The QR Code specified to remove was not in the user's account!");
+        }
 
-    public void setTotalScore(int totalScores) {
-        this.totalScore = totalScores;
+        FirebaseWrapper.deleteQrcode("profiles", this.getUserName(), code.getHash());
+        this.qrCodes.remove(code);
     }
 
     /**
@@ -118,8 +109,6 @@ public class User {
      * @param code The QR code to add to the user's account.
      */
     public void addQRCode(QRCode code) {
-        AddToTotalQRcodes();
-        AddToTotalScore(code);
         HashMap<String, Object> data = new HashMap<>();
         if (code.getLocation().isPresent()) {
             Location l = code.getLocation().get();
@@ -149,7 +138,7 @@ public class User {
             comments.add("");
             newData.replace("qrcodescomments", comments);
             newData.replace("qrcodes", codes);
-
+            newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
             FirebaseWrapper.updateData("qrcodescomments", this.getUserName(), data);
             this.qrCodes.add(code);

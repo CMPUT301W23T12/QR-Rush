@@ -3,6 +3,7 @@ package com.example.qrrush;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
