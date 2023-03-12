@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Add name + UUID and phone number to FB
                     Task<Void> t = FirebaseWrapper.addData("profiles", username, profiles);
                     while (!t.isComplete()) {
-                        // Intentionally empty loop
+                        // Intentionally empty loop to wait for data to be fetched
                     }
 
                     // set firstTimeLogin to false
