@@ -33,8 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:fontFamily="@font/gatekept"
-        android:text="Contact Information"
-        android:textColor="@color/black" />
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:text="Contact Information" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,7 +56,8 @@
             android:layout_weight="0"
             android:fontFamily="@font/gatekept"
             android:text="Name"
-            android:textColor="@color/black"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
             android:textSize="30sp" />
 
     </LinearLayout>
@@ -67,7 +69,8 @@
         android:layout_weight="0"
         android:fontFamily="@font/gatekept"
         android:text="Rank"
-        android:textColor="@color/black"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
         android:textSize="30sp" />
 
     <LinearLayout
@@ -89,7 +92,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/gatekept"
-            android:textColor="@color/black"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
             android:text="Score"
             android:gravity="right"
             android:textAlignment="gravity" />
@@ -113,6 +117,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="#3c6f83"
+                android:textColorHint="#3c6f83"
                 android:text="QR Codes Found: x" />
         </LinearLayout>
 
@@ -130,6 +136,8 @@
         android:id="@+id/listy"
         android:layout_width="match_parent"
         android:layout_height="500dip"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"/>
 
 </LinearLayout>
