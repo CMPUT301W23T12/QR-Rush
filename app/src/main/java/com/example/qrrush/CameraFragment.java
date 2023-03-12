@@ -38,6 +38,11 @@ public class CameraFragment extends Fragment {
     CameraController cameraController;
     User user;
 
+    /**
+     * Creates a CameraFragment for the given user.
+     *
+     * @param user The user to create the CameraFragment for.
+     */
     public CameraFragment(User user) {
         this.user = user;
     }
@@ -47,6 +52,11 @@ public class CameraFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Binds the ImageAnalysis to the camera so it can detect and scan QR Codes.
+     *
+     * @param cameraProvider The ProcessCameraProvider which is providing the camera.
+     */
     private void bindImageAnalysis(@NonNull ProcessCameraProvider cameraProvider) {
         BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
                 .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
