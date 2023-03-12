@@ -81,7 +81,6 @@ public class ProfileFragment extends Fragment {
         QRText.setText("QRCODES FOUND");
         scoreText.setText("SCORE");
 
-
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
         //      by score (sortingTracker = 0)
