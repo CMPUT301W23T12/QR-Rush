@@ -1,5 +1,6 @@
 package com.example.qrrush;
 
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +23,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ import java.util.Map;
  */
 public class ProfileFragment extends Fragment {
     User user;
-    QRCodeAdapter QRCodeAdapter;
+    QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
 
     /**
@@ -69,8 +68,9 @@ public class ProfileFragment extends Fragment {
         Button sortingButton = view.findViewById(R.id.sortingButton);
         contactView.setText("Contact: " + user.getPhoneNumber());
         nameView.setText("Name: " + user.getUserName());
-        rankView.setText("Rank: " + String.valueOf(user.getRank()));
-        QRScanned.setText("QR Codes Found: " + String.valueOf(user.getNumberOfQRCodes()));
+        rankView.setText("Rank: " + user.getRank());
+        QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
+        scoreView.setText("Total Score: " + user.getTotalScore());
 
 
         // Delete button instance for each QR code item
@@ -85,11 +85,7 @@ public class ProfileFragment extends Fragment {
                 Log.e("Firebase User", "Document doesn't exist!");
                 return;
             }
-            scoreView.setText(String.valueOf(document.getLong("score").intValue()));
-
         });
-
-
 
 
         // On launch sorting is set by date (sortingTracker = 1)
@@ -99,30 +95,27 @@ public class ProfileFragment extends Fragment {
 
         // Sorting button sorts arraylist of QR codes using custom comparators
         // Adapter gets updated each time the list gets sorted
-        sortingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sortingTracker == 0) {
-                    sortingButton.setText("By Date");
-                    sortingTracker += 1;
-                    DateComparator dateComparator = new DateComparator();
-                    Collections.sort(user.getQRCodes(), dateComparator);
-                    // Sorts by newest to oldest (newest codes being at the top)
-                    Collections.reverse(user.getQRCodes());
-                    QRCodeAdapter.notifyDataSetChanged();
-                } else if (sortingTracker == 1) {
-                    sortingButton.setText("By Points");
-                    sortingTracker += 1;
-                    ScoreComparator scoreComparator = new ScoreComparator();
-                    Collections.sort(user.getQRCodes(), scoreComparator);
-                    QRCodeAdapter.notifyDataSetChanged();
-                } else if (sortingTracker == 2) {
-                    sortingButton.setText("By Name");
-                    sortingTracker = 0;
-                    NameComparator nameComparator = new NameComparator();
-                    Collections.sort(user.getQRCodes(), nameComparator);
-                    QRCodeAdapter.notifyDataSetChanged();
-                }
+        sortingButton.setOnClickListener(v -> {
+            if (sortingTracker == 0) {
+                sortingButton.setText("By Date");
+                sortingTracker += 1;
+                DateComparator dateComparator = new DateComparator();
+                Collections.sort(user.getQRCodes(), dateComparator);
+                // Sorts by newest to oldest (newest codes being at the top)
+                Collections.reverse(user.getQRCodes());
+                qrCodeAdapter.notifyDataSetChanged();
+            } else if (sortingTracker == 1) {
+                sortingButton.setText("By Points");
+                sortingTracker += 1;
+                ScoreComparator scoreComparator = new ScoreComparator();
+                Collections.sort(user.getQRCodes(), scoreComparator);
+                qrCodeAdapter.notifyDataSetChanged();
+            } else if (sortingTracker == 2) {
+                sortingButton.setText("By Name");
+                sortingTracker = 0;
+                NameComparator nameComparator = new NameComparator();
+                Collections.sort(user.getQRCodes(), nameComparator);
+                qrCodeAdapter.notifyDataSetChanged();
             }
         });
         ImageView profileView = view.findViewById(R.id.profileView);
@@ -134,10 +127,21 @@ public class ProfileFragment extends Fragment {
                 .into(profileView);
 
         // Passes User object from main activity to the QR code adapter
-        QRCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
+        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
         ListView qrCodeList = view.findViewById(R.id.listy);
-        qrCodeList.setAdapter(QRCodeAdapter);
-        QRCodeAdapter.notifyDataSetChanged();
+        qrCodeList.setAdapter(qrCodeAdapter);
+        qrCodeAdapter.notifyDataSetChanged();
+
+        // Update the UI whenever the arrayAdapter gets a change.
+        qrCodeAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                rankView.setText("Rank: " + user.getRank());
+                QRScanned.setText("QR Codes Found: " + user.getQRCodes().size());
+                scoreView.setText("Total Score: " + user.getTotalScore());
+            }
+        });
 
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
@@ -183,9 +187,7 @@ public class ProfileFragment extends Fragment {
 
                             // Username is unique, continue with registration process
                             DocumentSnapshot document = task1.getResult();
-
                             Map<String, Object> updatedProfile = document.getData();
-                            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
 
                             // Add name + UUID and phone number to FB
                             FirebaseWrapper.addData("profiles", newUserName, updatedProfile);

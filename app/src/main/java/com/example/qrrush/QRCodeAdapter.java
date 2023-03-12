@@ -1,6 +1,5 @@
 package com.example.qrrush;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -83,6 +82,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         }
         locationView.setText(location);
 
+        pointView.setText("Score: " + qrCode.getScore());
+
         // Delete button instance for each QR code item
         // Fetch comments for the QR code from Firebase
         FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
@@ -96,7 +97,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 Log.e("Firebase User", "Document doesn't exist!");
                 return;
             }
-            pointView.setText(String.valueOf(document.getLong("score").intValue()));
+
             ArrayList<String> qrCodeComments = (ArrayList<String>) document.get("qrcodescomments");
             if (qrCodeComments != null && position < qrCodeComments.size()) {
                 String comment = qrCodeComments.get(position);
@@ -127,14 +128,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 // Get the QR code and its position in the list
                 QRCode qrCode = qrCodes.get(position);
 
-                // Remove the QR code from the list
-                qrCodes.remove(position);
-
                 // Remove the comment associated with the QR code from the comments map
                 commentsMap.remove(qrCode);
 
-                // Remove the comment for the QR code from Firebase
-                FirebaseWrapper.deleteQrcode("profiles", user.getUserName(), qrCode.getHash());
+                user.removeQRCode(qrCode);
 
                 // Update the Firebase data with the new comments list
                 FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task) -> {
@@ -159,16 +156,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                     }
                 });
 
-                // Update the user's score and number of QR codes
-                user.setTotalScore(user.getTotalScore() - qrCode.getScore());
-                user.setTotalQRcodes(user.getNumberOfQRCodes() - 1);
-
-                // Update the UI to reflect the changes
-                TextView qrScannedTextView = ((Activity) getContext()).findViewById(R.id.qrCodesView);
-                TextView scoreView = ((Activity) getContext()).findViewById(R.id.scoreView);
-                scoreView.setText(String.valueOf(user.getTotalScore()));
-                qrScannedTextView.setText(String.valueOf(user.getNumberOfQRCodes()));
-                notifyDataSetChanged(); // Notify the adapter that data has changed
+                notifyDataSetChanged();
             }
         });
         view.setOnClickListener(new View.OnClickListener() {
