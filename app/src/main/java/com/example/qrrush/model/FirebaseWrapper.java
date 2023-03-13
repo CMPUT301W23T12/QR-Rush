@@ -124,7 +124,7 @@ public class FirebaseWrapper {
             Map<String, Object> updates = new HashMap<>();
             updates.put("qrcodes", FieldValue.arrayRemove(hash));
 
-            if (comments.size() > 0) {
+            if (comments.size() > 0 && comments.size() >= hashes.size()) {
                 String comment = comments.get(hashes.indexOf(hash));
                 updates.put("qrcodescomments", FieldValue.arrayRemove(comment));
             }
