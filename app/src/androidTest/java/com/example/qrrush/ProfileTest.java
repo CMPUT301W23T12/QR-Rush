@@ -79,7 +79,7 @@ public class ProfileTest {
 
 // Check if the view appeared within the timeout period
         //assertTrue(viewAppeared);
-
+        solo.waitForView(R.id.profile_button);
         // Get the QR code count view
         TextView qrCountView1 = (TextView) solo.getView(R.id.qrCodesView);
 
@@ -92,7 +92,9 @@ public class ProfileTest {
         // Convert the numeric part to an integer
         int qrCount = Integer.parseInt(numericPart1);
         int qrCOUNT = qrCount - qrCountSub;
+
         // Compare the QR code count value to the expected value
+
         assertEquals(2, qrCOUNT);
         solo.clickOnButton("Delete");
         solo.waitForView(R.id.deleteButton);
