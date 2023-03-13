@@ -89,6 +89,10 @@ public class MainActivity extends AppCompatActivity {
         main();
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     /**
      * Initializes the app and sets up the main UI components.
      * Retrieves user data from Firebase and populates the UI with it.
