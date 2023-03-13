@@ -4,32 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/white_wash"
     tools:context=".view.ProfileFragment">
 
     <ListView
         android:id="@+id/listy"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:layout_marginTop="308dp"
-        android:layout_weight="1"
+        android:layout_width="411dp"
+        android:layout_height="232dp"
+        android:layout_weight="0"
+        app:layout_constraintBaseline_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileView"
         android:layout_width="166dp"
         android:layout_height="160dp"
         android:src="@drawable/discordpic"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.029" />
+        app:layout_constraintVertical_bias="0.035" />
 
     <ImageButton
         android:id="@+id/edit_name"
@@ -38,29 +40,27 @@
         android:backgroundTint="#00000000"
         android:scaleType="centerCrop"
         android:src="@drawable/editpr"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.951"
+        app:layout_constraintHorizontal_bias="0.957"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintVertical_bias="0.027" />
 
     <TextView
         android:id="@+id/nameView"
-        android:layout_width="166dp"
-        android:layout_height="54dp"
+        android:layout_width="235dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="4dp"
         android:fontFamily="@font/gatekeptbold"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.353" />
+        app:layout_constraintTop_toBottomOf="@+id/profileView" />
 
     <Button
         android:id="@+id/sortingButton"
@@ -75,37 +75,39 @@
         app:layout_constraintVertical_bias="0.197" />
 
     <TextView
-        android:id="@+id/qrCodesView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekeptsemibold"
-        android:text="1"
-        android:textAlignment="center"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.850"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.465" />
-
-    <TextView
         android:id="@+id/rankView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
         android:fontFamily="@font/gatekeptsemibold"
         android:text="Rank"
         android:textAlignment="center"
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.466" />
+        app:layout_constraintTop_toBottomOf="@+id/nameView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/qrCodesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:fontFamily="@font/gatekeptsemibold"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.878"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nameView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/qrCodesText"
@@ -117,12 +119,12 @@
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.950"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.497" />
+        app:layout_constraintTop_toBottomOf="@+id/qrCodesView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/rankText"
@@ -134,12 +136,12 @@
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.495" />
+        app:layout_constraintTop_toBottomOf="@+id/rankView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/scoreText"
@@ -151,28 +153,29 @@
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
+        app:layout_constraintHorizontal_bias="0.067"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.495" />
+        app:layout_constraintTop_toBottomOf="@+id/scoreView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/scoreView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
         android:fontFamily="@font/gatekeptsemibold"
         android:text="Score"
         android:textAlignment="center"
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/listy"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintHorizontal_bias="0.062"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.466" />
+        app:layout_constraintTop_toBottomOf="@+id/nameView"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
