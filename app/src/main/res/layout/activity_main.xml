@@ -4,8 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-    <LinearLayout
+    android:background="@drawable/background"
+    android:layout_gravity="top"
+    tools:context=".view.MainActivity">
+
+
+    <FrameLayout
         android:id="@+id/main_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -19,6 +23,7 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="409dp"
         android:layout_height="100dp"
+        android:background="@color/white_wash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -28,40 +33,58 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Button
+
+            <ImageButton
                 android:id="@+id/profile_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Profile" />
+                android:backgroundTint="@color/white_wash"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/profile" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/shop_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Shop" />
+                android:backgroundTint="@color/white_wash"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/shop" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/main_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Main" />
+                android:backgroundTint="@color/white_wash"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/main" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/social_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Social" />
+                android:backgroundTint="@color/white_wash"
+                android:scaleType="centerCrop"
+                android:scaleX="1"
+                android:scaleY="1"
+                app:srcCompat="@drawable/social" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/leaderboard_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Leaderboard" />
+                android:backgroundTint="@color/white_wash"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/leaderboard" />
+
         </LinearLayout>
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>

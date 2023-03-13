@@ -1,14 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShopFragment">
+    tools:context=".view.ShopFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Shop" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Score: 0"
+            android:textSize="24sp"
+            android:fontFamily="@font/gatekept"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/qr_code"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="20dp"
+            android:src="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/score" />
+
+        <TextView
+            android:id="@+id/qr_content"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
+            android:textSize="20sp"
+            android:fontFamily="@font/gatekept"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/qr_code" />
+
+        <TextView
+            android:id="@+id/name_content"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
+            android:textSize="20sp"
+            android:fontFamily="@font/gatekept"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/qr_content" />
+
+
+        <Button
+            android:id="@+id/common_button"
+            android:layout_width="137dp"
+            android:layout_height="wrap_content"
+            android:text="Common"
+            app:layout_constraintBottom_toBottomOf="@+id/rare_button"
+            app:layout_constraintEnd_toStartOf="@+id/rare_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/rare_button"
+            android:layout_width="138dp"
+            android:layout_height="wrap_content"
+            android:text="Rare"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/legendary_button"
+            android:layout_width="137dp"
+            android:layout_height="wrap_content"
+            android:text="Legendary"
+            app:layout_constraintBottom_toBottomOf="@+id/rare_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/rare_button" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

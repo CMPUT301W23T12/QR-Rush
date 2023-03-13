@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CameraFragment">
+    tools:context=".view.CameraFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Camera Screen" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/camera_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="#FFFFFF"
+            android:gravity="center"
+            android:text="Looking for QR Code..."
+            android:fontFamily="@font/gatekept"
+            android:textColor="@color/black"
+            android:textAlignment="gravity" />
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/camera_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </FrameLayout>
