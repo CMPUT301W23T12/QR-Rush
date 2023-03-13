@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -79,6 +80,26 @@ public class ProfileTest {
 
         // Compare the QR code count value to the expected value
         assertEquals(2, qrCount);
+        solo.clickOnButton("Delete");
+        solo.waitForView(R.id.deleteButton);
+
+        TextView qrCountView2 = (TextView) solo.getView(R.id.qrCodesView);
+
+        // Get the text from the QR code count view
+        String qrCountText2 = qrCountView2.getText().toString();
+
+        // Extract the numeric part of the text
+        String numericPart2 = qrCountText2.replaceAll("[^0-9]", "");
+
+        // Convert the numeric part to an integer
+        int qrCount2 = Integer.parseInt(numericPart2);
+
+        // Compare the QR code count value to the expected value
+        assertEquals(1, qrCount2);
+        solo.clickOnButton("Delete");
+        solo.waitForView(R.id.deleteButton);
+
+
         //edit name
         solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
         solo.clickOnView(solo.getView(R.id.edit_name));
@@ -93,15 +114,29 @@ public class ProfileTest {
         assertEquals("Bruh1234", name);
         solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
 
+
+
+
+
         solo.clickOnView(solo.getView(R.id.edit_name));
         // Enter "Bruh123" as the search term
         solo.enterText(0, "attn");
         solo.clickOnText("Confirm");
         solo.waitForDialogToClose();
-        TextView newName2 = (TextView) solo.getView(R.id.nameView);
-        String name2 = newName.getText().toString().substring(6);
+        TextView newName3 = (TextView) solo.getView(R.id.nameView);
+        String name2 = newName3.getText().toString().substring(6);
         assertEquals("attn", name2);
+        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
+        //make it error
+        solo.clickOnView(solo.getView(R.id.edit_name));
+        // Enter "Bruh123" as the search term
+        solo.enterText(0, "Bruh123");
+        solo.clickOnText("Confirm");
+
+        TextView newName2 = (TextView) solo.getView(R.id.errorText);
+        assertTrue(newName2.getVisibility() == View.VISIBLE);
 
     }
+
 }
 
