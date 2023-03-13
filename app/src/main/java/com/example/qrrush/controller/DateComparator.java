@@ -1,4 +1,6 @@
-package com.example.qrrush;
+package com.example.qrrush.controller;
+
+import com.example.qrrush.model.QRCode;
 
 import java.util.Comparator;
 

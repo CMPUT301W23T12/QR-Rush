@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -18,12 +18,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.qrrush.R;
+import com.example.qrrush.controller.DateComparator;
+import com.example.qrrush.controller.NameComparator;
+import com.example.qrrush.controller.ScoreComparator;
+import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCodeAdapter;
+import com.example.qrrush.model.User;
+import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.Map;

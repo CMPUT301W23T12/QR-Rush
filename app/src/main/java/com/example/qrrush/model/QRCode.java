@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.model;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;

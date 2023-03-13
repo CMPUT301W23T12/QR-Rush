@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.model;
 
 /**
  * Represents a Rarity for a QR code.

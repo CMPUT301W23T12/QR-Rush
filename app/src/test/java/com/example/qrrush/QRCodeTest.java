@@ -2,6 +2,9 @@ package com.example.qrrush;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Rarity;
+
 import org.junit.Test;
 
 public class QRCodeTest {
