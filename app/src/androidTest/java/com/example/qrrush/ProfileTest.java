@@ -56,6 +56,19 @@ public class ProfileTest {
             e.printStackTrace();
         }
 
+        solo.clickOnView(solo.getView(R.id.profile_button));
+        TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
+
+        // Get the text from the QR code count view
+        String qrCountText = qrCountView.getText().toString();
+
+        // Extract the numeric part of the text
+        String numericPart = qrCountText.replaceAll("[^0-9]", "");
+
+        // Convert the numeric part to an integer
+        int qrCountSub = Integer.parseInt(numericPart);
+
+
         solo.clickOnView(solo.getView(R.id.shop_button));
         solo.clickOnView(solo.getView(R.id.common_button));
         solo.clickOnView(solo.getView(R.id.rare_button));
@@ -67,19 +80,19 @@ public class ProfileTest {
         //assertTrue(viewAppeared);
 
         // Get the QR code count view
-        TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
+        TextView qrCountView1 = (TextView) solo.getView(R.id.qrCodesView);
 
         // Get the text from the QR code count view
-        String qrCountText = qrCountView.getText().toString();
+        String qrCountText1 = qrCountView1.getText().toString();
 
         // Extract the numeric part of the text
-        String numericPart = qrCountText.replaceAll("[^0-9]", "");
+        String numericPart1 = qrCountText1.replaceAll("[^0-9]", "");
 
         // Convert the numeric part to an integer
-        int qrCount = Integer.parseInt(numericPart);
+        int qrCount = Integer.parseInt(numericPart1);
 
         // Compare the QR code count value to the expected value
-        assertEquals(2, qrCount);
+        assertEquals(2, qrCount-qrCountSub);
         solo.clickOnButton("Delete");
         solo.waitForView(R.id.deleteButton);
 
@@ -95,9 +108,9 @@ public class ProfileTest {
         int qrCount2 = Integer.parseInt(numericPart2);
 
         // Compare the QR code count value to the expected value
-        assertEquals(1, qrCount2);
+        assertEquals(1, (qrCount-qrCountSub)-qrCount2);
         solo.clickOnButton("Delete");
-        solo.waitForView(R.id.deleteButton);
+
 
 
         //edit name
