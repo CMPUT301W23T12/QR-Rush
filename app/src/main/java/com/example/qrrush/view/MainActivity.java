@@ -32,6 +32,7 @@ import java.util.ArrayList;
 /**
  * The main activity class for the QR Rush app.
  * This activity serves as the entry point to the app and handles the main UI and user interactions.
+ * This class also sets up the main User object that that other fragments will be using via constructor
  */
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -172,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             socialButton = (ImageButton) findViewById(R.id.social_button);
             mainButton = (ImageButton) findViewById(R.id.main_button);
             leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
-
+            // User object passes into each fragment constructor
             profileButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_view, new ProfileFragment(user)).commit();

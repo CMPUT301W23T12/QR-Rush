@@ -34,7 +34,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * The fragment which displays the profile.
+ * The fragment which displays the users profile.
+ * This class is responsible for creating and setting up the users info for display,
+ * sorting the users QR codes by date, score and name,
+ * letting the user edit there username by interacting with firebase
  */
 public class ProfileFragment extends Fragment {
     User user;
@@ -66,9 +69,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ImageView profileView = view.findViewById(R.id.profileView);
-        //TextView contactView = view.findViewById(R.id.contactView);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
@@ -77,7 +77,6 @@ public class ProfileFragment extends Fragment {
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
         Button sortingButton = view.findViewById(R.id.sortingButton);
-        //contactView.setText("Contact: " + user.getPhoneNumber());
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
@@ -116,12 +115,6 @@ public class ProfileFragment extends Fragment {
                 qrCodeAdapter.notifyDataSetChanged();
             }
         });
-        // Image will be fit into the size of the image view
-//        Picasso
-//                .get()
-//                .load(user.getProfilePicture())
-//                .fit()
-//                .into(profileView);
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
