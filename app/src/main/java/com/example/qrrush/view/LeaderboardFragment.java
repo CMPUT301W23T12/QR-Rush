@@ -11,11 +11,17 @@ import com.example.qrrush.R;
 import com.example.qrrush.model.User;
 
 /**
- * The fragment which displays the leaderboard.
+ * The fragment which opens the leaderboard and displays all information
+
  */
 public class LeaderboardFragment extends Fragment {
     User user;
 
+    /**
+     * Creates a LeaderboardFragment for the given user.
+     *
+     * @param user The user to create the LeaderboardFragment for.
+     */
     public LeaderboardFragment(User user) {
         this.user = user;
     }

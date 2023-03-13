@@ -24,8 +24,9 @@ import com.example.qrrush.view.MainFragment;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
 /**
- * The fragment displaying the screen after a QR code is scanned, asking the user to confirm that
- * they want to add the QR code to their account.
+ * this class is responsible for
+ * The fragment displaying the screen after a QR code is scanned and asking the user to
+ * confirm that they want to add the QR code to their account.
  */
 public class QRConfirmFragment extends Fragment {
     User user;
