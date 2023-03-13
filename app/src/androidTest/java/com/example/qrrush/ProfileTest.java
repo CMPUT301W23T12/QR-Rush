@@ -51,11 +51,11 @@ public class ProfileTest {
 
     @Test
     public void testQRcount(){
-//        try {
-//            Thread.sleep(10000); // waits for 1 second
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(10000); // waits for 1 second
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         solo.clickOnView(solo.getView(R.id.profile_button));
         TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
