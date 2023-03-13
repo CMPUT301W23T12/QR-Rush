@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -226,6 +227,5 @@ public class MainActivity extends AppCompatActivity {
 
         main();
     }
-
 
 }

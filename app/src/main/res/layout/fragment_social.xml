@@ -55,7 +55,7 @@
         app:layout_constraintVertical_bias="0.415" />
 
     <TextView
-        android:id="@+id/nameView"
+        android:id="@+id/nameViewSocial"
         android:layout_width="150dp"
         android:layout_height="30dp"
         android:layout_weight="1"

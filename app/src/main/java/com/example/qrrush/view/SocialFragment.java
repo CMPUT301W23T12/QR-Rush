@@ -64,7 +64,7 @@ public class SocialFragment extends Fragment {
                 EditText searchPlayerEditField = view.findViewById(R.id.searchPlayer);
                 TextView noPlayerFound = view.findViewById(R.id.noPlayerFound);
                 ImageView PlayerImg = view.findViewById(R.id.profileView);
-                TextView searchedName = view.findViewById(R.id.nameView);
+                TextView searchedName = view.findViewById(R.id.nameViewSocial);
                 TextView searchedRank = view.findViewById(R.id.rankView);
                 String searchPlayer = searchPlayerEditField.getText().toString();
 
