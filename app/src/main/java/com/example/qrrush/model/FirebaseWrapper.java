@@ -106,6 +106,7 @@ public class FirebaseWrapper {
      */
     public static void deleteQrcode(String collectionName, String documentName, String hash) {
         FirebaseWrapper.getUserData(documentName, (Task<DocumentSnapshot> task) -> {
+
             if (!task.isSuccessful()) {
                 Log.e("deleteQrcode", "Failed to read user data!");
                 return;
@@ -123,9 +124,9 @@ public class FirebaseWrapper {
             DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
             Map<String, Object> updates = new HashMap<>();
             updates.put("qrcodes", FieldValue.arrayRemove(hash));
-
-            if (comments.size() > 0 && comments.size() >= hashes.size()) {
-                String comment = comments.get(hashes.indexOf(hash));
+            int i = hashes.indexOf(hash);
+            if (comments.size() > 0 && comments.size() >= hashes.size() && i != -1) {
+                String comment = comments.get(i);
                 updates.put("qrcodescomments", FieldValue.arrayRemove(comment));
             }
             docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
