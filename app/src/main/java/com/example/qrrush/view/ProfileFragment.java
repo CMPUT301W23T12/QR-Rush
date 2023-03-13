@@ -160,6 +160,10 @@ public class ProfileFragment extends Fragment {
                 button.setOnClickListener(newView -> {
                     // store the new name input of the user
                     String newUserName = userNameEdit.getText().toString();
+                    if (newUserName.isEmpty()) {
+                        dialog.dismiss();
+                        return;
+                    }
 
                     FirebaseWrapper.checkUsernameAvailability(newUserName, (Task<QuerySnapshot> task) -> {
                         if (!task.isSuccessful()) {
