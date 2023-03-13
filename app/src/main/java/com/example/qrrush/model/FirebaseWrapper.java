@@ -174,6 +174,15 @@ public class FirebaseWrapper {
                 .addOnCompleteListener(listener);
     }
 
+    /**
+     * Retrieves the data for a QR code with the given hash from the Firestore database.
+     *
+     * @param hash     The hash string of the QR code for which to retrieve data.
+     * @param listener An OnCompleteListener to be executed when the task completes.
+     *                 This listener will be called with the resulting DocumentSnapshot.
+     * @return A Task object representing the asynchronous Firestore database operation.
+     * The resulting DocumentSnapshot can be obtained from the task's getResult() method.
+     */
     public static Task<DocumentSnapshot> getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
