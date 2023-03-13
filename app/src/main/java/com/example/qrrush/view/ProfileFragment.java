@@ -155,10 +155,12 @@ public class ProfileFragment extends Fragment {
             AlertDialog dialog = alertDialogBuilder.create();
             dialog.setOnShowListener(dialogInterface -> {
                 TextView errorText = addNewName.findViewById(R.id.errorText);
+                TextView errorText1 = addNewName.findViewById(R.id.errorText1);
                 //add a positive button on the alertdialog that tells user to confirm their input
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(newView -> {
                     // store the new name input of the user
+
                     String newUserName = userNameEdit.getText().toString();
                     if (newUserName.isEmpty()) {
                         dialog.dismiss();
@@ -203,7 +205,6 @@ public class ProfileFragment extends Fragment {
                     });
                 });
             });
-
             dialog.show();
         });
     }

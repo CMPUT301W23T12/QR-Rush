@@ -8,6 +8,12 @@ import java.util.Comparator;
  * Custom Comparator to sort the QR codes by date
  */
 public class DateComparator implements Comparator<QRCode> {
+    /**
+     * Compares two QRCode objects based on their timestamp.
+     * If both timestamps are null or equal, 0 will be returned.
+     * If the first timestamp is null or less than the second, -1 will be returned.
+     * If the second timestamp is null or less than the first, 1 will be returned.
+     */
     @Override
     public int compare(QRCode QR1, QRCode QR2) {
         if (QR1.getTimestamp() == QR2.getTimestamp()) {
