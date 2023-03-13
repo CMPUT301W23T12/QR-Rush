@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -13,6 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.User;
+import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;

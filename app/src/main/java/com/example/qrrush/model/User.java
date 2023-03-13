@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.model;
 
 import android.location.Location;
 import android.util.Log;
@@ -26,7 +26,6 @@ public class User {
     // unsure of data type for now
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
-
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
      *

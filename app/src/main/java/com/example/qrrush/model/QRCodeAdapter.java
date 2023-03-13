@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.model;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,6 +17,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.qrrush.R;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.User;
 
 import java.util.ArrayList;
 import java.util.Optional;

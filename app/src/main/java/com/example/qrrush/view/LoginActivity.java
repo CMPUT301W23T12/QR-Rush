@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.UserUtil;
+import com.example.qrrush.view.MainActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QuerySnapshot;
 

@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,6 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.qrrush.R;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Rarity;
+import com.example.qrrush.model.User;
 
 /**
  * Shop Fragment for QR codes.
