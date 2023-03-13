@@ -9,6 +9,7 @@ import android.content.Intent;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.example.qrrush.view.MainActivity;
 import com.robotium.solo.Solo;
 
 import org.junit.After;

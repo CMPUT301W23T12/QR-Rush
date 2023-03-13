@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.model;
 
 import android.util.Log;
 
@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +40,8 @@ public class FirebaseWrapper {
      * @param documentID     The document name to add.
      * @param data           The data to add to firebase.
      */
-    public static void addData(String collectionName, String documentID, Map<String, Object> data) {
-        FirebaseFirestore.getInstance().collection(collectionName)
+    public static Task<Void> addData(String collectionName, String documentID, Map<String, Object> data) {
+        return FirebaseFirestore.getInstance().collection(collectionName)
                 .document(documentID)
                 .set(data)
                 .addOnSuccessListener(aVoid -> {
@@ -103,19 +105,40 @@ public class FirebaseWrapper {
      * @param hash
      */
     public static void deleteQrcode(String collectionName, String documentName, String hash) {
-        DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("qrcodes", FieldValue.arrayRemove(hash));
-        docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("FirebaseWrapper", "Document successfully updated!");
+        FirebaseWrapper.getUserData(documentName, (Task<DocumentSnapshot> task) -> {
+            if (!task.isSuccessful()) {
+                Log.e("deleteQrcode", "Failed to read user data!");
+                return;
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("FirebaseWrapper", "Error updating document", e);
+
+            DocumentSnapshot ds = task.getResult();
+            if (!ds.exists()) {
+                Log.e("deleteQrcode", "User was deleted from Firebase!");
+                return;
             }
+
+            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+
+            DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("qrcodes", FieldValue.arrayRemove(hash));
+
+            if (comments.size() > 0) {
+                String comment = comments.get(hashes.indexOf(hash));
+                updates.put("qrcodescomments", FieldValue.arrayRemove(comment));
+            }
+            docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("FirebaseWrapper", "Document successfully updated!");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w("FirebaseWrapper", "Error updating document", e);
+                }
+            });
         });
     }
 
@@ -150,10 +173,20 @@ public class FirebaseWrapper {
                 .get()
                 .addOnCompleteListener(listener);
     }
-    public static void getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
+
+    /**
+     * Retrieves the data for a QR code with the given hash from the Firestore database.
+     *
+     * @param hash     The hash string of the QR code for which to retrieve data.
+     * @param listener An OnCompleteListener to be executed when the task completes.
+     *                 This listener will be called with the resulting DocumentSnapshot.
+     * @return A Task object representing the asynchronous Firestore database operation.
+     * The resulting DocumentSnapshot can be obtained from the task's getResult() method.
+     */
+    public static Task<DocumentSnapshot> getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        db.collection("qrcodes").document(hash)
+        return db.collection("qrcodes").document(hash)
                 .get()
                 .addOnCompleteListener(listener);
     }

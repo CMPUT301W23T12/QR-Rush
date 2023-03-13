@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.rule.ActivityTestRule;
 
+import com.example.qrrush.view.MainActivity;
 import com.robotium.solo.Solo;
 
 import org.junit.After;

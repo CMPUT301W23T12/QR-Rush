@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -11,8 +11,16 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Rarity;
+import com.example.qrrush.model.User;
+
 /**
- * Shop Fragment for QR codes.
+ * The fragment which displays the shop fragment
+ * This class is responsible for creating and setting up the shop,
+ * handling what happens when the common, rare or legendary button is clicked
+ * and displaying the randomly generated QR code
  */
 public class ShopFragment extends Fragment {
     private ImageView qrCode;

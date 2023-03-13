@@ -1,16 +1,20 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.UserUtil;
+import com.example.qrrush.view.MainActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -54,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         confirmButton.setOnClickListener((view) -> {
             String username = usernameInput.getText().toString();
             String phoneNumber = phoneNumberInput.getText().toString();
-            if(!username.matches("")){
+            if (!username.matches("")) {
                 FirebaseWrapper.checkUsernameAvailability(username, (Task<QuerySnapshot> task) -> {
                     if (!task.isSuccessful()) {
                         // Error occurred while querying database
@@ -78,7 +82,10 @@ public class LoginActivity extends AppCompatActivity {
                     profiles.put("qrcodes", new ArrayList<QRCode>());
                     profiles.put("qrcodescomments", new ArrayList<String>());
                     // Add name + UUID and phone number to FB
-                    FirebaseWrapper.addData("profiles", username, profiles);
+                    Task<Void> t = FirebaseWrapper.addData("profiles", username, profiles);
+                    while (!t.isComplete()) {
+                        // Intentionally empty loop to wait for data to be fetched
+                    }
 
                     // set firstTimeLogin to false
                     UserUtil.setFirstTime(getApplicationContext(), true);

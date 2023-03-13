@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -13,6 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.User;
+import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
@@ -27,6 +33,7 @@ import java.util.HashMap;
 /**
  * The main activity class for the QR Rush app.
  * This activity serves as the entry point to the app and handles the main UI and user interactions.
+ * This class also sets up the main User object that that other fragments will be using via constructor
  */
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -117,11 +124,18 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            user = new User(
+                    username,
+                    document.getString("phone-number"),
+                    document.getLong("rank").intValue(),
+                    document.getLong("score").intValue(),
+                    new ArrayList<>()
+            );
+
             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
-            ArrayList<QRCode> qrCodes = new ArrayList<>();
             ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
             for (String hash : hashes) {
-                FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
+                Task<DocumentSnapshot> t = FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
                     if (!task1.isSuccessful()) {
                         Log.d("Firebase User", "Error creating user");
                         return;
@@ -143,18 +157,16 @@ public class MainActivity extends AppCompatActivity {
                         code.setLocation(l);
                     }
 
-                    qrCodes.add(code);
-                    comments.add("");
+                    user.addQRCodeWithoutFirebase(code);
+                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                    }
                 });
 
+                while (!t.isComplete()) {
+                    // Empty loop is on purpose. We need to wait for these to finish.
+                }
             }
-            user = new User(
-                    username,
-                    document.getString("phone-number"),
-                    document.getLong("rank").intValue(),
-                    document.getLong("score").intValue(),
-                    qrCodes
-            );
 
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
@@ -162,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             socialButton = (ImageButton) findViewById(R.id.social_button);
             mainButton = (ImageButton) findViewById(R.id.main_button);
             leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
-
+            // User object passes into each fragment constructor
             profileButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_view, new ProfileFragment(user)).commit();

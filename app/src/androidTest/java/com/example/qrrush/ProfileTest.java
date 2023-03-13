@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.example.qrrush.view.MainActivity;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -90,12 +91,12 @@ public class ProfileTest {
 
         // Convert the numeric part to an integer
         int qrCount = Integer.parseInt(numericPart1);
-
+        int qrCOUNT = qrCount - qrCountSub;
         // Compare the QR code count value to the expected value
-        assertEquals(2, qrCount-qrCountSub);
+        assertEquals(2, qrCOUNT);
         solo.clickOnButton("Delete");
         solo.waitForView(R.id.deleteButton);
-
+        solo.waitForView(R.id.qrCodesView);
         TextView qrCountView2 = (TextView) solo.getView(R.id.qrCodesView);
 
         // Get the text from the QR code count view
@@ -108,7 +109,7 @@ public class ProfileTest {
         int qrCount2 = Integer.parseInt(numericPart2);
 
         // Compare the QR code count value to the expected value
-        assertEquals(1, (qrCount-qrCountSub)-qrCount2);
+        assertEquals(1, qrCount - qrCount2);
         solo.clickOnButton("Delete");
 
 
@@ -123,7 +124,7 @@ public class ProfileTest {
         // Wait for the AlertDialog to close
         solo.waitForDialogToClose();
         TextView newName = (TextView) solo.getView(R.id.nameView);
-        String name = newName.getText().toString().substring(6);
+        String name = newName.getText().toString();
         assertEquals("Bruh1234", name);
         solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
 
@@ -137,7 +138,7 @@ public class ProfileTest {
         solo.clickOnText("Confirm");
         solo.waitForDialogToClose();
         TextView newName3 = (TextView) solo.getView(R.id.nameView);
-        String name2 = newName3.getText().toString().substring(6);
+        String name2 = newName3.getText().toString();
         assertEquals("attn", name2);
         solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
         //make it error

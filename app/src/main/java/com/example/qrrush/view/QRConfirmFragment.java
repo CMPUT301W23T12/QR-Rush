@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -15,11 +15,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.qrrush.R;
+import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.User;
+import com.example.qrrush.view.CameraFragment;
+import com.example.qrrush.view.MainFragment;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
 /**
- * The fragment displaying the screen after a QR code is scanned, asking the user to confirm that
- * they want to add the QR code to their account.
+ * this class is responsible for
+ * The fragment displaying the screen after a QR code is scanned and asking the user to
+ * confirm that they want to add the QR code to their account.
  */
 public class QRConfirmFragment extends Fragment {
     User user;
