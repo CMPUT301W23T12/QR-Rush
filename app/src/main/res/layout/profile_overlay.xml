@@ -24,7 +24,7 @@
         android:id="@+id/errorText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please enter a new name!"
+        android:text="Username must be less then 10 or less characters!"
         android:textColor="#EC1010"
         android:visibility="gone" />
 </LinearLayout>
