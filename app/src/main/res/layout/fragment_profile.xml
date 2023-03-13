@@ -11,8 +11,8 @@
     <ListView
         android:id="@+id/listy"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="332dp"
+        android:layout_height="230dp"
+        android:layout_marginTop="308dp"
         android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -26,9 +26,10 @@
         android:src="@drawable/discordpic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.028" />
+        app:layout_constraintVertical_bias="0.029" />
 
     <ImageButton
         android:id="@+id/edit_name"
@@ -46,88 +47,20 @@
 
     <TextView
         android:id="@+id/nameView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekeptbold"
+        android:layout_width="166dp"
+        android:layout_height="54dp"
+        android:fontFamily="@font/gatekept"
         android:text="TextView"
         android:textAlignment="center"
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
-        android:textSize="35sp"
+        android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.508"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileView"
-        app:layout_constraintVertical_bias="0.012" />
-
-    <TextView
-        android:id="@+id/scoreText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="72dp"
-        android:fontFamily="@font/gatekept"
-        android:text="SCORE"
-        android:textAlignment="center"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />
-
-    <TextView
-        android:id="@+id/scoreView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekeptsemibold"
-        android:gravity="center"
-        android:text="Score"
-        android:textAlignment="center"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/scoreText"
-        app:layout_constraintEnd_toStartOf="@+id/rankView"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.992" />
-
-    <TextView
-        android:id="@+id/rankText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekept"
-        android:text="RANK"
-        android:textAlignment="center"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43" />
-
-    <TextView
-        android:id="@+id/rankView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekeptsemibold"
-        android:gravity="center"
-        android:text="Rank"
-        android:textAlignment="center"
-        android:textColor="#3c6f83"
-        android:textColorHint="#3c6f83"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/rankText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.992" />
+        app:layout_constraintVertical_bias="0.353" />
 
     <Button
         android:id="@+id/sortingButton"
@@ -142,6 +75,39 @@
         app:layout_constraintVertical_bias="0.197" />
 
     <TextView
+        android:id="@+id/qrCodesView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.850"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.465" />
+
+    <TextView
+        android:id="@+id/rankView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="Rank"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.466" />
+
+    <TextView
         android:id="@+id/qrCodesText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -153,25 +119,60 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rankText"
+        app:layout_constraintHorizontal_bias="0.950"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.429" />
+        app:layout_constraintVertical_bias="0.497" />
 
     <TextView
-        android:id="@+id/qrCodesView"
+        android:id="@+id/rankText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/gatekeptsemibold"
-        android:gravity="center"
-        android:text="QRCodes"
+        android:fontFamily="@font/gatekept"
+        android:text="RANK"
         android:textAlignment="center"
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
-        app:layout_constraintBottom_toTopOf="@+id/qrCodesText"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.532"
-        app:layout_constraintStart_toEndOf="@+id/rankView"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.989" />
+        app:layout_constraintVertical_bias="0.495" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="SCORE"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.068"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.495" />
+
+    <TextView
+        android:id="@+id/scoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:text="Score"
+        android:textAlignment="center"
+        android:textColor="#3c6f83"
+        android:textColorHint="#3c6f83"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.466" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
