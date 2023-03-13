@@ -12,22 +12,23 @@
         android:id="@+id/listy"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_marginTop="332dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/rankText" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileView"
         android:layout_width="166dp"
         android:layout_height="160dp"
         android:src="@drawable/discordpic"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rankView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.028" />
+        app:layout_constraintVertical_bias="0.138" />
 
     <ImageButton
         android:id="@+id/edit_name"
@@ -53,12 +54,11 @@
         android:textColor="#3c6f83"
         android:textColorHint="#3c6f83"
         android:textSize="35sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rankView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileView"
-        app:layout_constraintVertical_bias="0.012" />
+        app:layout_constraintTop_toBottomOf="@+id/profileView" />
 
     <TextView
         android:id="@+id/scoreText"
