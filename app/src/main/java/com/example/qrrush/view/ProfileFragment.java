@@ -156,6 +156,11 @@ public class ProfileFragment extends Fragment {
                     if (newUserName.isEmpty()) {
                         dialog.dismiss();
                         return;
+                    } else if (newUserName.length() > 10){
+                        errorText1.setVisibility(view.VISIBLE);
+                        errorText.setVisibility(View.GONE);
+
+                        return;
                     }
 
                     FirebaseWrapper.checkUsernameAvailability(newUserName, (Task<QuerySnapshot> task) -> {
@@ -169,6 +174,8 @@ public class ProfileFragment extends Fragment {
                         if (querySnapshot.size() > 0) {
                             // Username is taken, prompt user to pick a new name
                             errorText.setVisibility(View.VISIBLE);
+                            errorText1.setVisibility(View.GONE);
+
                             return;
                         }
 
