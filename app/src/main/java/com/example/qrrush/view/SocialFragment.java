@@ -1,7 +1,6 @@
 package com.example.qrrush.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 /**
  * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
@@ -77,32 +73,23 @@ public class SocialFragment extends Fragment {
                     return;
                 }
 
-                FirebaseWrapper.getUserData(searchPlayer, new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e("SearchingPlayer", "Error fetching usernames in firebase");
-                            return;
-                        }
-
-                        DocumentSnapshot document = task.getResult();
-                        if (!document.exists()) {
-                            // Player is not found, display the "No player found!"
-                            noPlayerFound.setVisibility(View.VISIBLE);
-                            searchedName.setVisibility(View.GONE);
-                            PlayerImg.setVisibility(View.GONE);
-                            searchedRank.setVisibility(View.GONE);
-                            return;
-                        }
-
-                        // Player Search is found, Display the Profile
-                        noPlayerFound.setVisibility(View.GONE);
-                        searchedName.setText(searchPlayer);
-                        searchedRank.setText(String.format("%d", document.getLong("rank").intValue()));
-                        searchedName.setVisibility(View.VISIBLE);
-                        searchedRank.setVisibility(View.VISIBLE);
-                        PlayerImg.setVisibility(View.VISIBLE);
+                FirebaseWrapper.getData("profiles", searchPlayer, documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        // Player is not found, display the "No player found!"
+                        noPlayerFound.setVisibility(View.VISIBLE);
+                        searchedName.setVisibility(View.GONE);
+                        PlayerImg.setVisibility(View.GONE);
+                        searchedRank.setVisibility(View.GONE);
+                        return;
                     }
+
+                    // Player Search is found, Display the Profile
+                    noPlayerFound.setVisibility(View.GONE);
+                    searchedName.setText(searchPlayer);
+                    searchedRank.setText(String.format("%d", documentSnapshot.getLong("rank").intValue()));
+                    searchedName.setVisibility(View.VISIBLE);
+                    searchedRank.setVisibility(View.VISIBLE);
+                    PlayerImg.setVisibility(View.VISIBLE);
                 });
 
             }
