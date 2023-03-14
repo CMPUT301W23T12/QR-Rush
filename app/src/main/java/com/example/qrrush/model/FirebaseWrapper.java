@@ -1,5 +1,6 @@
 package com.example.qrrush.model;
 
+import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,18 +9,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * A wrapper class for accessing the Firebase database for QR Rush.
@@ -105,21 +109,15 @@ public class FirebaseWrapper {
      * @param hash
      */
     public static void deleteQrcode(String collectionName, String documentName, String hash) {
-        FirebaseWrapper.getUserData(documentName, (Task<DocumentSnapshot> task) -> {
-
-            if (!task.isSuccessful()) {
-                Log.e("deleteQrcode", "Failed to read user data!");
+        FirebaseWrapper.getData("profiles", documentName, documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Log.e("deleteQRCode", "Document " + documentName +
+                        " does not exist in the collection " + collectionName + "!");
                 return;
             }
 
-            DocumentSnapshot ds = task.getResult();
-            if (!ds.exists()) {
-                Log.e("deleteQrcode", "User was deleted from Firebase!");
-                return;
-            }
-
-            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+            ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
 
             DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
             Map<String, Object> updates = new HashMap<>();
@@ -160,36 +158,109 @@ public class FirebaseWrapper {
         query.get().addOnCompleteListener(onCompleteListener);
     }
 
+    public static Task<DocumentSnapshot> getData(String collection, String documentID, Consumer<DocumentSnapshot> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        return db.collection(collection).document(documentID)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    callback.accept(ds);
+                });
+    }
+
     /**
      * This method will retrieve all the data under a given name and you can access optionally
      * store the data check the documentation for example code usage
      *
      * @param username The username to retrieve the data for.
-     * @param listener The OnCompleteListener which will get the data for the user.
      */
-    public static void getUserData(String username, OnCompleteListener<DocumentSnapshot> listener) {
+    public static void getUserData(String username, Consumer<User> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         db.collection("profiles").document(username)
                 .get()
-                .addOnCompleteListener(listener);
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getUserData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getUserData", "User " + username + " is not in the database!");
+                        return;
+                    }
+
+                    User user = new User(
+                            username,
+                            ds.getString("phone-number"),
+                            ds.getLong("rank").intValue(),
+                            ds.getLong("score").intValue(),
+                            new ArrayList<>()
+                    );
+
+                    ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+                    ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+                    for (String hash : hashes) {
+                        Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
+                            GeoPoint g = (GeoPoint) ds.get("location");
+                            Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
+                            QRCode code = new QRCode(hash, timestamp);
+                            if (g != null) {
+                                Location l = new Location("");
+                                l.setLatitude(g.getLatitude());
+                                l.setLongitude(g.getLongitude());
+                                code.setLocation(l);
+                            }
+
+                            user.addQRCodeWithoutFirebase(code);
+                            if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                                user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                            }
+                        });
+
+                        while (!task.isComplete()) {
+                            // Empty loop is on purpose. We need to wait for these to finish.
+                        }
+                    }
+
+                    userConsumer.accept(user);
+                });
     }
 
     /**
      * Retrieves the data for a QR code with the given hash from the Firestore database.
      *
-     * @param hash     The hash string of the QR code for which to retrieve data.
-     * @param listener An OnCompleteListener to be executed when the task completes.
-     *                 This listener will be called with the resulting DocumentSnapshot.
+     * @param hash The hash string of the QR code for which to retrieve data.
      * @return A Task object representing the asynchronous Firestore database operation.
      * The resulting DocumentSnapshot can be obtained from the task's getResult() method.
      */
-    public static Task<DocumentSnapshot> getQRCodeData(String hash, OnCompleteListener<DocumentSnapshot> listener) {
+    public static Task<DocumentSnapshot> getQRCodeData(String hash, Consumer<QRCode> qrCodeConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         return db.collection("qrcodes").document(hash)
                 .get()
-                .addOnCompleteListener(listener);
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
+                        return;
+                    }
+
+                    QRCode code = new QRCode(hash, ds.getTimestamp("date"));
+                    qrCodeConsumer.accept(code);
+                });
     }
 
     /**

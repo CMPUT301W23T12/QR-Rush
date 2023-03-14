@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Collections;
@@ -175,15 +173,8 @@ public class ProfileFragment extends Fragment {
                         }
 
                         // Username is unique, continue with edit the process
-                        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task1) -> {
-                            if (!task1.isSuccessful()) {
-                                Log.e("EditName", "Error editing user");
-                                return;
-                            }
-
-                            // Username is unique, continue with registration process
-                            DocumentSnapshot document = task1.getResult();
-                            Map<String, Object> updatedProfile = document.getData();
+                        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+                            Map<String, Object> updatedProfile = documentSnapshot.getData();
 
                             // Add name + UUID and phone number to FB
                             FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
