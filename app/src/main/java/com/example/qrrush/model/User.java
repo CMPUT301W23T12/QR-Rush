@@ -241,6 +241,21 @@ public class User {
             newData.replace("qrcodes", codes);
             newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            FirebaseWrapper.getData("qrcodes", code.getHash(), qrCodeDocumentSnapshot -> {
+                if (!qrCodeDocumentSnapshot.exists()) {
+                    Log.e("addQRCode", "QR code " + code.getHash() +
+                            " does not exist in the database!");
+                    return;
+                }
+
+                Map<String, Object> qrData = qrCodeDocumentSnapshot.getData();
+                ArrayList<String> scannedBy = (ArrayList<String>) qrData.getOrDefault("scannedby", new ArrayList<>());
+                if (!scannedBy.contains(this.getUserName())) {
+                    scannedBy.add(this.getUserName());
+                    qrData.put("scannedby", scannedBy);
+                    FirebaseWrapper.updateData("qrcodes", code.getHash(), qrData);
+                }
+            });
         });
     }
 }
