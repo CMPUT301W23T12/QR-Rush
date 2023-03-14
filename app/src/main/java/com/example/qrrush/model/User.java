@@ -216,6 +216,9 @@ public class User {
         if (code.getLocation().isPresent()) {
             Location l = code.getLocation().get();
             data.put("location", new GeoPoint(l.getLatitude(), l.getLongitude()));
+        } else {
+            Location l = null;
+            data.put("location", l);
         }
         data.put("date", new Timestamp(new Date()));
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);
