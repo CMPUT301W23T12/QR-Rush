@@ -15,10 +15,13 @@ import androidx.core.app.ActivityCompat;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.Player;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 
 /**
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton socialButton;
     ImageButton leaderboardButton;
     User user;
+    ArrayList<Player> players;
 
     private FirebaseFirestore firestore;
 
@@ -103,7 +107,11 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve data from Firebase:
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
-
+        //TODO Get the players from firebase and remove hardcoded values
+        players = new ArrayList<Player>();
+        players.add(new Player("Abdul nur", 1));
+        players.add(new Player("moe moe", 1241));
+        players.add(new Player("abey", 4151));
         // Get everything from firebase
         // TODO: show a loading animation while we get everything from firebase, then load the UI
         //       once its done.
@@ -139,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
             leaderboardButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
+                        .replace(R.id.main_view, new LeaderboardFragment(user, players)).commit();
             });
 
             getSupportFragmentManager().beginTransaction()

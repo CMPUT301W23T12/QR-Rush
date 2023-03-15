@@ -10,12 +10,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.qrrush.LeaderboardAdapter;
+import com.example.qrrush.model.LeaderboardAdapter;
+import com.example.qrrush.model.Player;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -31,23 +33,27 @@ import com.example.qrrush.model.User;
 
  */
 public class LeaderboardFragment extends Fragment {
-
     ListView LeaderList;
     User user;
+    ArrayList<String> userNames;
+    ArrayList<Player> players;
+    LeaderboardAdapter adapter;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
      * Creates a LeaderboardFragment for the given user.
      *
      * @param user The user to create the LeaderboardFragment for.
      */
-    public LeaderboardFragment(User user) {
+    public LeaderboardFragment(User user, ArrayList<Player> players) {
         this.user = user;
+        this.players = players;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<Object> userNames = new ArrayList<>();
+        userNames = new ArrayList<>();
     }
 
     @SuppressLint("MissingInflatedId")
@@ -56,29 +62,33 @@ public class LeaderboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
-        //LeaderList = view.findViewById(R.id.leaderboard_list);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        adapter = new LeaderboardAdapter(requireActivity(), players);
+        ListView users = view.findViewById(R.id.leaderboard_listview);
+        users.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         // Retrieve user names from Firebase and populate them in a list view
-//        db.collection("profiles")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        for (QueryDocumentSnapshot document : task.getResult()) {
-//                            String docUserName = document.getId();
-//                            System.out.println("Document name: " + docUserName);
-//                            userNames.add(docUserName);
-//                        }
-//                        LeaderboardAdapter adapter = new LeaderboardAdapter(getContext(), userNames);
-//                        LeaderList.setAdapter(adapter);
-//                    } else {
-//                        Log.d(TAG, "Error getting documents: ", task.getException());
-//                    }
-//                });
-//    }
+        db.collection("profiles")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String docUserName = document.getId();
+                            System.out.println("Document name: " + docUserName);
+                            userNames.add(docUserName);
+                        }
+                        // empty for now
+
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                });
+        Log.e("AMOSSSSS", userNames.toString());
+    }
 }
