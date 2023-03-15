@@ -17,17 +17,17 @@ import java.util.ArrayList;
 /**
  * Custom adapter that will display the high scores of all players
  */
-public class LeaderboardAdapter extends ArrayAdapter<Player> {
-    ArrayList<Player> players;
+public class LeaderboardAdapter extends ArrayAdapter<User> {
+    ArrayList<User> users;
 
 
     /**
      * Creates a LeaderboardAdapter, unsure of datatype for now.
      * @param context The context object to pass to the super constructor.
      */
-    public LeaderboardAdapter(Context context,ArrayList<Player> objects) {
+    public LeaderboardAdapter(Context context,ArrayList<User> objects) {
         super(context, 0, objects);
-        players = objects;
+        users = objects;
     }
     @NonNull
     @Override
@@ -36,12 +36,12 @@ public class LeaderboardAdapter extends ArrayAdapter<Player> {
         if (convertView == null) {
             view = LayoutInflater.from(super.getContext()).inflate(R.layout.leaderboard_content, parent, false);
         }
-        Player player = getItem(position);
+        User user = getItem(position);
 
         TextView OtherUserNameView = view.findViewById(R.id.OtherUserNameView);
         TextView OtherUserScoreView = view.findViewById(R.id.OtherUserScoreView);
-        OtherUserNameView.setText(player.getName());
-        OtherUserScoreView.setText(String.valueOf(player.getScore()));
+        OtherUserNameView.setText(user.getUserName());
+        OtherUserScoreView.setText(String.valueOf(user.getTotalScore()));
         return view;
     }
 }

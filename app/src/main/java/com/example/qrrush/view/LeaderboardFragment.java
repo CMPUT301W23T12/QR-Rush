@@ -36,7 +36,7 @@ public class LeaderboardFragment extends Fragment {
     ListView LeaderList;
     User user;
     ArrayList<String> userNames;
-    ArrayList<Player> players;
+    ArrayList<User> users;
     LeaderboardAdapter adapter;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -45,9 +45,9 @@ public class LeaderboardFragment extends Fragment {
      *
      * @param user The user to create the LeaderboardFragment for.
      */
-    public LeaderboardFragment(User user, ArrayList<Player> players) {
+    public LeaderboardFragment(User user, ArrayList<User> users) {
         this.user = user;
-        this.players = players;
+        this.users = users;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class LeaderboardFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new LeaderboardAdapter(requireActivity(), players);
+        adapter = new LeaderboardAdapter(requireActivity(), users);
         ListView users = view.findViewById(R.id.leaderboard_listview);
         users.setAdapter(adapter);
         adapter.notifyDataSetChanged();

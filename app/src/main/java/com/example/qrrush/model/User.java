@@ -4,10 +4,15 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -216,9 +221,12 @@ public class User {
         if (code.getLocation().isPresent()) {
             Location l = code.getLocation().get();
             data.put("location", new GeoPoint(l.getLatitude(), l.getLongitude()));
+        } else {
+            Location l = null;
+            data.put("location", l);
         }
         data.put("date", new Timestamp(new Date()));
-        FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+        FirebaseWrapper.updateData("qrcodes", code.getHash(), data);
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {
@@ -227,17 +235,40 @@ public class User {
                 return;
             }
 
-            Map<String, Object> newData = documentSnapshot.getData();
+            Map<String, Object> profileData = documentSnapshot.getData();
             this.qrCodes.add(code);
-            // TODO: check if they've already scanned this one before.
-            ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
+            ArrayList<String> codes = (ArrayList<String>) profileData.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) profileData.get("qrcodescomments");
             codes.add(code.getHash());
             comments.add(null);
-            newData.replace("qrcodescomments", comments);
-            newData.replace("qrcodes", codes);
-            newData.put("score", this.getTotalScore());
-            FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            profileData.replace("qrcodescomments", comments);
+            profileData.replace("qrcodes", codes);
+            profileData.put("score", this.getTotalScore());
+            FirebaseWrapper.updateData("profiles", this.getUserName(), profileData);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
+
+            qrCodeRef.update("scannedby", FieldValue.arrayUnion(this.getUserName()))
+                    .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
+                    .addOnFailureListener(e -> {
+                        if (e instanceof FirebaseFirestoreException) {
+                            FirebaseFirestoreException firestoreException = (FirebaseFirestoreException) e;
+                            if (firestoreException.getCode() == FirebaseFirestoreException.Code.NOT_FOUND) {
+                                Map<String, Object> qrData = new HashMap<>();
+                                qrData.put("scannedby", Arrays.asList(this.getUserName()));
+                                // Add other relevant fields for the QR code document
+
+                                qrCodeRef.set(qrData)
+                                        .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
+                                        .addOnFailureListener(e2 -> Log.w("addQRCode", "Error creating new QR code document", e2));
+                            } else {
+                                Log.w("addQRCode", "Error updating scannedby", e);
+                            }
+                        } else {
+                            Log.w("addQRCode", "Error updating scannedby", e);
+                        }
+                    });
         });
     }
 }

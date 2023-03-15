@@ -19,9 +19,17 @@ import com.example.qrrush.model.Player;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     ImageButton leaderboardButton;
     User user;
     ArrayList<User> users;
+    ArrayList<User> topThreePlayers = new ArrayList<>();
+    ArrayList<Map<String,Integer>> leaderList = new ArrayList<>();
 
     private FirebaseFirestore firestore;
 
@@ -108,12 +118,47 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
         //TODO Get the players from firebase and remove hardcoded values/ need to use Users instead of Players
-        users = new ArrayList<User>();
-        users.add(new User("Abdul nur", 1));
-        users.add(new User("moe moe", 1241));
-        users.add(new User("abey", 4151));
 
-        FirebaseWrapper.getData("Profiles");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("profile").orderBy("score", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null){
+                            //List<DocumentSnapshot> documentSnapshots = querySnapshot.getDocuments();
+                            Map<String, Integer> scoreMap = new HashMap<>();
+
+                            for( DocumentSnapshot documentSnapshot : querySnapshot){
+
+                                String userUserID = documentSnapshot.getId();
+                                FirebaseWrapper.getData("profile", userUserID, documentSnapshot1 -> {
+                                    String userUserName = userUserID.toString();
+                                    int userUserScore = documentSnapshot1.getLong("score").intValue();
+                                    scoreMap.put(userUserName,userUserScore);
+                                    leaderList.add(scoreMap);
+
+                                });
+
+                            }
+
+                        }else{
+                            throw new RuntimeException("something went wrong while handling data");
+                        }
+                        for ( Map<String,Integer> leaderLists : leaderList){
+                            Log.e("list",leaderLists.toString());
+
+                        }
+                        int i = 0;
+                        for(Map<String,Integer> leaderLists: leaderList){
+                            //
+                        }
+
+
+                    }
+                });
+
+
         // Get everything from firebase
         // TODO: show a loading animation while we get everything from firebase, then load the UI
         //       once its done.
@@ -149,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
             leaderboardButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new LeaderboardFragment(user, players)).commit();
+                        .replace(R.id.main_view, new LeaderboardFragment(user, users)).commit();
             });
 
             getSupportFragmentManager().beginTransaction()
