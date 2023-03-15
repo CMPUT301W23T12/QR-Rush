@@ -66,15 +66,5 @@ public enum Rarity {
             this.context = context;
             this.names = names;
         }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.leaderboard_content, parent, false);
-            TextView nameView =  ((Activity) getContext()).findViewById(R.id.list_name);
-            String name = names.get(position);
-            nameView.setText(name);
-            return rowView;
-        }
     }
 }
