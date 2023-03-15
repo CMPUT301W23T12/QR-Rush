@@ -32,6 +32,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
 
+    Boolean editable;
+
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
      *
@@ -39,10 +41,11 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
      * @param objects The QR codes to display.
      * @param user    The user which is associated with the QR Codes.
      */
-    public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user) {
+    public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user, Boolean editable) {
         super(context, 0, objects);
         qrCodes = objects;
         this.user = user;
+        this.editable = editable;
     }
 
 
@@ -84,6 +87,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         pointView.setText("Score: " + qrCode.getScore());
 
         Button deleteButton = view.findViewById(R.id.deleteButton);
+
+        if(!editable){
+            deleteButton.setVisibility(View.GONE);
+        }
 
         // Image will be fit into the size of the image view
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false);
