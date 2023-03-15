@@ -2,7 +2,6 @@ package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +24,10 @@ import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The fragment which displays the users profile.
@@ -163,21 +161,15 @@ public class ProfileFragment extends Fragment {
                         return;
                     }
 
-                    FirebaseWrapper.checkUsernameAvailability(newUserName, (Task<QuerySnapshot> task) -> {
-                        if (!task.isSuccessful()) {
-                            // Error occurred while querying database
-                            Log.e("EditName", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
-                            return;
-                        }
-
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot.size() > 0) {
+                    FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+                        if (userResult.isPresent()) {
                             // Username is taken, prompt user to pick a new name
                             errorText.setVisibility(View.VISIBLE);
                             errorText1.setVisibility(View.GONE);
-
                             return;
                         }
+
+                        User user = userResult.get();
 
                         // Username is unique, continue with edit the process
                         FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
