@@ -55,7 +55,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         }
 
         QRCode qrCode = getItem(position);
-        TextView nameView = view.findViewById(R.id.nameView);
+        TextView nameView = view.findViewById(R.id.nameViewQR);
         TextView pointView = view.findViewById(R.id.pointView);
         TextView locationView = view.findViewById(R.id.locationView);
         ImageView imageView = view.findViewById(R.id.imageView);

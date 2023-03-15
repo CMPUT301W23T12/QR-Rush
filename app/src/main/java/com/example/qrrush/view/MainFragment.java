@@ -23,6 +23,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+/**
+ * The MainFragment class represents the main fragment(home page) of the QR Rush app.
+ * Displays the user's total score,
+ * the device's current location on a map, and providing a button to access the camera feature.
+ */
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;

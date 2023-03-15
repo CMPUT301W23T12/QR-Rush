@@ -108,12 +108,22 @@ public class QRCode {
         return result;
     }
 
+    /**
+     * @return location of QRCode
+     */
     public Optional<Location> getLocation() {
         return location;
     }
 
+    /**
+     * sets the location of the QRCode
+     */
     public void setLocation(Location l) {
         this.location = Optional.of(l);
+    }
+
+    public void removeLocation() {
+        this.location = Optional.empty();
     }
 
     /**
@@ -186,10 +196,16 @@ public class QRCode {
         return max;
     }
 
+    /**
+     * @return the rarity of QRCode
+     */
     public Rarity getRarity() {
         return Rarity.fromHash(this.getHash());
     }
 
+    /**
+     * @return hash of the String
+     */
     public String getHash() {
         return this.hash;
     }
@@ -302,9 +318,16 @@ public class QRCode {
         return result;
     }
 
+    /**
+     * @return Timestamp of when the QRCode was found
+     */
     public Timestamp getTimestamp() {
         return timestamp;
     }
+
+    /**
+     * set the timestamp of when the QRCode found
+     */
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;

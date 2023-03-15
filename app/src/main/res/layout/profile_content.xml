@@ -20,7 +20,7 @@
             android:layout_weight="0" />
 
         <TextView
-            android:id="@+id/nameView"
+            android:id="@+id/nameViewQR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
