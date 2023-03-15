@@ -86,24 +86,35 @@ public class ProfileFragment extends Fragment implements Serializable {
         QRText.setText("QRCODES FOUND");
         scoreText.setText("SCORE");
 
+        // Passes User object from main activity to the QR code adapter
+        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
+        ListView qrCodeList = view.findViewById(R.id.listy);
+        qrCodeList.setAdapter(qrCodeAdapter);
+
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
         //      by score (sortingTracker = 0)
         sortingTracker = 1;
 
+        sortingButton.setText("By Date (Newest First)");
+        DateComparator dateComparator = new DateComparator();
+        Collections.sort(user.getQRCodes(), dateComparator);
+        // Sorts by newest to oldest (newest codes being at the top)
+        Collections.reverse(user.getQRCodes());
+        qrCodeAdapter.notifyDataSetChanged();
+
         // Sorting button sorts arraylist of QR codes using custom comparators
         // Adapter gets updated each time the list gets sorted
         sortingButton.setOnClickListener(v -> {
             if (sortingTracker == 0) {
-                sortingButton.setText("By Date");
+                sortingButton.setText("By Date (Newest First)");
                 sortingTracker += 1;
-                DateComparator dateComparator = new DateComparator();
                 Collections.sort(user.getQRCodes(), dateComparator);
                 // Sorts by newest to oldest (newest codes being at the top)
                 Collections.reverse(user.getQRCodes());
                 qrCodeAdapter.notifyDataSetChanged();
             } else if (sortingTracker == 1) {
-                sortingButton.setText("By Points");
+                sortingButton.setText("By Points (Highest First)");
                 sortingTracker += 1;
                 ScoreComparator scoreComparator = new ScoreComparator();
                 Collections.sort(user.getQRCodes(), scoreComparator);
@@ -117,10 +128,7 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
-        ListView qrCodeList = view.findViewById(R.id.listy);
-        qrCodeList.setAdapter(qrCodeAdapter);
+
         qrCodeAdapter.notifyDataSetChanged();
 
         // Update the UI whenever the arrayAdapter gets a change.

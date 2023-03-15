@@ -72,7 +72,6 @@ public class QRConfirmFragment extends Fragment {
 
         confirmButton.setOnClickListener(v -> {
             Geo.getCurrentLocation(l -> {
-                qrCode.setLocation(l);
                 user.addQRCode(qrCode);
 
                 FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
