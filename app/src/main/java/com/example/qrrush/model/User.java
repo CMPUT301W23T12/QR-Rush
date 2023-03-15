@@ -257,6 +257,8 @@ public class User {
                             if (firestoreException.getCode() == FirebaseFirestoreException.Code.NOT_FOUND) {
                                 Map<String, Object> qrData = new HashMap<>();
                                 qrData.put("scannedby", Arrays.asList(this.getUserName()));
+                                qrData.put("location", data.get("location")); // Add location for the first scan
+                                qrData.put("date", data.get("date")); // Add date for the first scan
                                 // Add other relevant fields for the QR code document
 
                                 qrCodeRef.set(qrData)
