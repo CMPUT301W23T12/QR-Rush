@@ -5,8 +5,9 @@ import android.util.Log;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -226,7 +226,7 @@ public class User {
             data.put("location", l);
         }
         data.put("date", new Timestamp(new Date()));
-        FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+        FirebaseWrapper.updateData("qrcodes", code.getHash(), data);
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {
@@ -249,35 +249,26 @@ public class User {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
 
-            qrCodeRef.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        // QR code exists in the database, update the scannedby array
-                        List<String> scannedBy = (List<String>) document.get("scannedby");
-                        if (scannedBy == null) {
-                            scannedBy = new ArrayList<>();
-                        }
-                        if (!scannedBy.contains(this.getUserName())) {
-                            scannedBy.add(this.getUserName());
-                            qrCodeRef.update("scannedby", scannedBy)
-                                    .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
-                                    .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
-                        }
-                    } else {
-                        // QR code does not exist in the database, create a new document with initial data
-                        Map<String, Object> qrData = new HashMap<>();
-                        qrData.put("scannedby", Arrays.asList(this.getUserName()));
-                        // Add other relevant fields for the QR code document
+            qrCodeRef.update("scannedby", FieldValue.arrayUnion(this.getUserName()))
+                    .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
+                    .addOnFailureListener(e -> {
+                        if (e instanceof FirebaseFirestoreException) {
+                            FirebaseFirestoreException firestoreException = (FirebaseFirestoreException) e;
+                            if (firestoreException.getCode() == FirebaseFirestoreException.Code.NOT_FOUND) {
+                                Map<String, Object> qrData = new HashMap<>();
+                                qrData.put("scannedby", Arrays.asList(this.getUserName()));
+                                // Add other relevant fields for the QR code document
 
-                        qrCodeRef.set(qrData)
-                                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
-                                .addOnFailureListener(e -> Log.w("addQRCode", "Error creating new QR code document", e));
-                    }
-                } else {
-                    Log.w("addQRCode", "Error checking for QR code document existence", task.getException());
-                }
-            });
+                                qrCodeRef.set(qrData)
+                                        .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
+                                        .addOnFailureListener(e2 -> Log.w("addQRCode", "Error creating new QR code document", e2));
+                            } else {
+                                Log.w("addQRCode", "Error updating scannedby", e);
+                            }
+                        } else {
+                            Log.w("addQRCode", "Error updating scannedby", e);
+                        }
+                    });
         });
     }
 }
