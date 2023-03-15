@@ -6,7 +6,6 @@ import android.util.Log;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -235,16 +235,16 @@ public class User {
                 return;
             }
 
-            Map<String, Object> newData = documentSnapshot.getData();
+            Map<String, Object> profileData = documentSnapshot.getData();
             this.qrCodes.add(code);
-            ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
+            ArrayList<String> codes = (ArrayList<String>) profileData.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) profileData.get("qrcodescomments");
             codes.add(code.getHash());
             comments.add(null);
-            newData.replace("qrcodescomments", comments);
-            newData.replace("qrcodes", codes);
-            newData.put("score", this.getTotalScore());
-            FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            profileData.replace("qrcodescomments", comments);
+            profileData.replace("qrcodes", codes);
+            profileData.put("score", this.getTotalScore());
+            FirebaseWrapper.updateData("profiles", this.getUserName(), profileData);
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
@@ -254,16 +254,23 @@ public class User {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         // QR code exists in the database, update the scannedby array
-                        qrCodeRef.update("scannedby", FieldValue.arrayUnion(this.getUserName()))
-                                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
-                                .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
+                        List<String> scannedBy = (List<String>) document.get("scannedby");
+                        if (scannedBy == null) {
+                            scannedBy = new ArrayList<>();
+                        }
+                        if (!scannedBy.contains(this.getUserName())) {
+                            scannedBy.add(this.getUserName());
+                            qrCodeRef.update("scannedby", scannedBy)
+                                    .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
+                                    .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
+                        }
                     } else {
                         // QR code does not exist in the database, create a new document with initial data
-                        Map<String, Object> newArray = new HashMap<>();
-                        newArray.put("scannedby", Arrays.asList(this.getUserName()));
+                        Map<String, Object> qrData = new HashMap<>();
+                        qrData.put("scannedby", Arrays.asList(this.getUserName()));
                         // Add other relevant fields for the QR code document
 
-                        qrCodeRef.set(newData)
+                        qrCodeRef.set(qrData)
                                 .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
                                 .addOnFailureListener(e -> Log.w("addQRCode", "Error creating new QR code document", e));
                     }
