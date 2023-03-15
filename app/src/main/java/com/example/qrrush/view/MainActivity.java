@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton socialButton;
     ImageButton leaderboardButton;
     User user;
-    ArrayList<Player> players;
+    ArrayList<User> users;
 
     private FirebaseFirestore firestore;
 
@@ -107,11 +107,13 @@ public class MainActivity extends AppCompatActivity {
         // Retrieve data from Firebase:
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
-        //TODO Get the players from firebase and remove hardcoded values
-        players = new ArrayList<Player>();
-        players.add(new Player("Abdul nur", 1));
-        players.add(new Player("moe moe", 1241));
-        players.add(new Player("abey", 4151));
+        //TODO Get the players from firebase and remove hardcoded values/ need to use Users instead of Players
+        users = new ArrayList<User>();
+        users.add(new User("Abdul nur", 1));
+        users.add(new User("moe moe", 1241));
+        users.add(new User("abey", 4151));
+
+        FirebaseWrapper.getData("Profiles");
         // Get everything from firebase
         // TODO: show a loading animation while we get everything from firebase, then load the UI
         //       once its done.
