@@ -88,16 +88,15 @@ public class SocialFragment extends Fragment {
                     displayNoPlayerFound();
                     return;
                 }
-                // IF PLAYER DOESNT EXIST WE NEED TO SHOW THE MESSAGE ASWELL (DO THIS LATER)
-                // MIGHT HAVE TO CHANGE THE getUserData method ?? Idk
                 FirebaseWrapper.getUserData(searchPlayer, user -> {
                     // we will retrieve the user information from firebase and create a user object
                     // update the search results adapter with the retrieved user information
-                    if (user == null){
-
+                    if (!user.isPresent()){
+                        displayNoPlayerFound();
+                        return;
                     }
                     ArrayList<User> searchResults = new ArrayList<>();
-                    searchResults.add(user);
+                    searchResults.add(user.get());
                     searchResultsAdapter.setData(searchResults);
 
                     searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -113,13 +112,8 @@ public class SocialFragment extends Fragment {
     }
     private void displayNoPlayerFound() {
         TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
-//        ImageView PlayerImg = getView().findViewById(R.id.profileView);
-        TextView searchedName = getView().findViewById(R.id.nameViewSocial);
-        TextView searchedRank = getView().findViewById(R.id.rankView);
         noPlayerFound.setVisibility(View.VISIBLE);
-        searchedName.setVisibility(View.GONE);
-//        PlayerImg.setVisibility(View.GONE);
-        searchedRank.setVisibility(View.GONE);
+        searchResultsList.setVisibility(View.GONE);
     }
 
 
