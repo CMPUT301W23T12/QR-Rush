@@ -5,11 +5,11 @@ import android.util.Log;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -243,19 +243,10 @@ public class User {
             newData.replace("qrcodes", codes);
             newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
-            FirebaseWrapper.getData("qrcodes", code.getHash(), qrCodeDocumentSnapshot -> {
-                if (!qrCodeDocumentSnapshot.exists()) {
-                    Log.e("addQRCode", "QR code " + code.getHash() +
-                            " does not exist in the database!");
-                    return;
-                }
-                Map<String, Object> qrData = qrCodeDocumentSnapshot.getData();
-                ArrayList<String> scannedBy = (ArrayList<String>) qrData.getOrDefault("scannedby", new ArrayList<>());
-                if (!scannedBy.contains(this.getUserName())) {
-                    // Update the scannedby field using FieldValue.arrayUnion
-                    FirebaseWrapper.updateData("qrcodes", code.getHash(), Collections.singletonMap("scannedby", FieldValue.arrayUnion(this.getUserName())));
-                }
-            });
         });
+        FirebaseFirestore.getInstance().collection("qrcodes").document(code.getHash())
+                .update("scannedby", FieldValue.arrayUnion(this.getUserName()))
+                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
+                .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
     }
 }
