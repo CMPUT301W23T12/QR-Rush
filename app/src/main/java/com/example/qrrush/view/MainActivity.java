@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             // User object passes into each fragment constructor
             profileButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new ProfileFragment(user)).commit();
+                        .replace(R.id.main_view, new ProfileFragment(user, true)).commit();
             });
 
             shopButton.setOnClickListener((v) -> {

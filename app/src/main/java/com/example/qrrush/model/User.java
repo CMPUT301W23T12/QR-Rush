@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Optional;
 /**
  * The class representing a user in the game.
  */
-public class User {
+public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private int rank;
@@ -37,6 +38,12 @@ public class User {
     public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
+        this.rank = rank;
+        this.qrCodes = qrCodes;
+    }
+
+    public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
+        this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
     }
