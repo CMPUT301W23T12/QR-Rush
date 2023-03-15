@@ -19,8 +19,6 @@ import com.example.qrrush.R;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
-import com.example.qrrush.view.CameraFragment;
-import com.example.qrrush.view.MainFragment;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
 /**
@@ -90,18 +88,17 @@ public class QRConfirmFragment extends Fragment {
         nameView.setText(qrCode.getName());
         scoreView.setText("Score: " + qrCode.getScore());
         rarityView.setText("Rarity: " + qrCode.getRarity());
-        locationView.setText("Location: getting location...");
-        Geo.getCurrentLocation(l -> {
-            qrCode.setLocation(l);
-            locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
-        });
+        locationView.setText("Location: not saved");
 
+        geolocationToggle.setChecked(false);
         geolocationToggle.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (!isChecked) {
-                locationView.setText("Location: no location available");
+                locationView.setText("Location: not saved");
+                qrCode.removeLocation();
                 return;
             }
 
+            locationView.setText("Location: getting location...");
             Geo.getCurrentLocation(l -> {
                 qrCode.setLocation(l);
                 locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());

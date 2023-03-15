@@ -122,6 +122,10 @@ public class QRCode {
         this.location = Optional.of(l);
     }
 
+    public void removeLocation() {
+        this.location = Optional.empty();
+    }
+
     /**
      * Generates a visualization for the QR Code and returns it as a Bitmap object.
      */

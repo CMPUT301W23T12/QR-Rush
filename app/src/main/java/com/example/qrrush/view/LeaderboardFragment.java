@@ -1,4 +1,4 @@
-package com.example.qrrush;
+package com.example.qrrush.view;
 
 import static android.content.ContentValues.TAG;
 
@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.qrrush.LeaderboardAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -46,7 +47,7 @@ public class LeaderboardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userNames = new ArrayList<>();
+        ArrayList<Object> userNames = new ArrayList<>();
     }
 
     @SuppressLint("MissingInflatedId")
@@ -55,7 +56,7 @@ public class LeaderboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
-        LeaderList = view.findViewById(R.id.leaderboard_list);
+        //LeaderList = view.findViewById(R.id.leaderboard_list);
         return view;
     }
 
@@ -64,20 +65,20 @@ public class LeaderboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Retrieve user names from Firebase and populate them in a list view
-        db.collection("profiles")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String docUserName = document.getId();
-                            System.out.println("Document name: " + docUserName);
-                            userNames.add(docUserName);
-                        }
-                        LeaderboardAdapter adapter = new LeaderboardAdapter(getContext(), userNames);
-                        LeaderList.setAdapter(adapter);
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                    }
-                });
-    }
+//        db.collection("profiles")
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            String docUserName = document.getId();
+//                            System.out.println("Document name: " + docUserName);
+//                            userNames.add(docUserName);
+//                        }
+//                        LeaderboardAdapter adapter = new LeaderboardAdapter(getContext(), userNames);
+//                        LeaderList.setAdapter(adapter);
+//                    } else {
+//                        Log.d(TAG, "Error getting documents: ", task.getException());
+//                    }
+//                });
+//    }
 }
