@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.qrrush.model.LeaderboardAdapter;
+import com.example.qrrush.model.Player;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -34,6 +36,8 @@ public class LeaderboardFragment extends Fragment {
     ListView LeaderList;
     User user;
     ArrayList<String> userNames;
+    ArrayList<Player> players;
+    LeaderboardAdapter adapter;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /**
@@ -41,8 +45,9 @@ public class LeaderboardFragment extends Fragment {
      *
      * @param user The user to create the LeaderboardFragment for.
      */
-    public LeaderboardFragment(User user) {
+    public LeaderboardFragment(User user, ArrayList<Player> players) {
         this.user = user;
+        this.players = players;
     }
 
     @Override
@@ -57,13 +62,16 @@ public class LeaderboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
-        LeaderList = view.findViewById(R.id.leaderboard_list);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        adapter = new LeaderboardAdapter(requireActivity(), players);
+        ListView users = view.findViewById(R.id.leaderboard_listview);
+        users.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         // Retrieve user names from Firebase and populate them in a list view
         db.collection("profiles")
@@ -75,11 +83,12 @@ public class LeaderboardFragment extends Fragment {
                             System.out.println("Document name: " + docUserName);
                             userNames.add(docUserName);
                         }
-                        LeaderboardAdapter adapter = new LeaderboardAdapter(getContext(), userNames);
-                        LeaderList.setAdapter(adapter);
+                        // empty for now
+
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                 });
+        Log.e("AMOSSSSS", userNames.toString());
     }
 }
