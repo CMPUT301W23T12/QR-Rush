@@ -9,6 +9,7 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -248,13 +249,11 @@ public class User {
                             " does not exist in the database!");
                     return;
                 }
-
                 Map<String, Object> qrData = qrCodeDocumentSnapshot.getData();
                 ArrayList<String> scannedBy = (ArrayList<String>) qrData.getOrDefault("scannedby", new ArrayList<>());
                 if (!scannedBy.contains(this.getUserName())) {
-                    Map<String, Object> updateMap = new HashMap<>();
-                    updateMap.put("scannedby", FieldValue.arrayUnion(this.getUserName()));
-                    FirebaseWrapper.updateData("qrcodes", code.getHash(), updateMap);
+                    // Update the scannedby field using FieldValue.arrayUnion
+                    FirebaseWrapper.updateData("qrcodes", code.getHash(), Collections.singletonMap("scannedby", FieldValue.arrayUnion(this.getUserName())));
                 }
             });
         });
