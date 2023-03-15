@@ -2,7 +2,6 @@ package com.example.qrrush.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -13,12 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -70,20 +70,16 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameInput.getText().toString();
             String phoneNumber = phoneNumberInput.getText().toString();
             if (!username.matches("")) {
-                FirebaseWrapper.checkUsernameAvailability(username, (Task<QuerySnapshot> task) -> {
-                    if (!task.isSuccessful()) {
-                        // Error occurred while querying database
-                        Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
-                        return;
-
-                    }
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot.size() > 0) {
+                FirebaseWrapper.getUserData(username, (Optional<User> result) -> {
+                    if (result.isPresent()) {
                         // Username is taken, prompt user to pick a new name11
                         errorText.setText("Username is taken!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
-                    } else if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)) {
+                    }
+
+                    // Username is unique, continue with registration process
+                    if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)) {
                         errorText.setText("Invalid phone number & Invalid username!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
@@ -97,7 +93,6 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Username is unique, continue with registration process
                     errorText.setVisibility(View.GONE);
                     HashMap<String, Object> profiles = new HashMap<>();
                     profiles.put("UUID", UserUtil.generateUUID());
