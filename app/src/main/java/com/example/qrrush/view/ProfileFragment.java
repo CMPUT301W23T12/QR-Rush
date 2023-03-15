@@ -87,7 +87,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         scoreText.setText("SCORE");
 
         // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
+        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
 
@@ -129,10 +129,6 @@ public class ProfileFragment extends Fragment implements Serializable {
         });
 
 
-        // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
-        ListView qrCodeList = view.findViewById(R.id.listy);
-        qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeAdapter.notifyDataSetChanged();
 
         // Update the UI whenever the arrayAdapter gets a change.
