@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <EditText
@@ -17,6 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="This name is already taken!"
+        android:textColor="#EC1010"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/errorText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Username must be less then 10 or less characters!"
         android:textColor="#EC1010"
         android:visibility="gone" />
 </LinearLayout>
