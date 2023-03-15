@@ -19,7 +19,6 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
     private Context context;
     private int resource;
-
     private List<User> mUsers;
 
     public SearchPlayerAdapter(Context context, int resource, List<User> users) {
