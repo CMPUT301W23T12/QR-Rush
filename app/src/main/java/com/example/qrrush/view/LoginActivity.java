@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * LoginActivity is responsible for managing user login and registration.
@@ -30,7 +31,17 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton confirmButton;
     EditText phoneNumberInput;
     TextView errorText;
-
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        // Regular expression to match valid phone number formats
+        String regex = "^\\+?[1]?[- ]?\\(?[0-9]{3}\\)?[- ]?\\(?[0-9]{3}\\)?[- ]?[0-9]{3,4}$";
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(regex);
+        // Check if the phone number matches the pattern
+        if (phoneNumber.isEmpty()){
+            return true;
+        }
+        return pattern.matcher(phoneNumber).matches();
+    }
     /**
      * Initializes the activity and checks if the user has already logged in before. If the user
      * has logged in before, the app will skip the login page and direct the user to the main
@@ -53,8 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.username_input);
         confirmButton = findViewById(R.id.confirmButton);
         phoneNumberInput = findViewById(R.id.phone_number_input);
-        errorText = findViewById(R.id.username_error);
-
+        errorText = findViewById(R.id.error);
         confirmButton.setOnClickListener((view) -> {
             String username = usernameInput.getText().toString();
             String phoneNumber = phoneNumberInput.getText().toString();
@@ -64,16 +74,31 @@ public class LoginActivity extends AppCompatActivity {
                         // Error occurred while querying database
                         Log.e("Firebase", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
                         return;
-                    }
 
+                    }
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot.size() > 0) {
-                        // Username is taken, prompt user to pick a new name
+                        // Username is taken, prompt user to pick a new name11
+                        errorText.setText("Username is taken!");
+                        errorText.setVisibility(View.VISIBLE);
+                        return;
+                    }
+                    else if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)){
+                        errorText.setText("Invalid phone number & Invalid username!");
+                        errorText.setVisibility(View.VISIBLE);
+                        return;
+                    } else if (!isValidPhoneNumber(phoneNumber)) {
+                        errorText.setText("Invalid phone number!");
+                        errorText.setVisibility(View.VISIBLE);
+                        return;
+                    }else if(username.length() > 10){
+                        errorText.setText("Username must be less then 10 or less characters!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
                     }
 
                     // Username is unique, continue with registration process
+                    errorText.setVisibility(View.GONE);
                     HashMap<String, Object> profiles = new HashMap<>();
                     profiles.put("UUID", UserUtil.generateUUID());
                     profiles.put("phone-number", phoneNumber);
@@ -96,8 +121,6 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(i);
                 });
             }
-
         });
-
     }
 }

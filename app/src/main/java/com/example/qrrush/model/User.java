@@ -3,9 +3,7 @@ package com.example.qrrush.model;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
@@ -26,6 +24,7 @@ public class User {
     // unsure of data type for now
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
+
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
      *
@@ -134,21 +133,16 @@ public class User {
         }
 
         this.commentMap.remove(code);
-        FirebaseWrapper.getUserData(this.getUserName(), (Task<DocumentSnapshot> task) -> {
-            if (!task.isSuccessful()) {
-                Log.e("addCommentFor", "Failed to read user data!");
+        FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Log.e("removeCommentFor", "Profile " + this.getUserName() +
+                        " does not exist in the database!");
                 return;
             }
 
-            DocumentSnapshot ds = task.getResult();
-            if (!ds.exists()) {
-                Log.e("addCommentFor", "User was deleted from Firebase!");
-                return;
-            }
-
-            Map<String, Object> data = ds.getData();
-            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+            Map<String, Object> data = documentSnapshot.getData();
+            ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
 
             comments.set(hashes.indexOf(code.getHash()), null);
             data.replace("qrcodescomments", comments);
@@ -170,21 +164,16 @@ public class User {
         }
 
         setCommentWithoutUsingFirebase(code, commentText);
-        FirebaseWrapper.getUserData(this.getUserName(), (Task<DocumentSnapshot> task) -> {
-            if (!task.isSuccessful()) {
-                Log.e("addCommentFor", "Failed to read user data!");
+        FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Log.e("setCommentFor", "Profile " + this.getUserName() +
+                        " does not exist in the database!");
                 return;
             }
 
-            DocumentSnapshot ds = task.getResult();
-            if (!ds.exists()) {
-                Log.e("addCommentFor", "User was deleted from Firebase!");
-                return;
-            }
-
-            Map<String, Object> data = ds.getData();
-            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+            Map<String, Object> data = documentSnapshot.getData();
+            ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
 
             comments.set(hashes.indexOf(code.getHash()), commentText);
             data.replace("qrcodescomments", comments);
@@ -231,19 +220,14 @@ public class User {
         data.put("date", new Timestamp(new Date()));
         FirebaseWrapper.addData("qrcodes", code.getHash(), data);
 
-        FirebaseWrapper.getUserData(this.getUserName(), task -> {
-            if (!task.isSuccessful()) {
-                Log.e("addQRCode", "Failed to read from firebase!");
+        FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Log.e("addQRCode", "Profile " + this.getUserName() +
+                        " does not exist in the database!");
                 return;
             }
 
-            DocumentSnapshot ds = task.getResult();
-            if (!ds.exists()) {
-                Log.e("addQRCode", "User was deleted from Firebase!");
-                return;
-            }
-
-            Map<String, Object> newData = ds.getData();
+            Map<String, Object> newData = documentSnapshot.getData();
             this.qrCodes.add(code);
             // TODO: check if they've already scanned this one before.
             ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
