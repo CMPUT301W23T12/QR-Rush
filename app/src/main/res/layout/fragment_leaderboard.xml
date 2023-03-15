@@ -10,6 +10,9 @@
         android:id="@+id/leaderboard_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fontFamily="@font/gatekept"
+        android:text="Leaderboard"
+        android:textColor="@color/black"
         android:divider="@null"
         android:dividerHeight="0dp"/>
 
