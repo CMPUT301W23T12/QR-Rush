@@ -77,6 +77,8 @@ public class SocialFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageButton searchButton = view.findViewById(R.id.searchButton);
+        TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
+
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,19 +87,23 @@ public class SocialFragment extends Fragment {
 
                 if (searchPlayer.matches("")) {
                     // UX Experience: If search is empty and you press search, it will display "No player found!"
-                    displayNoPlayerFound();
+                    noPlayerFound.setVisibility(View.VISIBLE);
+                    searchResultsList.setVisibility(View.GONE);
                     return;
                 }
                 FirebaseWrapper.getUserData(searchPlayer, user -> {
                     // we will retrieve the user information from firebase and create a user object
                     // update the search results adapter with the retrieved user information
                     if (!user.isPresent()){
-                        displayNoPlayerFound();
+                        noPlayerFound.setVisibility(View.VISIBLE);
+                        searchResultsList.setVisibility(View.GONE);
                         return;
                     }
                     ArrayList<User> searchResults = new ArrayList<>();
                     searchResults.add(user.get());
                     searchResultsAdapter.setData(searchResults);
+                    noPlayerFound.setVisibility(View.GONE);
+                    searchResultsList.setVisibility(View.VISIBLE);
 
                     searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -110,11 +116,11 @@ public class SocialFragment extends Fragment {
             }
         });
     }
-    private void displayNoPlayerFound() {
-        TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
-        noPlayerFound.setVisibility(View.VISIBLE);
-        searchResultsList.setVisibility(View.GONE);
-    }
+//    private void displayNoPlayerFound() {
+//        TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
+//        noPlayerFound.setVisibility(View.VISIBLE);
+//        searchResultsList.setVisibility(View.GONE);
+//    }
 
 
 
