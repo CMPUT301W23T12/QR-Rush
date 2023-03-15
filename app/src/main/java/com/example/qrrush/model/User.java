@@ -4,6 +4,7 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
@@ -251,9 +252,9 @@ public class User {
                 Map<String, Object> qrData = qrCodeDocumentSnapshot.getData();
                 ArrayList<String> scannedBy = (ArrayList<String>) qrData.getOrDefault("scannedby", new ArrayList<>());
                 if (!scannedBy.contains(this.getUserName())) {
-                    scannedBy.add(this.getUserName());
-                    qrData.put("scannedby", scannedBy);
-                    FirebaseWrapper.updateData("qrcodes", code.getHash(), qrData);
+                    Map<String, Object> updateMap = new HashMap<>();
+                    updateMap.put("scannedby", FieldValue.arrayUnion(this.getUserName()));
+                    FirebaseWrapper.updateData("qrcodes", code.getHash(), updateMap);
                 }
             });
         });
