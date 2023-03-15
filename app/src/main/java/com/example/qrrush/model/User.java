@@ -4,12 +4,15 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -234,7 +237,6 @@ public class User {
 
             Map<String, Object> newData = documentSnapshot.getData();
             this.qrCodes.add(code);
-            // TODO: check if they've already scanned this one before.
             ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
             codes.add(code.getHash());
@@ -243,10 +245,32 @@ public class User {
             newData.replace("qrcodes", codes);
             newData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
+
+            qrCodeRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // QR code exists in the database, update the scannedby array
+                        qrCodeRef.update("scannedby", FieldValue.arrayUnion(this.getUserName()))
+                                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
+                                .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
+                    } else {
+                        // QR code does not exist in the database, create a new document with initial data
+                        Map<String, Object> newArray = new HashMap<>();
+                        newArray.put("scannedby", Arrays.asList(this.getUserName()));
+                        // Add other relevant fields for the QR code document
+
+                        qrCodeRef.set(newData)
+                                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
+                                .addOnFailureListener(e -> Log.w("addQRCode", "Error creating new QR code document", e));
+                    }
+                } else {
+                    Log.w("addQRCode", "Error checking for QR code document existence", task.getException());
+                }
+            });
         });
-        FirebaseFirestore.getInstance().collection("qrcodes").document(code.getHash())
-                .update("scannedby", FieldValue.arrayUnion(this.getUserName()))
-                .addOnSuccessListener(aVoid -> Log.d("addQRCode", "User added to scannedby"))
-                .addOnFailureListener(e -> Log.w("addQRCode", "Error updating scannedby", e));
     }
 }
