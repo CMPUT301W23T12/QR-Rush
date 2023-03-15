@@ -5,24 +5,20 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -141,23 +137,6 @@ public class FirebaseWrapper {
         });
     }
 
-    /**
-     * This method checks if the username is already inside the firebase collection under
-     * "profiles", this is mainly used for edit name on profile page or create name on first time
-     * login.
-     *
-     * @param username           The username to check availability for.
-     * @param onCompleteListener The OnCompleteListener which will receive the result.
-     */
-    public static void checkUsernameAvailability(String username, OnCompleteListener<QuerySnapshot> onCompleteListener) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // if you want to change the collection name that stores profile information, change it in
-        // here too
-        CollectionReference usersRef = db.collection("profiles");
-        Query query = usersRef.whereEqualTo(FieldPath.documentId(), username);
-        query.get().addOnCompleteListener(onCompleteListener);
-    }
-
     public static Task<DocumentSnapshot> getData(String collection, String documentID, Consumer<DocumentSnapshot> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
@@ -180,7 +159,7 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static void getUserData(String username, Consumer<User> userConsumer) {
+    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         db.collection("profiles").document(username)
@@ -193,7 +172,7 @@ public class FirebaseWrapper {
 
                     DocumentSnapshot ds = t.getResult();
                     if (!ds.exists()) {
-                        Log.e("getUserData", "User " + username + " is not in the database!");
+                        userConsumer.accept(Optional.empty());
                         return;
                     }
 
@@ -230,7 +209,7 @@ public class FirebaseWrapper {
                         }
                     }
 
-                    userConsumer.accept(user);
+                    userConsumer.accept(Optional.of(user));
                 });
     }
 
