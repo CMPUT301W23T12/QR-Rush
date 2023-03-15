@@ -14,6 +14,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,6 +139,40 @@ public class FirebaseWrapper {
         });
     }
 
+    public static void getAllUsers(Consumer<ArrayList<User>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("profiles").orderBy("score", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        throw new RuntimeException("Bruh moment");
+                    }
+
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot == null) {
+                        throw new RuntimeException("something went wrong while handling data");
+                    }
+
+                    ArrayList<User> users = new ArrayList<>();
+                    querySnapshot.forEach(documentSnapshot -> {
+                        String username = documentSnapshot.getId();
+                        Task<DocumentSnapshot> t = FirebaseWrapper.getUserData(username, user -> {
+                            if (!user.isPresent()) {
+                                return;
+                            }
+
+                            users.add(user.get());
+                        });
+
+                        while (!t.isComplete()) {
+                            // Intentionally empty loop
+                        }
+                    });
+
+                    callback.accept(users);
+                });
+    }
+
     public static Task<DocumentSnapshot> getData(String collection, String documentID, Consumer<DocumentSnapshot> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
@@ -159,10 +195,10 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
+    public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        db.collection("profiles").document(username)
+        return db.collection("profiles").document(username)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
                     if (!t.isSuccessful()) {
