@@ -14,7 +14,6 @@ import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.UserUtil;
-import com.example.qrrush.view.MainActivity;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -31,17 +30,19 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton confirmButton;
     EditText phoneNumberInput;
     TextView errorText;
+
     public static boolean isValidPhoneNumber(String phoneNumber) {
         // Regular expression to match valid phone number formats
         String regex = "^\\+?[1]?[- ]?\\(?[0-9]{3}\\)?[- ]?\\(?[0-9]{3}\\)?[- ]?[0-9]{3,4}$";
         // Compile the regex pattern
         Pattern pattern = Pattern.compile(regex);
         // Check if the phone number matches the pattern
-        if (phoneNumber.isEmpty()){
+        if (phoneNumber.isEmpty()) {
             return true;
         }
         return pattern.matcher(phoneNumber).matches();
     }
+
     /**
      * Initializes the activity and checks if the user has already logged in before. If the user
      * has logged in before, the app will skip the login page and direct the user to the main
@@ -82,8 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                         errorText.setText("Username is taken!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
-                    }
-                    else if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)){
+                    } else if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)) {
                         errorText.setText("Invalid phone number & Invalid username!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                         errorText.setText("Invalid phone number!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
-                    }else if(username.length() > 10){
+                    } else if (username.length() > 10) {
                         errorText.setText("Username must be less then 10 or less characters!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
