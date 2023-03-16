@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.qrrush.controller.ScoreComparator;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -170,6 +171,36 @@ public class FirebaseWrapper {
                     });
 
                     callback.accept(users);
+                });
+    }
+
+    public static void getAllQRCodes(Consumer<ArrayList<QRCode>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes")
+                .get().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        throw new RuntimeException("Bruh moment");
+                    }
+
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot == null) {
+                        throw new RuntimeException("something went wrong while handling data");
+                    }
+
+                    ArrayList<QRCode> codes = new ArrayList<>();
+                    querySnapshot.forEach(documentSnapshot -> {
+                        String hash = documentSnapshot.getId();
+                        Task<DocumentSnapshot> t = FirebaseWrapper.getQRCodeData(hash, codes::add);
+
+                        while (!t.isComplete()) {
+                            // Intentionally empty loop
+                        }
+                    });
+
+                    ScoreComparator scoreComparator = new ScoreComparator();
+                    codes.sort(scoreComparator);
+                    callback.accept(codes);
                 });
     }
 
