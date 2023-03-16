@@ -84,7 +84,6 @@ public class SocialFragment extends Fragment {
             public void onClick(View v) {
                 EditText searchPlayerEditField = view.findViewById(R.id.searchPlayer);
                 String searchPlayer = searchPlayerEditField.getText().toString();
-
                 if (searchPlayer.matches("")) {
                     // UX Experience: If search is empty and you press search, it will display "No player found!"
                     noPlayerFound.setVisibility(View.VISIBLE);
@@ -116,11 +115,6 @@ public class SocialFragment extends Fragment {
             }
         });
     }
-//    private void displayNoPlayerFound() {
-//        TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
-//        noPlayerFound.setVisibility(View.VISIBLE);
-//        searchResultsList.setVisibility(View.GONE);
-//    }
 
 
 
