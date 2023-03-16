@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,8 +42,10 @@ public class UserAdapter extends ArrayAdapter<User> {
 
         TextView OtherUserNameView = view.findViewById(R.id.OtherUserNameView);
         TextView OtherUserScoreView = view.findViewById(R.id.OtherUserScoreView);
+        ImageView OtherUserImageView = view.findViewById(R.id.imageView2);
         OtherUserNameView.setText(user.getUserName());
         OtherUserScoreView.setText(String.valueOf(user.getTotalScore()));
+        OtherUserImageView.setImageResource(R.drawable.discordpic);
         return view;
     }
 }
