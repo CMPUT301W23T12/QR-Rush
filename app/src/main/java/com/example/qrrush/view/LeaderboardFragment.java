@@ -6,13 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
+import com.example.qrrush.controller.UserScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserAdapter;
 
@@ -21,7 +24,10 @@ import com.example.qrrush.model.UserAdapter;
  */
 public class LeaderboardFragment extends Fragment {
     User user;
-    UserAdapter adapter;
+    UserAdapter userAdapter;
+    QRCodeAdapter qrCodeAdapter;
+    TextView loadingText;
+    ListView leaderboardView;
 
     /**
      * Creates a LeaderboardFragment for the given user.
@@ -50,14 +56,24 @@ public class LeaderboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        loadingText = view.findViewById(R.id.leaderboard_loading_text);
+        leaderboardView = view.findViewById(R.id.leaderboard_listview);
+
+        loadingText.setVisibility(View.VISIBLE);
+        leaderboardView.setVisibility(View.GONE);
+
         // TODO: display some loading screen while this finishes.
         // TODO: make it display the QR code leaderboard when QR codes are selected at the top.
 
         FirebaseWrapper.getAllUsers(users -> {
-            adapter = new UserAdapter(requireActivity(), users);
-            ListView usersView = view.findViewById(R.id.leaderboard_listview);
-            usersView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+            leaderboardView.setVisibility(View.VISIBLE);
+
+            UserScoreComparator sc = new UserScoreComparator();
+            users.sort(sc);
+            userAdapter = new UserAdapter(requireActivity(), users);
+            leaderboardView.setAdapter(userAdapter);
+
+            loadingText.setVisibility(View.GONE);
         });
     }
 }

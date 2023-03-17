@@ -40,12 +40,12 @@ public class UserAdapter extends ArrayAdapter<User> {
         }
         User user = getItem(position);
 
-        TextView OtherUserNameView = view.findViewById(R.id.OtherUserNameView);
-        TextView OtherUserScoreView = view.findViewById(R.id.OtherUserScoreView);
-        ImageView OtherUserImageView = view.findViewById(R.id.imageView2);
-        OtherUserNameView.setText(user.getUserName());
-        OtherUserScoreView.setText(String.valueOf(user.getTotalScore()));
-        OtherUserImageView.setImageResource(R.drawable.discordpic);
+        TextView name = view.findViewById(R.id.OtherUserNameView);
+        TextView score = view.findViewById(R.id.OtherUserScoreView);
+        ImageView image = view.findViewById(R.id.imageView2);
+        name.setText(user.getUserName());
+        score.setText(String.valueOf(user.getTotalScore()));
+        image.setImageResource(R.drawable.discordpic);
         return view;
     }
 }
