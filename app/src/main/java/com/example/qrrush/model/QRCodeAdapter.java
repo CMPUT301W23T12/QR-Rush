@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.QRCode;
@@ -39,6 +40,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
     Boolean editable;
 
+    Context context;
+
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
      *
@@ -51,6 +54,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         qrCodes = objects;
         this.user = user;
         this.editable = editable;
+        this.context = context;
     }
 
 
@@ -114,6 +118,9 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         });
 
         Button commentButton = view.findViewById(R.id.commentButton);
+        if (!editable){
+            commentButton.setVisibility(View.GONE);
+        }
         commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,11 +183,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                         // We need to create a user object with that so we gotta use getUserData
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
                                             // scannedByList.get(pos) returns the name -> STRING
-                                            // Create a user object from that (getUserdata)
                                             // send the user object to the profile fragment
-//                                            user.get();
-//                                            requireActivity().getSupportFragmentManager().beginTransaction()
-//                                                    .replace(R.id.main_view, new ProfileFragment(user, false)).commit();
+                                            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction()
+                                                    .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+
                                         });
 
 
