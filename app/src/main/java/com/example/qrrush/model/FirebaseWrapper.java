@@ -15,7 +15,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -143,35 +142,34 @@ public class FirebaseWrapper {
     public static void getAllUsers(Consumer<ArrayList<User>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        db.collection("profiles").orderBy("score", Query.Direction.DESCENDING)
-                .get().addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        throw new RuntimeException("Bruh moment");
+        db.collection("profiles").get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                throw new RuntimeException("Bruh moment");
+            }
+
+            QuerySnapshot querySnapshot = task.getResult();
+            if (querySnapshot == null) {
+                throw new RuntimeException("something went wrong while handling data");
+            }
+
+            ArrayList<User> users = new ArrayList<>();
+            querySnapshot.forEach(documentSnapshot -> {
+                String username = documentSnapshot.getId();
+                Task<DocumentSnapshot> t = FirebaseWrapper.getUserData(username, user -> {
+                    if (!user.isPresent()) {
+                        return;
                     }
 
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot == null) {
-                        throw new RuntimeException("something went wrong while handling data");
-                    }
-
-                    ArrayList<User> users = new ArrayList<>();
-                    querySnapshot.forEach(documentSnapshot -> {
-                        String username = documentSnapshot.getId();
-                        Task<DocumentSnapshot> t = FirebaseWrapper.getUserData(username, user -> {
-                            if (!user.isPresent()) {
-                                return;
-                            }
-
-                            users.add(user.get());
-                        });
-
-                        while (!t.isComplete()) {
-                            // Intentionally empty loop
-                        }
-                    });
-
-                    callback.accept(users);
+                    users.add(user.get());
                 });
+
+                while (!t.isComplete()) {
+                    // Intentionally empty loop
+                }
+            });
+
+            callback.accept(users);
+        });
     }
 
     public static void getAllQRCodes(Consumer<ArrayList<QRCode>> callback) {
@@ -229,55 +227,52 @@ public class FirebaseWrapper {
     public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        return db.collection("profiles").document(username)
-                .get()
-                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
-                    if (!t.isSuccessful()) {
-                        Log.e("getUserData", "task failed!");
-                        return;
+        return db.collection("profiles").document(username).get().addOnCompleteListener(t -> {
+            if (!t.isSuccessful()) {
+                Log.e("getUserData", "task failed!");
+                return;
+            }
+
+            DocumentSnapshot ds = t.getResult();
+            if (!ds.exists()) {
+                userConsumer.accept(Optional.empty());
+                return;
+            }
+
+            User user = new User(
+                    username,
+                    ds.getString("phone-number"),
+                    ds.getLong("rank").intValue(),
+                    new ArrayList<>()
+            );
+
+            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+            for (String hash : hashes) {
+                Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
+                    GeoPoint g = (GeoPoint) ds.get("location");
+                    Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
+                    QRCode code = new QRCode(hash, timestamp);
+                    if (g != null) {
+                        Location l = new Location("");
+                        l.setLatitude(g.getLatitude());
+                        l.setLongitude(g.getLongitude());
+                        code.setLocation(l);
                     }
 
-                    DocumentSnapshot ds = t.getResult();
-                    if (!ds.exists()) {
-                        userConsumer.accept(Optional.empty());
-                        return;
+                    user.addQRCodeWithoutFirebase(code);
+                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
                     }
-
-                    User user = new User(
-                            username,
-                            ds.getString("phone-number"),
-                            ds.getLong("rank").intValue(),
-                            ds.getLong("score").intValue(),
-                            new ArrayList<>()
-                    );
-
-                    ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-                    ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
-                    for (String hash : hashes) {
-                        Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
-                            GeoPoint g = (GeoPoint) ds.get("location");
-                            Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
-                            QRCode code = new QRCode(hash, timestamp);
-                            if (g != null) {
-                                Location l = new Location("");
-                                l.setLatitude(g.getLatitude());
-                                l.setLongitude(g.getLongitude());
-                                code.setLocation(l);
-                            }
-
-                            user.addQRCodeWithoutFirebase(code);
-                            if (comments.size() > 0 && comments.size() >= hashes.size()) {
-                                user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
-                            }
-                        });
-
-                        while (!task.isComplete()) {
-                            // Empty loop is on purpose. We need to wait for these to finish.
-                        }
-                    }
-
-                    userConsumer.accept(Optional.of(user));
                 });
+
+                while (!task.isComplete()) {
+                    // Empty loop is on purpose. We need to wait for these to finish.
+                }
+            }
+
+            userConsumer.accept(Optional.of(user));
+        });
     }
 
     /**
