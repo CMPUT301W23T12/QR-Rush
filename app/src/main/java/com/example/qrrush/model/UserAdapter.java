@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,18 +18,19 @@ import java.util.ArrayList;
 /**
  * Custom adapter that will display the high scores of all players
  */
-public class LeaderboardAdapter extends ArrayAdapter<User> {
+public class UserAdapter extends ArrayAdapter<User> {
     ArrayList<User> users;
-
 
     /**
      * Creates a LeaderboardAdapter, unsure of datatype for now.
+     *
      * @param context The context object to pass to the super constructor.
      */
-    public LeaderboardAdapter(Context context,ArrayList<User> objects) {
+    public UserAdapter(Context context, ArrayList<User> objects) {
         super(context, 0, objects);
         users = objects;
     }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -40,8 +42,10 @@ public class LeaderboardAdapter extends ArrayAdapter<User> {
 
         TextView OtherUserNameView = view.findViewById(R.id.OtherUserNameView);
         TextView OtherUserScoreView = view.findViewById(R.id.OtherUserScoreView);
+        ImageView OtherUserImageView = view.findViewById(R.id.imageView2);
         OtherUserNameView.setText(user.getUserName());
         OtherUserScoreView.setText(String.valueOf(user.getTotalScore()));
+        OtherUserImageView.setImageResource(R.drawable.discordpic);
         return view;
     }
 }

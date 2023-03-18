@@ -13,21 +13,15 @@ import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
-import com.example.qrrush.model.LeaderboardAdapter;
 import com.example.qrrush.model.User;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
+import com.example.qrrush.model.UserAdapter;
 
 /**
  * The fragment which opens the leaderboard and displays all information
  */
 public class LeaderboardFragment extends Fragment {
-    ListView LeaderList;
     User user;
-    ArrayList<User> users;
-    LeaderboardAdapter adapter;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    UserAdapter adapter;
 
     /**
      * Creates a LeaderboardFragment for the given user.
@@ -57,9 +51,10 @@ public class LeaderboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // TODO: display some loading screen while this finishes.
+        // TODO: make it display the QR code leaderboard when QR codes are selected at the top.
 
         FirebaseWrapper.getAllUsers(users -> {
-            adapter = new LeaderboardAdapter(requireActivity(), users);
+            adapter = new UserAdapter(requireActivity(), users);
             ListView usersView = view.findViewById(R.id.leaderboard_listview);
             usersView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
