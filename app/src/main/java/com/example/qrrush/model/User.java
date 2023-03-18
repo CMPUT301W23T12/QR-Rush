@@ -4,10 +4,16 @@ import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +22,7 @@ import java.util.Optional;
 /**
  * The class representing a user in the game.
  */
-public class User {
+public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private int rank;
@@ -37,6 +43,12 @@ public class User {
     public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
+        this.rank = rank;
+        this.qrCodes = qrCodes;
+    }
+
+    public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
+        this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
     }
@@ -212,13 +224,37 @@ public class User {
      * @param code The QR code to add to the user's account.
      */
     public void addQRCode(QRCode code) {
-        HashMap<String, Object> data = new HashMap<>();
-        if (code.getLocation().isPresent()) {
-            Location l = code.getLocation().get();
-            data.put("location", new GeoPoint(l.getLatitude(), l.getLongitude()));
-        }
-        data.put("date", new Timestamp(new Date()));
-        FirebaseWrapper.addData("qrcodes", code.getHash(), data);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
+
+        qrCodeRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                HashMap<String, Object> data = new HashMap<>();
+                if (code.getLocation().isPresent()) {
+                    Location l = code.getLocation().get();
+                    data.put("location", new GeoPoint(l.getLatitude(), l.getLongitude()));
+                } else {
+                    Location l = null;
+                    data.put("location", l);
+                }
+                data.put("date", new Timestamp(new Date()));
+
+                if (document.exists()) {
+                    data.put("scannedby", FieldValue.arrayUnion(this.getUserName()));
+                    qrCodeRef.update(data)
+                            .addOnSuccessListener(aVoid -> Log.d("addQRCode", "QR code document updated"))
+                            .addOnFailureListener(e -> Log.w("addQRCode", "Error updating QR code document", e));
+                } else {
+                    data.put("scannedby", Arrays.asList(this.getUserName()));
+                    qrCodeRef.set(data)
+                            .addOnSuccessListener(aVoid -> Log.d("addQRCode", "New QR code document created"))
+                            .addOnFailureListener(e -> Log.w("addQRCode", "Error creating new QR code document", e));
+                }
+            } else {
+                Log.w("addQRCode", "Error getting document", task.getException());
+            }
+        });
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {
@@ -227,17 +263,16 @@ public class User {
                 return;
             }
 
-            Map<String, Object> newData = documentSnapshot.getData();
+            Map<String, Object> profileData = documentSnapshot.getData();
             this.qrCodes.add(code);
-            // TODO: check if they've already scanned this one before.
-            ArrayList<String> codes = (ArrayList<String>) newData.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) newData.get("qrcodescomments");
+            ArrayList<String> codes = (ArrayList<String>) profileData.get("qrcodes");
+            ArrayList<String> comments = (ArrayList<String>) profileData.get("qrcodescomments");
             codes.add(code.getHash());
             comments.add(null);
-            newData.replace("qrcodescomments", comments);
-            newData.replace("qrcodes", codes);
-            newData.put("score", this.getTotalScore());
-            FirebaseWrapper.updateData("profiles", this.getUserName(), newData);
+            profileData.replace("qrcodescomments", comments);
+            profileData.replace("qrcodes", codes);
+            profileData.put("score", this.getTotalScore());
+            FirebaseWrapper.updateData("profiles", this.getUserName(), profileData);
         });
     }
 }

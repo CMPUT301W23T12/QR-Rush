@@ -25,6 +25,7 @@ import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -35,20 +36,24 @@ import java.util.Optional;
  * sorting the users QR codes by date, score and name,
  * letting the user edit there username by interacting with firebase
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
+
+    Boolean editable;
 
     /**
      * Grabs User object from the main activity
      *
      * @param user The user who's profile should be displayed.
      */
-    public ProfileFragment(User user) {
+    public ProfileFragment(User user, Boolean editable) {
         // Required empty public constructor
         this.user = user;
+        this.editable = editable;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,7 +87,7 @@ public class ProfileFragment extends Fragment {
         scoreText.setText("SCORE");
 
         // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
+        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
 
@@ -123,6 +128,9 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+        qrCodeAdapter.notifyDataSetChanged();
+
         // Update the UI whenever the arrayAdapter gets a change.
         qrCodeAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -136,7 +144,9 @@ public class ProfileFragment extends Fragment {
 
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
-
+        if(!editable){
+            editNameButton.setVisibility(View.GONE);
+        }
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
@@ -196,5 +206,6 @@ public class ProfileFragment extends Fragment {
             dialog.show();
         });
     }
+
 }
 

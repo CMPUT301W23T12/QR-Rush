@@ -1,5 +1,7 @@
 package com.example.qrrush.model;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -17,9 +19,11 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A wrapper class for accessing the Firebase database for QR Rush.
@@ -242,6 +246,39 @@ public class FirebaseWrapper {
                 });
     }
 
+
+
+
+
+    public static void getScannedQRCodeData(String hash, String username, Consumer<List<String>> scannedByListConsumer) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
+                        return;
+                    }
+
+                    // Retrieve the array of users who have scanned the QR code
+                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
+
+                    // Filter out the given username
+                    scannedByList.remove(username);
+
+                    scannedByListConsumer.accept(scannedByList);
+                });
+    }
+
+
+
     /**
      * This method will delete a given username under the "profiles" collection, this method should
      * not be used unless you are 100% certain you wish to delete that user, this method was
@@ -266,4 +303,5 @@ public class FirebaseWrapper {
                     }
                 });
     }
+
 }

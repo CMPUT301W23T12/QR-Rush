@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +16,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
+import com.example.qrrush.view.ProfileFragment;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -32,6 +38,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
 
+    Boolean editable;
+
+    Context context;
+
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
      *
@@ -39,10 +49,12 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
      * @param objects The QR codes to display.
      * @param user    The user which is associated with the QR Codes.
      */
-    public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user) {
+    public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user, Boolean editable) {
         super(context, 0, objects);
         qrCodes = objects;
         this.user = user;
+        this.editable = editable;
+        this.context = context;
     }
 
 
@@ -72,8 +84,6 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             commentEditText.setVisibility(View.GONE);
             commentEditText.setText("");
         }
-
-
         String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
@@ -84,6 +94,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         pointView.setText("Score: " + qrCode.getScore());
 
         Button deleteButton = view.findViewById(R.id.deleteButton);
+
+        if(!editable){
+            deleteButton.setVisibility(View.GONE);
+        }
 
         // Image will be fit into the size of the image view
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false);
@@ -103,7 +117,11 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             }
         });
 
-        view.setOnClickListener(new View.OnClickListener() {
+        Button commentButton = view.findViewById(R.id.commentButton);
+        if (!editable){
+            commentButton.setVisibility(View.GONE);
+        }
+        commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -143,6 +161,42 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                 });
 
                 builder.show();
+            }
+        });
+
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Display other users who have scanned the same QR code as an AlertDialog
+                FirebaseWrapper.getScannedQRCodeData(qrCode.getHash(), user.getUserName(), (scannedByList) -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Scanned by...");
+                    if (scannedByList.isEmpty()) {
+                        builder.setMessage("No other user has scanned this QR code yet.");
+                    } else {
+                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int pos) {
+                                        // position is tracked by "pos" so now we pass the clickable profile
+                                        // We need to create a user object with that so we gotta use getUserData
+                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+                                            // scannedByList.get(pos) returns the name -> STRING
+                                            // send the user object to the profile fragment
+                                            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction()
+                                                    .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+
+                                        });
+
+
+                                    }
+                                });
+                    }
+                    builder.setPositiveButton("OK", null);
+                    builder.show();
+                });
+
             }
         });
 
