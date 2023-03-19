@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -117,7 +118,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                         GeoPoint geoPoint = document.getGeoPoint("location");
                         if (geoPoint != null) {
                             LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                            Marker marker = googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+                            googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
 
                             // Add marker click listener to show alert dialog
                             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -126,7 +127,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                     // Create and show alert dialog
                                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                        builder.setTitle("QR CODE");
+                                        builder.setTitle("QR CODE\nHash:" + document.getId());
                                         if (scannedByList.isEmpty()) {
                                             builder.setMessage("No other user has scanned this QR code yet.");
                                         } else {
