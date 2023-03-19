@@ -5,7 +5,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.qrrush.controller.ScoreComparator;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -15,13 +14,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -140,77 +141,6 @@ public class FirebaseWrapper {
         });
     }
 
-    public static void getAllUsers(Consumer<ArrayList<User>> callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
-        db.collection("profiles").get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
-                throw new RuntimeException("Bruh moment");
-            }
-
-            QuerySnapshot querySnapshot = task.getResult();
-            if (querySnapshot == null) {
-                throw new RuntimeException("something went wrong while handling data");
-            }
-
-            ArrayList<User> users = new ArrayList<>();
-            AtomicInteger pendingUsers = new AtomicInteger(querySnapshot.size());
-
-
-            querySnapshot.forEach(documentSnapshot -> {
-                String username = documentSnapshot.getId();
-                Task<DocumentSnapshot> t = FirebaseWrapper.getUserData(username, user -> {
-                    if (!user.isPresent()) {
-                        return;
-                    }
-                    if(user.isPresent()){
-                        users.add(user.get());
-                    }
-                    if (pendingUsers.decrementAndGet() == 0) {
-                        callback.accept(users);
-                    }
-
-                });
-
-                while (!t.isComplete()) {
-                    // Intentionally empty loop
-                }
-            });
-
-            callback.accept(users);
-        });
-    }
-
-    public static void getAllQRCodes(Consumer<ArrayList<QRCode>> callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
-        db.collection("qrcodes")
-                .get().addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        throw new RuntimeException("Bruh moment");
-                    }
-
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot == null) {
-                        throw new RuntimeException("something went wrong while handling data");
-                    }
-
-                    ArrayList<QRCode> codes = new ArrayList<>();
-                    querySnapshot.forEach(documentSnapshot -> {
-                        String hash = documentSnapshot.getId();
-                        Task<DocumentSnapshot> t = FirebaseWrapper.getQRCodeData(hash, codes::add);
-
-                        while (!t.isComplete()) {
-                            // Intentionally empty loop
-                        }
-                    });
-
-                    ScoreComparator scoreComparator = new ScoreComparator();
-                    codes.sort(scoreComparator);
-                    callback.accept(codes);
-                });
-    }
-
     public static Task<DocumentSnapshot> getData(String collection, String documentID, Consumer<DocumentSnapshot> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
@@ -233,55 +163,58 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
+    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        return db.collection("profiles").document(username).get().addOnCompleteListener(t -> {
-            if (!t.isSuccessful()) {
-                Log.e("getUserData", "task failed!");
-                return;
-            }
-
-            DocumentSnapshot ds = t.getResult();
-            if (!ds.exists()) {
-                userConsumer.accept(Optional.empty());
-                return;
-            }
-
-            User user = new User(
-                    username,
-                    ds.getString("phone-number"),
-                    ds.getLong("rank").intValue(),
-                    new ArrayList<>()
-            );
-
-            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
-            for (String hash : hashes) {
-                Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
-                    GeoPoint g = (GeoPoint) ds.get("location");
-                    Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
-                    QRCode code = new QRCode(hash, timestamp);
-                    if (g != null) {
-                        Location l = new Location("");
-                        l.setLatitude(g.getLatitude());
-                        l.setLongitude(g.getLongitude());
-                        code.setLocation(l);
+        db.collection("profiles").document(username)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getUserData", "task failed!");
+                        return;
                     }
 
-                    user.addQRCodeWithoutFirebase(code);
-                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
-                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        userConsumer.accept(Optional.empty());
+                        return;
                     }
+
+                    User user = new User(
+                            username,
+                            ds.getString("phone-number"),
+                            ds.getLong("rank").intValue(),
+                            ds.getLong("score").intValue(),
+                            new ArrayList<>()
+                    );
+
+                    ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+                    ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+                    for (String hash : hashes) {
+                        Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
+                            GeoPoint g = (GeoPoint) ds.get("location");
+                            Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
+                            QRCode code = new QRCode(hash, timestamp);
+                            if (g != null) {
+                                Location l = new Location("");
+                                l.setLatitude(g.getLatitude());
+                                l.setLongitude(g.getLongitude());
+                                code.setLocation(l);
+                            }
+
+                            user.addQRCodeWithoutFirebase(code);
+                            if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                                user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                            }
+                        });
+
+                        while (!task.isComplete()) {
+                            // Empty loop is on purpose. We need to wait for these to finish.
+                        }
+                    }
+
+                    userConsumer.accept(Optional.of(user));
                 });
-
-                while (!task.isComplete()) {
-                    // Empty loop is on purpose. We need to wait for these to finish.
-                }
-            }
-
-            userConsumer.accept(Optional.of(user));
-        });
     }
 
     /**
@@ -313,6 +246,100 @@ public class FirebaseWrapper {
                 });
     }
 
+    public static void getScannedQRCodeData(String hash, String username, Consumer<List<String>> scannedByListConsumer) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
+                        return;
+                    }
+
+                    // Retrieve the array of users who have scanned the QR code
+                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
+
+                    // Filter out the given username
+                    scannedByList.remove(username);
+
+                    scannedByListConsumer.accept(scannedByList);
+                });
+    }
+
+    private static void getUsers(QuerySnapshot profileSnapshot, QuerySnapshot qrCodeSnapshot,
+                                 Consumer<ArrayList<User>> callback) {
+        // Get all the QR codes into a list
+        HashMap<String, QRCode> qrCodes = new HashMap<>(qrCodeSnapshot.size());
+        Iterator<QueryDocumentSnapshot> it = qrCodeSnapshot.iterator();
+        while (it.hasNext()) {
+            DocumentSnapshot d = it.next();
+
+            QRCode code = new QRCode(d.getId(), d.getTimestamp("date"));
+            Object maybeLocation = d.get("location");
+            if (maybeLocation != null) {
+                GeoPoint g = (GeoPoint) maybeLocation;
+                Location l = new Location("");
+                l.setLongitude(g.getLongitude());
+                l.setLatitude(g.getLatitude());
+                code.setLocation(l);
+            }
+
+            qrCodes.put(d.getId(), code);
+        }
+
+        // Add all the users to a list
+        ArrayList<User> users = new ArrayList<>(profileSnapshot.size());
+        it = profileSnapshot.iterator();
+        while (it.hasNext()) {
+            DocumentSnapshot d = it.next();
+
+            ArrayList<QRCode> codes = new ArrayList<>();
+            ArrayList<String> hashes = (ArrayList<String>) d.get("qrcodes");
+            for (String hash : hashes) {
+                codes.add(qrCodes.get(hash));
+            }
+
+            users.add(new User(
+                    d.getId(),
+                    d.getString("phone-number"),
+                    d.getLong("rank").intValue(),
+                    d.getLong("score").intValue(),
+                    codes
+            ));
+        }
+
+        callback.accept(users);
+    }
+
+    /**
+     * This method will get all users from firebase, and provide an ArrayList<User> for the person
+     * who calls this.
+     *
+     * @param callback The callback which receives the list of users.
+     */
+    public static void getAllUsers(Consumer<ArrayList<User>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles").get().addOnSuccessListener(querySnapshot -> {
+                    db.collection("qrcodes").get()
+                            .addOnSuccessListener(qrCodeQuerySnapshot -> {
+                                getUsers(querySnapshot, qrCodeQuerySnapshot, callback);
+                            })
+                            .addOnFailureListener(exception -> {
+                                Log.d("FirebaseWrapper", "Error deleting the document.");
+                            });
+                })
+                .addOnFailureListener(exception -> {
+                    Log.d("FirebaseWrapper", "Error deleting the document.");
+                });
+    }
+
     /**
      * This method will delete a given username under the "profiles" collection, this method should
      * not be used unless you are 100% certain you wish to delete that user, this method was
@@ -337,4 +364,5 @@ public class FirebaseWrapper {
                     }
                 });
     }
+
 }

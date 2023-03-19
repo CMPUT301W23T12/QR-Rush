@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.qrrush.model.Geo;
 import com.example.qrrush.R;
+import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +22,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 /**
  * The MainFragment class represents the main fragment(home page) of the QR Rush app.
@@ -65,6 +68,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Obtain the SupportMapFragment object from the layout using getChildFragmentManager()
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
 
+
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
     }
@@ -85,16 +89,41 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        //when map is loaded
+        // When map is loaded
         Geo.getCurrentLocation(location -> {
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
-        });
 
+            // Fetch QRCode locations from Firebase
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
+                if (error != null) {
+                    Log.w("MainFragment", "Listen failed.", error);
+                    return;
+                }
+
+                if (querySnapshot != null) {
+                    googleMap.clear(); // Clear previous markers from the map
+                    // Add the device location marker again after clearing the map
+                    googleMap.addMarker(new MarkerOptions().position(deviceLocation));
+
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        GeoPoint geoPoint = document.getGeoPoint("location");
+                        if (geoPoint != null) {
+                            LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+                            googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+                        }
+                    }
+                } else {
+                    Log.d("MainFragment", "Current data: null");
+                }
+            });
+        });
     }
 }
+
 
 
 

@@ -86,11 +86,21 @@
         <Button
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="35dp"
             android:text="Delete"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/locationView" />
+
+        <Button
+            android:id="@+id/commentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="Comment"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/locationView" />
+
 
     </LinearLayout>
 
