@@ -4,89 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
-    android:layout_gravity="top"
+    android:orientation="vertical"
     tools:context=".view.MainActivity">
 
-
-    <FrameLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/main_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:background="@color/white_wash"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/profile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PROFILE" />
 
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/shop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SHOP" />
 
-            <ImageButton
-                android:id="@+id/profile_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white_wash"
-                android:scaleType="centerCrop"
-                android:scaleX="1"
-                android:scaleY="1"
-                app:srcCompat="@drawable/profile" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/main_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MAIN" />
 
-            <ImageButton
-                android:id="@+id/shop_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white_wash"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/shop" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/social_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SOCIAL" />
 
-            <ImageButton
-                android:id="@+id/main_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white_wash"
-                android:scaleType="centerCrop"
-                android:scaleX="1"
-                android:scaleY="1"
-                app:srcCompat="@drawable/main" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/leaderboard_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LEADER" />
 
-            <ImageButton
-                android:id="@+id/social_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white_wash"
-                android:scaleType="centerCrop"
-                android:scaleX="1"
-                android:scaleY="1"
-                app:srcCompat="@drawable/social" />
+    </com.google.android.material.tabs.TabLayout>
 
-            <ImageButton
-                android:id="@+id/leaderboard_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white_wash"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/leaderboard" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-        </LinearLayout>
-
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

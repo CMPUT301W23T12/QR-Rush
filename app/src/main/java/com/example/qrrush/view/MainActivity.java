@@ -11,12 +11,15 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
+import com.example.qrrush.model.ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     ImageButton socialButton;
     ImageButton leaderboardButton;
     User user;
+    TabLayout main_view;
+    ViewPager2 viewPager2;
+    ViewPagerAdapter viewPagerAdapter;
 
     private FirebaseFirestore firestore;
 
@@ -163,6 +169,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         main();
+
+
+        main_view = findViewById(R.id.main_view);
+        viewPager2 = findViewById(R.id.viewPager);
+        viewPagerAdapter = new ViewPagerAdapter(this);
+        viewPager2.setAdapter(viewPagerAdapter);
+        main_view.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager2.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                main_view.getTabAt(position).select();
+
+            }
+        });
     }
 
 }

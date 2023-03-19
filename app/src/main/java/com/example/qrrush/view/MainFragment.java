@@ -1,8 +1,10 @@
 package com.example.qrrush.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,7 +36,6 @@ import com.google.firebase.firestore.GeoPoint;
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
-
     /**
      * Grabs the User object from the main activity
      *
