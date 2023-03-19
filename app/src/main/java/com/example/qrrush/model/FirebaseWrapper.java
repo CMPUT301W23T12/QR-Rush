@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -153,14 +154,22 @@ public class FirebaseWrapper {
             }
 
             ArrayList<User> users = new ArrayList<>();
+            AtomicInteger pendingUsers = new AtomicInteger(querySnapshot.size());
+
+
             querySnapshot.forEach(documentSnapshot -> {
                 String username = documentSnapshot.getId();
                 Task<DocumentSnapshot> t = FirebaseWrapper.getUserData(username, user -> {
                     if (!user.isPresent()) {
                         return;
                     }
+                    if(user.isPresent()){
+                        users.add(user.get());
+                    }
+                    if (pendingUsers.decrementAndGet() == 0) {
+                        callback.accept(users);
+                    }
 
-                    users.add(user.get());
                 });
 
                 while (!t.isComplete()) {
