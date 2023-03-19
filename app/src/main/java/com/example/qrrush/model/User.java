@@ -3,11 +3,9 @@ package com.example.qrrush.model;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -229,7 +227,7 @@ public class User implements Serializable {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
 
-        qrCodeRef.get().addOnCompleteListener(task -> {
+        Task<DocumentSnapshot> t = qrCodeRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 HashMap<String, Object> data = new HashMap<>();
@@ -257,6 +255,9 @@ public class User implements Serializable {
                 Log.w("addQRCode", "Error getting document", task.getException());
             }
         });
+        while (!t.isComplete()) {
+            // Intentionally empty loop
+        }
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {

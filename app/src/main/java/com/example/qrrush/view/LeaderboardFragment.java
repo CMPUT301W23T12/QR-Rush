@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
-import com.example.qrrush.controller.UserScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
@@ -66,11 +65,8 @@ public class LeaderboardFragment extends Fragment {
         // TODO: make it display the QR code leaderboard when QR codes are selected at the top.
 
         FirebaseWrapper.getAllUsers(users -> {
+            userAdapter = new UserAdapter(requireContext(), users);
             leaderboardView.setVisibility(View.VISIBLE);
-
-            UserScoreComparator sc = new UserScoreComparator();
-            users.sort(sc);
-            userAdapter = new UserAdapter(requireActivity(), users);
             leaderboardView.setAdapter(userAdapter);
 
             loadingText.setVisibility(View.GONE);
