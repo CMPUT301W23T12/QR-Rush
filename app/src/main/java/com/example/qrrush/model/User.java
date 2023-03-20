@@ -3,6 +3,7 @@ package com.example.qrrush.model;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,10 +38,9 @@ public class User implements Serializable {
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
-     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
@@ -227,7 +227,7 @@ public class User implements Serializable {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
 
-        qrCodeRef.get().addOnCompleteListener(task -> {
+        Task<DocumentSnapshot> t = qrCodeRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 HashMap<String, Object> data = new HashMap<>();
@@ -255,6 +255,9 @@ public class User implements Serializable {
                 Log.w("addQRCode", "Error getting document", task.getException());
             }
         });
+        while (!t.isComplete()) {
+            // Intentionally empty loop
+        }
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {

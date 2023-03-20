@@ -60,6 +60,26 @@
             android:text="Friends" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/top_users_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+        <include layout="@layout/top_user_item" android:id="@+id/top_user1"/>
+
+        <include
+            android:id="@+id/top_user2"
+            layout="@layout/top_user_item" />
+
+        <include layout="@layout/top_user_item" android:id="@+id/top_user3"/>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/leaderboard_listview"
         android:layout_width="match_parent"
@@ -67,9 +87,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
-
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@+id/top_users_container"/>
 
     <TextView
         android:id="@+id/leaderboard_loading_text"
