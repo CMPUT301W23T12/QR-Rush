@@ -74,6 +74,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Obtain the SupportMapFragment object from the layout using getChildFragmentManager()
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
 
+
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
     }

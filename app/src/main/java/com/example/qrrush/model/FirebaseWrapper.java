@@ -1,7 +1,5 @@
 package com.example.qrrush.model;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -16,14 +14,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A wrapper class for accessing the Firebase database for QR Rush.
@@ -246,10 +246,6 @@ public class FirebaseWrapper {
                 });
     }
 
-
-
-
-
     public static void getScannedQRCodeData(String hash, String username, Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
@@ -277,7 +273,72 @@ public class FirebaseWrapper {
                 });
     }
 
+    private static void getUsers(QuerySnapshot profileSnapshot, QuerySnapshot qrCodeSnapshot,
+                                 Consumer<ArrayList<User>> callback) {
+        // Get all the QR codes into a list
+        HashMap<String, QRCode> qrCodes = new HashMap<>(qrCodeSnapshot.size());
+        Iterator<QueryDocumentSnapshot> it = qrCodeSnapshot.iterator();
+        while (it.hasNext()) {
+            DocumentSnapshot d = it.next();
 
+            QRCode code = new QRCode(d.getId(), d.getTimestamp("date"));
+            Object maybeLocation = d.get("location");
+            if (maybeLocation != null) {
+                GeoPoint g = (GeoPoint) maybeLocation;
+                Location l = new Location("");
+                l.setLongitude(g.getLongitude());
+                l.setLatitude(g.getLatitude());
+                code.setLocation(l);
+            }
+
+            qrCodes.put(d.getId(), code);
+        }
+
+        // Add all the users to a list
+        ArrayList<User> users = new ArrayList<>(profileSnapshot.size());
+        it = profileSnapshot.iterator();
+        while (it.hasNext()) {
+            DocumentSnapshot d = it.next();
+
+            ArrayList<QRCode> codes = new ArrayList<>();
+            ArrayList<String> hashes = (ArrayList<String>) d.get("qrcodes");
+            for (String hash : hashes) {
+                codes.add(qrCodes.get(hash));
+            }
+
+            users.add(new User(
+                    d.getId(),
+                    d.getString("phone-number"),
+                    d.getLong("rank").intValue(),
+                    d.getLong("score").intValue(),
+                    codes
+            ));
+        }
+
+        callback.accept(users);
+    }
+
+    /**
+     * This method will get all users from firebase, and provide an ArrayList<User> for the person
+     * who calls this.
+     *
+     * @param callback The callback which receives the list of users.
+     */
+    public static void getAllUsers(Consumer<ArrayList<User>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles").get().addOnSuccessListener(querySnapshot -> {
+                    db.collection("qrcodes").get()
+                            .addOnSuccessListener(qrCodeQuerySnapshot -> {
+                                getUsers(querySnapshot, qrCodeQuerySnapshot, callback);
+                            })
+                            .addOnFailureListener(exception -> {
+                                Log.d("FirebaseWrapper", "Error deleting the document.");
+                            });
+                })
+                .addOnFailureListener(exception -> {
+                    Log.d("FirebaseWrapper", "Error deleting the document.");
+                });
+    }
 
     /**
      * This method will delete a given username under the "profiles" collection, this method should
