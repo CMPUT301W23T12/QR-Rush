@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         // Get everything from firebase
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
-
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
             shopButton = (ImageButton) findViewById(R.id.shop_button);
