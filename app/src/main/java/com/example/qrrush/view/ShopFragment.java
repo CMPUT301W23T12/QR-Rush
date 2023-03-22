@@ -97,7 +97,6 @@ public class ShopFragment extends Fragment {
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
                 nameContentText.setText("Name: " + code.getName());
-
             }
         });
 
@@ -113,7 +112,6 @@ public class ShopFragment extends Fragment {
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
                 nameContentText.setText("Name: " + code.getName());
-                tryPurchaseQRCode(code);
             }
         });
 
@@ -129,7 +127,6 @@ public class ShopFragment extends Fragment {
                 scoreText.setText("Score: " + code.getScore());
                 qrContentText.setText("QR content: " + code.getHash());
                 nameContentText.setText("Name: " + code.getName());
-                tryPurchaseQRCode(code);
             }
         });
 
