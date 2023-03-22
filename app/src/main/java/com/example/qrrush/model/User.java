@@ -26,6 +26,7 @@ public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private int rank;
+    private int totalScore;
     private ArrayList<QRCode> qrCodes;
     // unsure of data type for now
     private String profilePicture;
@@ -47,6 +48,7 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.totalScore = totalScore;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
@@ -54,6 +56,10 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public String getUserName() {
@@ -100,6 +106,7 @@ public class User implements Serializable {
         this.rank = rank;
     }
 
+
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
     }
@@ -114,6 +121,9 @@ public class User implements Serializable {
         }
 
         return result;
+    }
+    public int getTotalScoreMemeber() {
+        return totalScore;
     }
 
     /**

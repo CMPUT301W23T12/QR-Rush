@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 
 /**
@@ -34,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
     ImageButton socialButton;
     ImageButton leaderboardButton;
     User user;
-
+    ArrayList<User> users;
     private FirebaseFirestore firestore;
+    TextView loadingText;
 
     static final String[] PERMISSIONS = {
             android.Manifest.permission.CAMERA,
@@ -104,12 +108,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
+        loadingText = findViewById(R.id.main_loading_text);
+        loadingText.setVisibility(View.VISIBLE);
+
         // Get everything from firebase
-        // TODO: show a loading animation while we get everything from firebase, then load the UI
-        //       once its done.
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
-
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
             shopButton = (ImageButton) findViewById(R.id.shop_button);
@@ -147,11 +151,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void removeLoadingScreen() {
+        this.loadingText.setVisibility(View.GONE);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wait_for_permission);
-
         // TODO: If they say no, explain what the permissions are for and explain that they are
         //  needed for the app to work?
 
@@ -163,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         main();
+
     }
 
 }
