@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -16,6 +17,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,8 @@ import java.util.stream.Collectors;
  * <a href="https://github.com/CMPUT301W23T12/6ixStacks/wiki/FirebaseWrapper-API-Documentation"> the wiki.</a>
  */
 public class FirebaseWrapper {
+    static ArrayList<User> users = new ArrayList<User>();
+
     /**
      * This methods creates a new collection (collectionName) and new Document (documentName)
      * you must create a hashmap of type &lt;String, Object&gt; and populate the data before adding
@@ -302,6 +307,39 @@ public class FirebaseWrapper {
                         Log.d("FirebaseWrapper", "Error deleting the document.");
                     }
                 });
+    }
+    public static ArrayList<User> getAllCollection(User user){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            users.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                if (!user.getUserName().matches(document.getId())){
+                                    users.add(new User(document.getId(),
+                                            "",
+                                            ((Long) document.getData().get("rank")).intValue(),
+                                            ((Long) document.getData().get("score")).intValue(),
+                                            new ArrayList<>()));
+                                } else{
+                                    user.setRank(((Long) document.getData().get("rank")).intValue());
+                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
+                                    users.add(user);
+                                }
+                            }
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ", task.getException());
+                        }
+                        while (!task.isComplete()) {
+                            // Empty loop is on purpose. We need to wait for these to finish.
+                        }
+                    }
+                });
+        return users;
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
@@ -26,7 +28,10 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,9 +45,8 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
-
+    ArrayList<User> users;
     Boolean editable;
-
     /**
      * Grabs User object from the main activity
      *
@@ -69,6 +73,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        users = FirebaseWrapper.getAllCollection(user);
         super.onViewCreated(view, savedInstanceState);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
@@ -91,9 +96,27 @@ public class ProfileFragment extends Fragment implements Serializable {
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
 
+
+        Collections.sort(users, new RankComparator());
+        for (int i = 0; i < users.size(); ++i){
+            Log.e("TEST",users.get(i).getUserName() +":"+(users.get(i).getTotalScoreMemeber()));
+        }
+
+        HashMap<String, Object> data = new HashMap<>();
+        for (int i = 0; i < users.size(); ++i){
+            data.put("rank",(users.indexOf(users.get(i)))+1);
+            FirebaseWrapper.updateData("profiles",users.get(i).getUserName(), data);
+            if (user.getUserName().matches(users.get(i).getUserName())){
+                user.setRank(((users.indexOf(users.get(i)))+1));
+//                rankView.setText(String.valueOf((users.indexOf(users.get(i)))+1));
+            }
+        }
+
+
         // On launch sorting is set by date (sortingTracker = 1)
         //      by points (sortingTracker = 2)
         //      by score (sortingTracker = 0)
+
         sortingTracker = 1;
 
         sortingButton.setText("By Date (Newest First)");
