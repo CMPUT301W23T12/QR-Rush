@@ -22,7 +22,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -40,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     User user;
     ArrayList<User> users;
     private FirebaseFirestore firestore;
+    TextView loadingText;
 
     static final String[] PERMISSIONS = {
             android.Manifest.permission.CAMERA,
@@ -108,11 +108,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
+        loadingText = findViewById(R.id.main_loading_text);
+        loadingText.setVisibility(View.VISIBLE);
+
         // Get everything from firebase
-        // TODO: show a loading animation while we get everything from firebase, then load the UI
-        //       once its done.
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
+
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
             shopButton = (ImageButton) findViewById(R.id.shop_button);
@@ -149,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.main_view, new MainFragment(user)).commit();
         });
     }
+
+    public void removeLoadingScreen() {
+        this.loadingText.setVisibility(View.GONE);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
