@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     User user;
     ArrayList<User> users;
     private FirebaseFirestore firestore;
+    TextView loadingText;
 
     static final String[] PERMISSIONS = {
             android.Manifest.permission.CAMERA,
@@ -107,14 +108,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
-        TextView loadingText = findViewById(R.id.main_loading_text);
+        loadingText = findViewById(R.id.main_loading_text);
         loadingText.setVisibility(View.VISIBLE);
 
         // Get everything from firebase
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
-
-            loadingText.setVisibility(View.GONE);
 
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
@@ -152,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.main_view, new MainFragment(user)).commit();
         });
     }
+
+    public void removeLoadingScreen() {
+        this.loadingText.setVisibility(View.GONE);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
