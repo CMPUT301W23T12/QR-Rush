@@ -118,19 +118,20 @@ public class ProfileFragment extends Fragment implements Serializable {
         TextView nameView = view.findViewById(R.id.nameView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
+        TextView moneyView = view.findViewById(R.id.moneyView);
         TextView rankText = view.findViewById(R.id.rankText);
         TextView rankView = view.findViewById(R.id.rankView);
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
+        TextView moneyText = view.findViewById(R.id.moneyText);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
-        rankText.setText("RANK");
-        QRText.setText("QRCODES FOUND");
-        scoreText.setText("SCORE");
+        moneyView.setText(String.valueOf(user.getMoney()));
         getAllCollection(user, rankView);
+
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
@@ -182,12 +183,13 @@ public class ProfileFragment extends Fragment implements Serializable {
                 rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
+                moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
 
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
-        if(!editable){
+        if (!editable) {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {

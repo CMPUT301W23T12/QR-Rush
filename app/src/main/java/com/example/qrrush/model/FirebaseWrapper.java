@@ -192,7 +192,8 @@ public class FirebaseWrapper {
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
                             ds.getLong("score").intValue(),
-                            new ArrayList<>()
+                            new ArrayList<>(),
+                            ds.getLong("money").intValue()
                     );
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
@@ -318,7 +319,8 @@ public class FirebaseWrapper {
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
                     d.getLong("score").intValue(),
-                    codes
+                    codes,
+                    d.getLong("money").intValue()
             ));
         }
 

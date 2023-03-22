@@ -31,6 +31,7 @@ public class User implements Serializable {
     // unsure of data type for now
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
+    private int money;
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -41,18 +42,20 @@ public class User implements Serializable {
      * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
         this.totalScore = totalScore;
     }
 
-    public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
+    public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
     }
 
     public void setTotalScore(int totalScore) {
@@ -61,6 +64,18 @@ public class User implements Serializable {
 
     public String getUserName() {
         return userName;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
     }
 
     public void setUserName(String userName) {
