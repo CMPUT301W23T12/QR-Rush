@@ -78,7 +78,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                                             "",
                                             0,
                                             ((Long) document.getData().get("score")).intValue(),
-                                            new ArrayList<>()));
+                                            new ArrayList<>(),
+                                            0));
                                 } else{
                                     user.setTotalScore(((Long) document.getData().get("score")).intValue());
                                     users.add(user);
@@ -97,7 +98,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                     }
                 });
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
