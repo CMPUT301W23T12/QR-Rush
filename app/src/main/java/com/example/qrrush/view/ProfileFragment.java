@@ -26,6 +26,11 @@ import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,8 +50,8 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
-    ArrayList<User> users;
     Boolean editable;
+
     /**
      * Grabs User object from the main activity
      *
@@ -57,7 +62,42 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
-
+    public void getAllCollection(User user, TextView rankView){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            ArrayList<User> users = new ArrayList<User>();
+                            users.clear();
+                            for (QueryDocumentSnapshot document : value) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                if (!user.getUserName().matches(document.getId())){
+                                    users.add(new User(document.getId(),
+                                            "",
+                                            0,
+                                            ((Long) document.getData().get("score")).intValue(),
+                                            new ArrayList<>(),
+                                            0));
+                                } else{
+                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
+                                    users.add(user);
+                                }
+                            }
+                            Collections.sort(users, new RankComparator());
+                            for (int i = 0; i < users.size(); ++i){
+                                if (user.getUserName().matches(users.get(i).getUserName())){
+                                    user.setRank(((users.indexOf(users.get(i)))+1));
+                                    rankView.setText(String.valueOf(user.getRank()));
+                                }
+                            }
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
+                        }
+                    }
+                });
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,49 +113,30 @@ public class ProfileFragment extends Fragment implements Serializable {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        users = FirebaseWrapper.getAllCollection(user);
         super.onViewCreated(view, savedInstanceState);
+//        FirebaseWrapper.getAllCollection(user);
         TextView nameView = view.findViewById(R.id.nameView);
-        TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
+        TextView moneyView = view.findViewById(R.id.moneyView);
         TextView rankText = view.findViewById(R.id.rankText);
+        TextView rankView = view.findViewById(R.id.rankView);
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
+        TextView moneyText = view.findViewById(R.id.moneyText);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
-        rankText.setText("RANK");
-        QRText.setText("QRCODES FOUND");
-        scoreText.setText("SCORE");
+        moneyView.setText(String.valueOf(user.getMoney()));
+        getAllCollection(user, rankView);
+
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
-
-
-        Collections.sort(users, new RankComparator());
-        for (int i = 0; i < users.size(); ++i){
-            Log.e("TEST",users.get(i).getUserName() +":"+(users.get(i).getTotalScoreMemeber()));
-        }
-
-        HashMap<String, Object> data = new HashMap<>();
-        for (int i = 0; i < users.size(); ++i){
-            data.put("rank",(users.indexOf(users.get(i)))+1);
-            FirebaseWrapper.updateData("profiles",users.get(i).getUserName(), data);
-            if (user.getUserName().matches(users.get(i).getUserName())){
-                user.setRank(((users.indexOf(users.get(i)))+1));
-//                rankView.setText(String.valueOf((users.indexOf(users.get(i)))+1));
-            }
-        }
-
-
-        // On launch sorting is set by date (sortingTracker = 1)
-        //      by points (sortingTracker = 2)
-        //      by score (sortingTracker = 0)
 
         sortingTracker = 1;
 
@@ -162,12 +183,13 @@ public class ProfileFragment extends Fragment implements Serializable {
                 rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
+                moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
 
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
-        if(!editable){
+        if (!editable) {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {
