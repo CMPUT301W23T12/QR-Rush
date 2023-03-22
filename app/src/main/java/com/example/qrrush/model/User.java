@@ -55,7 +55,6 @@ public class User implements Serializable {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
-        this.money = money;
     }
 
     public void setTotalScore(int totalScore) {
