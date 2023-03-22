@@ -89,4 +89,19 @@
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
+    <TextView
+        android:id="@+id/main_loading_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:text="Loading..."
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
