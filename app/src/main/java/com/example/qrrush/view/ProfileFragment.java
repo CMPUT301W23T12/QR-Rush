@@ -26,6 +26,7 @@ import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -186,11 +187,18 @@ public class ProfileFragment extends Fragment implements Serializable {
                 moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
-
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
+        FloatingActionButton addButton = view.findViewById(R.id.addFriend);
         if (!editable) {
             editNameButton.setVisibility(View.GONE);
+            addButton.setVisibility(View.VISIBLE);
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // when they click add friend, handle sending the friend request to that user, and add them as your friend (if they confirm they want to be your friend)
+                }
+            });
         }
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
