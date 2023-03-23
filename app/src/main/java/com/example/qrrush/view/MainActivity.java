@@ -6,7 +6,6 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,11 +13,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
+import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.example.qrrush.model.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,15 +30,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class MainActivity extends AppCompatActivity {
     View mainView;
-    ImageButton profileButton;
-    ImageButton shopButton;
-    ImageButton mainButton;
-    ImageButton socialButton;
-    ImageButton leaderboardButton;
     User user;
-    TabLayout main_view;
+
     ViewPager2 viewPager2;
-    ViewPagerAdapter viewPagerAdapter;
+
+    TabLayout tabLayout;
+
+    MyViewPagerAdapater myViewPagerAdapater;
+
+
 
     private FirebaseFirestore firestore;
 
@@ -116,40 +115,48 @@ public class MainActivity extends AppCompatActivity {
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
 
-            mainView = findViewById(R.id.main_view);
-            profileButton = (ImageButton) findViewById(R.id.profile_button);
-            shopButton = (ImageButton) findViewById(R.id.shop_button);
-            socialButton = (ImageButton) findViewById(R.id.social_button);
-            mainButton = (ImageButton) findViewById(R.id.main_button);
-            leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
-            // User object passes into each fragment constructor
-            profileButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new ProfileFragment(user, true)).commit();
+
+            // TabLayout//Viewpager2 allows swiping and icons to be
+            // highlighted at the bottom
+            tabLayout = findViewById(R.id.tabLayout);
+            viewPager2 = findViewById(R.id.view_pager);
+            myViewPagerAdapater = new MyViewPagerAdapater(this, user);
+            viewPager2.setAdapter(myViewPagerAdapater);
+
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager2.setCurrentItem(tab.getPosition());
+
+                    if (tab.getPosition() == 2) {
+                        viewPager2.setUserInputEnabled(false);
+                    }
+                    else {
+                        viewPager2.setUserInputEnabled(true);
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
             });
 
-            shopButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new ShopFragment(user)).commit();
+            viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    tabLayout.getTabAt(position).select();
+                }
             });
 
-            socialButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new SocialFragment(user)).commit();
-            });
+            viewPager2.setCurrentItem(2);
 
-            mainButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new MainFragment(user)).commit();
-            });
-
-            leaderboardButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
-            });
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new MainFragment(user)).commit();
         });
     }
 
@@ -169,36 +176,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         main();
-
-
-        main_view = findViewById(R.id.main_view);
-        viewPager2 = findViewById(R.id.viewPager);
-        viewPagerAdapter = new ViewPagerAdapter(this);
-        viewPager2.setAdapter(viewPagerAdapter);
-        main_view.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager2.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                main_view.getTabAt(position).select();
-
-            }
-        });
     }
 
 }
+
