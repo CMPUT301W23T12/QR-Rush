@@ -1,5 +1,7 @@
 package com.example.qrrush.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -68,7 +72,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Obtain the SupportMapFragment object from the layout using getChildFragmentManager()
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
 
-
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
     }
@@ -91,6 +94,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         // When map is loaded
         Geo.getCurrentLocation(location -> {
+            ((MainActivity) requireActivity()).removeLoadingScreen();
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
@@ -114,6 +118,42 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                         if (geoPoint != null) {
                             LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
                             googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+
+                            // Add marker click listener to show alert dialog
+                            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    // Create and show alert dialog
+                                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                        builder.setTitle("QR CODE\nHash:" + document.getId());
+                                        if (scannedByList.isEmpty()) {
+                                            builder.setMessage("No other user has scanned this QR code yet.");
+                                        } else {
+                                            builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int pos) {
+                                                            // position is tracked by "pos" so now we pass the clickable profile
+                                                            // We need to create a user object with that so we gotta use getUserData
+                                                            FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+                                                                // scannedByList.get(pos) returns the name -> STRING
+                                                                // send the user object to the profile fragment
+                                                                requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                        .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+
+                                                            });
+
+
+                                                        }
+                                                    });
+                                        }
+                                        builder.setPositiveButton("OK", null);
+                                        builder.show();
+                                    });
+                                    return true; // Return true to indicate that we've handled the marker click event
+                                }
+                            });
                         }
                     }
                 } else {
@@ -122,6 +162,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             });
         });
     }
+
 }
 
 

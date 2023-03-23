@@ -4,22 +4,28 @@ import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.qrrush.controller.ScoreComparator;
+import com.example.qrrush.controller.RankComparator;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -165,55 +171,59 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
+    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        return db.collection("profiles").document(username).get().addOnCompleteListener(t -> {
-            if (!t.isSuccessful()) {
-                Log.e("getUserData", "task failed!");
-                return;
-            }
-
-            DocumentSnapshot ds = t.getResult();
-            if (!ds.exists()) {
-                userConsumer.accept(Optional.empty());
-                return;
-            }
-
-            User user = new User(
-                    username,
-                    ds.getString("phone-number"),
-                    ds.getLong("rank").intValue(),
-                    new ArrayList<>()
-            );
-
-            ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
-            for (String hash : hashes) {
-                Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
-                    GeoPoint g = (GeoPoint) ds.get("location");
-                    Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
-                    QRCode code = new QRCode(hash, timestamp);
-                    if (g != null) {
-                        Location l = new Location("");
-                        l.setLatitude(g.getLatitude());
-                        l.setLongitude(g.getLongitude());
-                        code.setLocation(l);
+        db.collection("profiles").document(username)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getUserData", "task failed!");
+                        return;
                     }
 
-                    user.addQRCodeWithoutFirebase(code);
-                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
-                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        userConsumer.accept(Optional.empty());
+                        return;
                     }
+
+                    User user = new User(
+                            username,
+                            ds.getString("phone-number"),
+                            ds.getLong("rank").intValue(),
+                            ds.getLong("score").intValue(),
+                            new ArrayList<>(),
+                            ds.getLong("money").intValue()
+                    );
+
+                    ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
+                    ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+                    for (String hash : hashes) {
+                        Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
+                            GeoPoint g = (GeoPoint) ds.get("location");
+                            Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
+                            QRCode code = new QRCode(hash, timestamp);
+                            if (g != null) {
+                                Location l = new Location("");
+                                l.setLatitude(g.getLatitude());
+                                l.setLongitude(g.getLongitude());
+                                code.setLocation(l);
+                            }
+
+                            user.addQRCodeWithoutFirebase(code);
+                            if (comments.size() > 0 && comments.size() >= hashes.size()) {
+                                user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                            }
+                        });
+
+                        while (!task.isComplete()) {
+                            // Empty loop is on purpose. We need to wait for these to finish.
+                        }
+                    }
+
+                    userConsumer.accept(Optional.of(user));
                 });
-
-                while (!task.isComplete()) {
-                    // Empty loop is on purpose. We need to wait for these to finish.
-                }
-            }
-
-            userConsumer.accept(Optional.of(user));
-        });
     }
 
     /**
@@ -313,7 +323,9 @@ public class FirebaseWrapper {
                     d.getId(),
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
-                    codes
+                    d.getLong("score").intValue(),
+                    codes,
+                    d.getLong("money").intValue()
             ));
         }
 

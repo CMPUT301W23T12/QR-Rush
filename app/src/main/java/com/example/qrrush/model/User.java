@@ -24,6 +24,8 @@ import java.util.Optional;
  * The class representing a user in the game.
  */
 public class User implements Serializable {
+    private  int totalScore;
+    private int money;
     private String userName;
     private String phoneNumber;
     private int rank;
@@ -38,13 +40,16 @@ public class User implements Serializable {
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
+     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
+        this.totalScore = totalScore;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
@@ -53,8 +58,24 @@ public class User implements Serializable {
         this.qrCodes = qrCodes;
     }
 
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
     public String getUserName() {
         return userName;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
     }
 
     public void setUserName(String userName) {
@@ -99,6 +120,9 @@ public class User implements Serializable {
         }
 
         return result;
+    }
+    public int getTotalScoreMemeber() {
+        return totalScore;
     }
 
     /**
@@ -227,7 +251,7 @@ public class User implements Serializable {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference qrCodeRef = db.collection("qrcodes").document(code.getHash());
 
-        Task<DocumentSnapshot> t = qrCodeRef.get().addOnCompleteListener(task -> {
+        qrCodeRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 HashMap<String, Object> data = new HashMap<>();
@@ -255,9 +279,6 @@ public class User implements Serializable {
                 Log.w("addQRCode", "Error getting document", task.getException());
             }
         });
-        while (!t.isComplete()) {
-            // Intentionally empty loop
-        }
 
         FirebaseWrapper.getData("profiles", this.getUserName(), documentSnapshot -> {
             if (!documentSnapshot.exists()) {
