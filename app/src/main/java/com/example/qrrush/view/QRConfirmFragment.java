@@ -65,7 +65,7 @@ public class QRConfirmFragment extends Fragment {
 
         retakeButton.setOnClickListener(v -> {
             FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new CameraFragment(user));
+            t.replace(R.id.tabLayout, new CameraFragment(user));
             t.addToBackStack(null);
             t.commit();
         });
@@ -75,7 +75,7 @@ public class QRConfirmFragment extends Fragment {
                 user.addQRCode(qrCode);
 
                 FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-                t.replace(R.id.main_view, new MainFragment(user));
+                t.replace(R.id.tabLayout, new MainFragment(user));
                 t.addToBackStack(null);
                 t.commit();
             });

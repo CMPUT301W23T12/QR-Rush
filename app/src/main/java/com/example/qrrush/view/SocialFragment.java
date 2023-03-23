@@ -108,7 +108,7 @@ public class SocialFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.main_view, new ProfileFragment(searchResults.get(position), false)).commit();
+                                    .replace(R.id.tabLayout, new ProfileFragment(searchResults.get(position), false)).commit();
                         }
                     });
                 });

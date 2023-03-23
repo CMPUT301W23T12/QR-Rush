@@ -62,7 +62,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         cameraButton = view.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener((v) -> {
             FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new CameraFragment(user));
+            t.replace(R.id.tabLayout, new CameraFragment(user));
             t.addToBackStack(null);
             t.commit();
         });
@@ -142,7 +142,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                                                 // scannedByList.get(pos) returns the name -> STRING
                                                                 // send the user object to the profile fragment
                                                                 requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
                                                             });
 

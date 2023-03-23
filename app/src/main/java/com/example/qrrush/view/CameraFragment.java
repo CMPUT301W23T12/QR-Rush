@@ -76,7 +76,7 @@ public class CameraFragment extends Fragment {
 
                     for (Barcode b : results) {
                         requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_view, new QRConfirmFragment(user, b)).commit();
+                                .replace(R.id.tabLayout, new QRConfirmFragment(user, b)).commit();
                     }
                 }));
 
