@@ -44,11 +44,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/profileView"
             android:layout_width="166dp"
             android:layout_height="160dp"
             android:layout_gravity="center_horizontal"
+            android:onClick="profileButton"
             android:src="@drawable/discordpic" />
 
         <TextView

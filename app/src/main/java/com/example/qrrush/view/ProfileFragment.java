@@ -1,7 +1,14 @@
 package com.example.qrrush.view;
 
+import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +16,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
@@ -26,13 +40,22 @@ import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +73,7 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
+    ImageView profilePicture;
     Boolean editable;
 
     /**
@@ -62,6 +86,19 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.e("PhotoPicker", "Selected URI: " + uri);
+                    profilePicture.setImageURI(uri);
+                } else {
+                    Log.e("PhotoPicker", "No media selected");
+                }
+            });
+
+
     public void getAllCollection(User user, TextView rankView){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("profiles")
@@ -124,6 +161,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
         TextView moneyText = view.findViewById(R.id.moneyText);
+        profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
@@ -137,6 +175,28 @@ public class ProfileFragment extends Fragment implements Serializable {
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
+        ColorGenerator generator = ColorGenerator.MATERIAL;
+
+        profilePicture.setClickable(true);
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
+
+        int color = generator.getColor(user.getUserName());
+
+        TextDrawable drawable = TextDrawable.builder()
+                .beginConfig()
+                .textColor(Color.WHITE)
+                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                .toUpperCase()
+                .endConfig()
+                .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
+        profilePicture.setImageDrawable(drawable);
 
         sortingTracker = 1;
 
@@ -229,8 +289,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                             return;
                         }
 
-                        User user = userResult.get();
-
                         // Username is unique, continue with edit the process
                         FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
                             Map<String, Object> updatedProfile = documentSnapshot.getData();
@@ -244,6 +302,18 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
+                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+
+                            int newcolor = newgenerator.getColor(user.getUserName());
+
+                            TextDrawable newdrawable = TextDrawable.builder()
+                                    .beginConfig()
+                                    .textColor(Color.WHITE)
+                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                    .toUpperCase()
+                                    .endConfig()
+                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+                            profilePicture.setImageDrawable(newdrawable);
                         });
                     });
                 });
