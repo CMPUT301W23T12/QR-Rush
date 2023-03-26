@@ -264,6 +264,8 @@ public class User implements Serializable {
                 }
                 data.put("date", new Timestamp(new Date()));
 
+                data.put("score", code.getScore());
+
                 if (document.exists()) {
                     data.put("scannedby", FieldValue.arrayUnion(this.getUserName()));
                     qrCodeRef.update(data)

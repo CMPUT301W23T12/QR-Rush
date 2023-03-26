@@ -70,13 +70,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
-        <include layout="@layout/top_user_item" android:id="@+id/top_user1"/>
+        <include layout="@layout/leaderboard_content" android:id="@+id/top_user1"/>
 
         <include
             android:id="@+id/top_user2"
-            layout="@layout/top_user_item" />
+            layout="@layout/leaderboard_content" />
 
-        <include layout="@layout/top_user_item" android:id="@+id/top_user3"/>
+        <include layout="@layout/leaderboard_content" android:id="@+id/top_user3"/>
 
     </LinearLayout>
 

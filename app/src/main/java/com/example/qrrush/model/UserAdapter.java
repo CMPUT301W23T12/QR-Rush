@@ -40,11 +40,17 @@ public class UserAdapter extends ArrayAdapter<User> {
         }
         User user = getItem(position);
 
+        TextView rank = view.findViewById(R.id.rankTextView); // add TextView for rank
+
         TextView name = view.findViewById(R.id.OtherUserNameView);
         TextView score = view.findViewById(R.id.OtherUserScoreView);
         ImageView image = view.findViewById(R.id.imageView2);
+
+        int index = position + 4; // calculate the rank of the user
+        rank.setText(String.valueOf(index)); // set the rank TextView
+
         name.setText(user.getUserName());
-        score.setText(String.valueOf(user.getTotalScore()));
+        score.setText(String.valueOf(user.getTotalScoreMemeber()));
         image.setImageResource(R.drawable.discordpic);
         return view;
     }
