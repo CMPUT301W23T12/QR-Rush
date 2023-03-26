@@ -156,11 +156,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
         TextView moneyView = view.findViewById(R.id.moneyView);
-        TextView rankText = view.findViewById(R.id.rankText);
         TextView rankView = view.findViewById(R.id.rankView);
-        TextView QRText = view.findViewById(R.id.qrCodesText);
-        TextView scoreText = view.findViewById(R.id.scoreText);
-        TextView moneyText = view.findViewById(R.id.moneyText);
         profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
