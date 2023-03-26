@@ -105,7 +105,7 @@ public class LeaderboardFragment extends Fragment {
         for(int i = 0; i<3; i++){
             topUsers.add(users.get(i));
         }
-        for(int i = 3; i<users.size() - 3; i++){
+        for(int i = 3; i<users.size(); i++){
             otherUsers.add(users.get(i));
         }
         if (topUsers.size() > 0) {
