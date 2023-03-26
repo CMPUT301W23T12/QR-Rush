@@ -37,9 +37,7 @@ import java.util.Collections;
  */
 public class LeaderboardFragment extends Fragment {
     User user;
-    ArrayList<User> users;
     UserAdapter userAdapter;
-    QRCodeAdapter qrCodeAdapter;
     TextView loadingText;
     ListView leaderboardView;
 
@@ -48,9 +46,8 @@ public class LeaderboardFragment extends Fragment {
      *
      * @param user The user to create the LeaderboardFragment for.
      */
-    public LeaderboardFragment(User user, ArrayList<User> users) {
+    public LeaderboardFragment(User user) {
         this.user = user;
-        this.users = users;
     }
 
     @Override
@@ -66,6 +63,7 @@ public class LeaderboardFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
         return view;
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -93,37 +91,65 @@ public class LeaderboardFragment extends Fragment {
         // TODO: display some loading screen while this finishes.
         // TODO: make it display the QR code leaderboard when QR codes are selected at the top.
 
-        //ArrayList<User> users = getAllCollection(user);
+//        ArrayList<User> users = getAllCollection(user);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        ArrayList<User> users = new ArrayList<User>();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+
+                            users.clear();
+                            for (QueryDocumentSnapshot document : value) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                if (!user.getUserName().matches(document.getId())){
+                                    users.add(new User(document.getId(),
+                                            "",
+                                            0,
+                                            ((Long) document.getData().get("score")).intValue(),
+                                            new ArrayList<>(),
+                                            ((Long) document.getData().get("money")).intValue()));
+                                } else{
+                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
+                                    users.add(user);
+                                }
+                            }
+                            Collections.sort(users, new RankComparator());
+                            for (int i = 0; i < users.size(); ++i){
+                                users.get(i).setRank(users.indexOf(users.get(i)));
+                            }
+                            ArrayList<User> topUsers = new ArrayList<>();
+                            ArrayList<User> otherUsers = new ArrayList<>();
+                            userAdapter = new UserAdapter(requireContext(), otherUsers);
+                            leaderboardView.setVisibility(View.VISIBLE);
+                            leaderboardView.setAdapter(userAdapter);
+                            for(int i = 0; i<3; i++){
+                                topUsers.add(users.get(i));
+                            }
+                            for(int i = 3; i<users.size(); i++){
+                                otherUsers.add(users.get(i));
+                            }
+                            if (topUsers.size() > 0) {
+                                updateTopUserView(user1View, topUsers.get(0), 1);
+
+                            }
+                            if (topUsers.size() > 1) {
+                                updateTopUserView(user2View, topUsers.get(1), 2);
+
+                            }
+                            if (topUsers.size() > 2) {
+                                updateTopUserView(user3View, topUsers.get(2), 3);
+
+                            }
+
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
+                        }
+                    }
+                });
         // Separate the top 3 users
-        ArrayList<User> topUsers = new ArrayList<>();
-        ArrayList<User> otherUsers = new ArrayList<>();
 
-        // Set the top 3 users in the appropriate TextViews
-//            LayoutInflater inflater = LayoutInflater.from(requireContext());
-//            LinearLayout topUsersLayout = view.findViewById(R.id.top_users_layout);
-        Log.e("size", String.valueOf(users.size()));
-        for(int i = 0; i<3; i++){
-            topUsers.add(users.get(i));
-        }
-        for(int i = 3; i<users.size() - 3; i++){
-            otherUsers.add(users.get(i));
-        }
-        if (topUsers.size() > 0) {
-            updateTopUserView(user1View, topUsers.get(0), 1);
-
-        }
-        if (topUsers.size() > 1) {
-            updateTopUserView(user2View, topUsers.get(1), 2);
-
-        }
-        if (topUsers.size() > 2) {
-            updateTopUserView(user3View, topUsers.get(2), 3);
-
-        }
-
-        userAdapter = new UserAdapter(requireContext(), otherUsers);
-        leaderboardView.setVisibility(View.VISIBLE);
-        leaderboardView.setAdapter(userAdapter);
 
         loadingText.setVisibility(View.GONE);
 
@@ -218,7 +244,7 @@ public class LeaderboardFragment extends Fragment {
                                             0,
                                             ((Long) document.getData().get("score")).intValue(),
                                             new ArrayList<>(),
-                                            0));
+                                            ((Long) document.getData().get("money")).intValue()));
                                 } else{
                                     user.setTotalScore(((Long) document.getData().get("score")).intValue());
                                     users.add(user);
