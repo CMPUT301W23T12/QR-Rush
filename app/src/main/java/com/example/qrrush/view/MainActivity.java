@@ -3,7 +3,9 @@ package com.example.qrrush.view;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
 
     MyViewPagerAdapater myViewPagerAdapater;
+
+    MediaPlayer mediaPlayer;
 
 
 
@@ -175,8 +179,32 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.backgroundmusic);
+        mediaPlayer.start();
+        mediaPlayer.setLooping(true);
+
         main();
     }
+
+    protected void onPause() {
+
+        super.onPause();
+        mediaPlayer.pause();
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        if (mediaPlayer != null){
+            mediaPlayer.start();
+        }
+
+    }
+
+
+
+
+
 
 }
 
