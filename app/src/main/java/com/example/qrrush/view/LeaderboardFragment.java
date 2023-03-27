@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,16 +21,10 @@ import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.LeaderboardQRCodeAdapter;
-import com.example.qrrush.model.QRCode;
-import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserAdapter;
-import com.google.android.material.color.utilities.Score;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +38,6 @@ public class LeaderboardFragment extends Fragment {
     LeaderboardQRCodeAdapter qrCodeAdapter;
     TextView loadingText;
     ListView leaderboardView;
-
 
     /**
      * Creates a LeaderboardFragment for the given user.
@@ -82,13 +73,8 @@ public class LeaderboardFragment extends Fragment {
         loadingText.setVisibility(View.VISIBLE);
         leaderboardView.setVisibility(View.GONE);
 
-        Button playersTabButton  = view.findViewById(R.id.button4);
+        Button playersTabButton = view.findViewById(R.id.button4);
         Button qrCodesTabButton = view.findViewById(R.id.button5);
-        // when thuis button is pressed
-
-        // call function(true)
-
-
 
         TextView rank = view.findViewById(R.id.rankTextView); // add TextView for rank
         ListView leaderList = view.findViewById(R.id.leaderboard_listview);
@@ -100,135 +86,120 @@ public class LeaderboardFragment extends Fragment {
         TextView user2Name = user2View.findViewById(R.id.OtherUserNameView);
         TextView user3Name = user3View.findViewById(R.id.OtherUserNameView);
 
-        TextView user1Score = user1View.findViewById(R.id.OtherUserScoreView);
-        TextView user2Score = user2View.findViewById(R.id.OtherUserScoreView);
-        TextView user3Score = user3View.findViewById(R.id.OtherUserScoreView);
-
         // TODO: display some loading screen while this finishes.
         // TODO: make it display the QR code leaderboard when QR codes are selected at the top.
 
 //        ArrayList<User> users = getAllCollection(user);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        ArrayList<User> users = new ArrayList<User>();
+        ArrayList<User> users = new ArrayList<>();
         db.collection("profiles")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error == null) {
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.d("FirebaseWrapper", "Error getting documents: ", error.fillInStackTrace());
+                        return;
+                    }
 
-                            users.clear();
-                            for (QueryDocumentSnapshot document : value) {
-                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
-                                if (!user.getUserName().matches(document.getId())){
-                                    users.add(new User(document.getId(),
-                                            "",
-                                            0,
-                                            ((Long) document.getData().get("score")).intValue(),
-                                            new ArrayList<>(),
-                                            ((Long) document.getData().get("money")).intValue()));
-                                } else{
-                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
-                                    users.add(user);
-                                }
-                            }
-                            Collections.sort(users, new RankComparator());
-                            for (int i = 0; i < users.size(); ++i){
-                                users.get(i).setRank(users.indexOf(users.get(i)));
-                            }
-                            ArrayList<User> topUsers = new ArrayList<>();
-                            ArrayList<User> otherUsers = new ArrayList<>();
-                            userAdapter = new UserAdapter(requireContext(), otherUsers);
-                            leaderboardView.setVisibility(View.VISIBLE);
-                            leaderboardView.setAdapter(userAdapter);
-                            for(int i = 0; i<3; i++){
-                                topUsers.add(users.get(i));
-                            }
-                            for(int i = 3; i<users.size(); i++){
-                                otherUsers.add(users.get(i));
-                            }
-                            if (topUsers.size() > 0) {
-                                updateTopUserView(user1View, topUsers.get(0), 1);
-
-                            }
-                            if (topUsers.size() > 1) {
-                                updateTopUserView(user2View, topUsers.get(1), 2);
-
-                            }
-                            if (topUsers.size() > 2) {
-                                updateTopUserView(user3View, topUsers.get(2), 3);
-
-                            }
-
-                        } else {
-                            Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
+                    users.clear();
+                    for (QueryDocumentSnapshot document : value) {
+                        Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                        if (user.getUserName().matches(document.getId())) {
+                            user.setTotalScore(((Long) document.getData().get("score")).intValue());
+                            users.add(user);
+                            continue;
                         }
+
+                        users.add(new User(document.getId(),
+                                "",
+                                0,
+                                ((Long) document.getData().get("score")).intValue(),
+                                new ArrayList<>(),
+                                ((Long) document.getData().get("money")).intValue()));
+                    }
+
+                    Collections.sort(users, new RankComparator());
+                    for (int i = 0; i < users.size(); ++i) {
+                        users.get(i).setRank(users.indexOf(users.get(i)));
+                    }
+                    ArrayList<User> topUsers = new ArrayList<>();
+                    ArrayList<User> otherUsers = new ArrayList<>();
+                    userAdapter = new UserAdapter(requireActivity(), otherUsers);
+                    leaderboardView.setVisibility(View.VISIBLE);
+                    leaderboardView.setAdapter(userAdapter);
+                    for (int i = 0; i < 3; i++) {
+                        if (i >= users.size()) {
+                            break;
+                        }
+                        topUsers.add(users.get(i));
+                    }
+                    for (int i = 3; i < users.size(); i++) {
+                        otherUsers.add(users.get(i));
+                    }
+                    if (topUsers.size() > 0) {
+                        updateTopUserView(user1View, topUsers.get(0), 1);
+
+                    }
+                    if (topUsers.size() > 1) {
+                        updateTopUserView(user2View, topUsers.get(1), 2);
+
+                    }
+                    if (topUsers.size() > 2) {
+                        updateTopUserView(user3View, topUsers.get(2), 3);
+
                     }
                 });
         // Separate the top 3 users
-        qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseWrapper.getAllQRCodes(qrCodes -> {
-                    ScoreComparator s = new ScoreComparator();
+        qrCodesTabButton.setOnClickListener(v -> {
+            FirebaseWrapper.getAllQRCodes(qrCodes -> {
+                ScoreComparator s = new ScoreComparator();
 
-                    Collections.sort(qrCodes,s);
-                    qrCodeAdapter = new LeaderboardQRCodeAdapter(requireContext(),qrCodes);
-                    leaderboardView.setVisibility(View.VISIBLE);
-                    leaderboardView.setAdapter(qrCodeAdapter);
-                });
-            }
+                Collections.sort(qrCodes, s);
+                qrCodeAdapter = new LeaderboardQRCodeAdapter(requireContext(), qrCodes);
+                leaderboardView.setVisibility(View.VISIBLE);
+                leaderboardView.setAdapter(qrCodeAdapter);
+            });
         });
-
 
 
         loadingText.setVisibility(View.GONE);
 
-        user1View.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String bruh = user1Name.getText().toString();
-                FirebaseWrapper.getUserData(bruh, user1 -> {
-                    User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
-                });
-
-
-            }
-
+        user1View.setOnClickListener(v -> {
+            String bruh = user1Name.getText().toString();
+            FirebaseWrapper.getUserData(bruh, user1 -> {
+                if (!user1.isPresent()) {
+                    return;
+                }
+                User user2 = user1.get();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+            });
         });
-        user2View.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String bruh = user2Name.getText().toString();
-                FirebaseWrapper.getUserData(bruh, user1 -> {
-                    User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
-                });
 
-
-            }
-
+        user2View.setOnClickListener(v -> {
+            String bruh = user2Name.getText().toString();
+            FirebaseWrapper.getUserData(bruh, user1 -> {
+                if (!user1.isPresent()) {
+                    return;
+                }
+                User user2 = user1.get();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+            });
         });
-        user3View.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String bruh = user3Name.getText().toString();
-                FirebaseWrapper.getUserData(bruh, user1 -> {
-                    User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
-                });
-
-
-            }
-
+        user3View.setOnClickListener(v -> {
+            String bruh = user3Name.getText().toString();
+            FirebaseWrapper.getUserData(bruh, user1 -> {
+                if (!user1.isPresent()) {
+                    return;
+                }
+                User user2 = user1.get();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+            });
         });
+
         leaderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 TextView v = view.findViewById(R.id.OtherUserNameView);
                 String nameUser = v.getText().toString();
                 FirebaseWrapper.getUserData(nameUser, user1 -> {
@@ -236,12 +207,13 @@ public class LeaderboardFragment extends Fragment {
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
                 });
-                Log.e("name",v.getText().toString());
+                Log.e("name", v.getText().toString());
 //                requireActivity().getSupportFragmentManager().beginTransaction()
 //                        .replace(R.id.main_view, new ProfileFragment(leaderboardView.get(position), false)).commit();
             }
         });
     }
+
     private void updateTopUserView(View view, User user, int rank) {
         ImageView userImage = view.findViewById(R.id.imageView2);
         TextView userName = view.findViewById(R.id.OtherUserNameView);
@@ -256,8 +228,5 @@ public class LeaderboardFragment extends Fragment {
 
     }
     //TODO: when a user in the top 3 is clicked on, open their profile
-
-
-
 }
 
