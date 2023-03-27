@@ -1,5 +1,9 @@
 package com.example.qrrush.view;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -7,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +20,21 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.qrrush.R;
 
+import java.util.Set;
+
 public class SettingsFragment extends DialogFragment {
+
+    MainActivity(mediaPlayer);
 
     View view;
 
-    Button playButton, pauseButton;
+    ImageButton playButton, pauseButton;
 
     MediaPlayer mediaPlayer;
+
+    SeekBar volumeBar;
+
+    AudioManager audioManager;
 
 
     @Nullable
@@ -34,7 +48,12 @@ public class SettingsFragment extends DialogFragment {
 
         pauseButton = view.findViewById(R.id.pause_button);
 
-        mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), R.raw.backgroundmusic);
+        volumeBar = view.findViewById(R.id.volume_seekBar);
+
+        audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+
+
+        //mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), R.raw.backgroundmusic);
 
         mediaPlayer.start();
         mediaPlayer.setLooping(true);
@@ -54,6 +73,13 @@ public class SettingsFragment extends DialogFragment {
                 mediaPlayer.pause();
             }
         });
+
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+        int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        volumeBar.setMax(maxVolume);
+        volumeBar.setProgress(curVolume);
 
         return view;
     }

@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     MyViewPagerAdapater myViewPagerAdapater;
 
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
 
 
