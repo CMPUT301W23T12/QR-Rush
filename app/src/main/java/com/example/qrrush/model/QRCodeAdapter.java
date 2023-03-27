@@ -42,6 +42,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
     Context context;
 
+
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
      *

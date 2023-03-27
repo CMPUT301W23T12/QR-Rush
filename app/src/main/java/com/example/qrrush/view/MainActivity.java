@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     ImageButton socialButton;
     ImageButton leaderboardButton;
     User user;
-    ArrayList<User> users;
     private FirebaseFirestore firestore;
     TextView loadingText;
 
@@ -122,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         // Get everything from firebase
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
-            users = getAllCollection(user);
             mainView = findViewById(R.id.main_view);
             profileButton = (ImageButton) findViewById(R.id.profile_button);
             shopButton = (ImageButton) findViewById(R.id.shop_button);
@@ -152,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
             leaderboardButton.setOnClickListener((v) -> {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new LeaderboardFragment(user,users)).commit();
+                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
             });
 
             getSupportFragmentManager().beginTransaction()
@@ -181,41 +179,6 @@ public class MainActivity extends AppCompatActivity {
 
         main();
 
-    }
-    public ArrayList<User> getAllCollection(User user){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        ArrayList<User> users = new ArrayList<User>();
-        db.collection("profiles")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error == null) {
-
-                            users.clear();
-                            for (QueryDocumentSnapshot document : value) {
-                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
-                                if (!user.getUserName().matches(document.getId())){
-                                    users.add(new User(document.getId(),
-                                            "",
-                                            0,
-                                            ((Long) document.getData().get("score")).intValue(),
-                                            new ArrayList<>(),
-                                            0));
-                                } else{
-                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
-                                    users.add(user);
-                                }
-                            }
-                            Collections.sort(users, new RankComparator());
-                            for (int i = 0; i < users.size(); ++i){
-                                users.get(i).setRank(users.indexOf(users.get(i)));
-                            }
-                        } else {
-                            Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
-                        }
-                    }
-                });
-        return users;
     }
 
 }
