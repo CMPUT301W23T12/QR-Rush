@@ -12,14 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
-import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -61,10 +58,10 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         cameraButton = view.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener((v) -> {
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.tabLayout, new CameraFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+            new CameraFragment(user).show(
+                    requireActivity().getSupportFragmentManager(),
+                    "Scan a QR code"
+            );
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);
@@ -124,7 +121,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             // Add marker click listener to show alert dialog
                             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
-                                public boolean onMarkerClick(Marker marker) {
+                                public boolean onMarkerClick(@NonNull Marker marker) {
                                     // Create and show alert dialog
                                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

@@ -13,9 +13,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
-import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.material.tabs.TabLayout;
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
 
     MyViewPagerAdapater myViewPagerAdapater;
-
 
 
     private FirebaseFirestore firestore;
@@ -115,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
 
-
             // TabLayout//Viewpager2 allows swiping and icons to be
             // highlighted at the bottom
             tabLayout = findViewById(R.id.tabLayout);
@@ -130,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (tab.getPosition() == 2) {
                         viewPager2.setUserInputEnabled(false);
-                    }
-                    else {
+                    } else {
                         viewPager2.setUserInputEnabled(true);
                     }
                 }
