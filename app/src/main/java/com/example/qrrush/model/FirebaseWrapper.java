@@ -187,6 +187,7 @@ public class FirebaseWrapper {
                         return;
                     }
 
+
                     User user = new User(
                             username,
                             ds.getString("phone-number"),

@@ -56,6 +56,7 @@ public class ShopFragment extends Fragment {
         return price;
     }
 
+
     private void tryPurchaseQRCode(QRCode code) {
         int price = rarityPrice(code.getRarity());
         if (user.getMoney() >= price) {

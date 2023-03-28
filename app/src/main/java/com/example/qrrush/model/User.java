@@ -31,6 +31,7 @@ public class User implements Serializable {
     // unsure of data type for now
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
+
     private int money;
 
     /**
