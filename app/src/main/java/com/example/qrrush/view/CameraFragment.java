@@ -17,7 +17,8 @@ import androidx.camera.view.CameraController;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.User;
@@ -34,11 +35,14 @@ import java.util.List;
  * The fragment which opens the camera, scanning for a QR code. Upon scanning one, we move to the
  * screen which shows the user what they've scanned.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends DialogFragment {
     PreviewView previewView;
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     CameraController cameraController;
     User user;
+    FragmentManager manager;
+    View container;
+    Boolean foundCode = false;
 
     /**
      * Creates a CameraFragment for the given user.
@@ -74,9 +78,12 @@ public class CameraFragment extends Fragment {
                         return;
                     }
 
-                    for (Barcode b : results) {
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.tabLayout, new QRConfirmFragment(user, b)).commit();
+                    synchronized (foundCode) {
+                        if (!results.isEmpty() && !foundCode) {
+                            new QRConfirmFragment(user, results.get(0)).show(manager, "Confirm QR code");
+                            dismiss();
+                            foundCode = true;
+                        }
                     }
                 }));
 
@@ -97,6 +104,8 @@ public class CameraFragment extends Fragment {
         cameraController = new LifecycleCameraController(requireContext());
         previewView = result.findViewById(R.id.camera_view);
         previewView.setController(cameraController);
+        this.container = result.findViewById(R.id.linearLayout);
+        manager = getParentFragmentManager();
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {

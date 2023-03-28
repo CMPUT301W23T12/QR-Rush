@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -41,6 +42,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     Boolean editable;
 
     Context context;
+
+    MediaPlayer mediaPlayer;
 
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
@@ -185,7 +188,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
                                             ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false, mediaPlayer)).commit();
 
                                         });
 

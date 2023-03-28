@@ -15,9 +15,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
-import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.material.tabs.TabLayout;
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     MyViewPagerAdapater myViewPagerAdapater;
 
     private MediaPlayer mediaPlayer;
-
 
 
     private FirebaseFirestore firestore;
@@ -119,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
 
-
             // TabLayout//Viewpager2 allows swiping and icons to be
             // highlighted at the bottom
             tabLayout = findViewById(R.id.tabLayout);
@@ -134,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (tab.getPosition() == 2) {
                         viewPager2.setUserInputEnabled(false);
-                    }
-                    else {
+                    } else {
                         viewPager2.setUserInputEnabled(true);
                     }
                 }
@@ -179,13 +176,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.backgroundmusic);
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);
+        //mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.backgroundmusic);
+        //mediaPlayer.start();
+        //mediaPlayer.setLooping(true);
 
         main();
     }
-
     protected void onPause() {
 
         super.onPause();
@@ -200,10 +196,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
-
-
 
 
 }

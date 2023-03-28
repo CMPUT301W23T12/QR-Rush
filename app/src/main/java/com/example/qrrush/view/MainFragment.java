@@ -2,24 +2,23 @@ package com.example.qrrush.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
-import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,7 +38,9 @@ import com.google.firebase.firestore.GeoPoint;
  */
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
-    private Button cameraButton;
+
+    ImageButton cameraButton;
+    private MediaPlayer mediaPlayer;
 
     /**
      * Grabs the User object from the main activity
@@ -59,12 +60,12 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        cameraButton = view.findViewById(R.id.camera_button);
+        cameraButton = (ImageButton) view.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener((v) -> {
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.tabLayout, new CameraFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+            new CameraFragment(user).show(
+                    requireActivity().getSupportFragmentManager(),
+                    "Scan a QR code"
+            );
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);
@@ -124,7 +125,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             // Add marker click listener to show alert dialog
                             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
-                                public boolean onMarkerClick(Marker marker) {
+                                public boolean onMarkerClick(@NonNull Marker marker) {
                                     // Create and show alert dialog
                                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -142,7 +143,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                                                 // scannedByList.get(pos) returns the name -> STRING
                                                                 // send the user object to the profile fragment
                                                                 requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false, mediaPlayer)).commit();
 
                                                             });
 

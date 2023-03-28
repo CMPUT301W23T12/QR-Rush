@@ -1,37 +1,24 @@
 package com.example.qrrush.view;
 
-import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
-import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.SearchPlayerAdapter;
 import com.example.qrrush.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.GeoPoint;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -93,7 +80,7 @@ public class SocialFragment extends Fragment {
                 FirebaseWrapper.getUserData(searchPlayer, user -> {
                     // we will retrieve the user information from firebase and create a user object
                     // update the search results adapter with the retrieved user information
-                    if (!user.isPresent()){
+                    if (!user.isPresent()) {
                         noPlayerFound.setVisibility(View.VISIBLE);
                         searchResultsList.setVisibility(View.GONE);
                         return;
@@ -107,15 +94,16 @@ public class SocialFragment extends Fragment {
                     searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.tabLayout, new ProfileFragment(searchResults.get(position), false)).commit();
+                            new ProfileDialogFragment(searchResults.get(position)).show(
+                                    requireActivity().getSupportFragmentManager(),
+                                    searchResults.get(position).getUserName()
+                            );
                         }
                     });
                 });
             }
         });
     }
-
 
 
 }
