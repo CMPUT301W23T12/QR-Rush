@@ -7,8 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +42,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
 
+    String[] quests = {"Quest1", "Quest2", "Quest3"};
+
+    AutoCompleteTextView autoCompleteTextView;
+    ArrayAdapter<String> adapterItems;
+
     /**
      * Grabs the User object from the main activity
      *
@@ -62,6 +71,20 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                     requireActivity().getSupportFragmentManager(),
                     "Scan a QR code"
             );
+        });
+
+        autoCompleteTextView = view.findViewById(R.id.questText);
+        adapterItems = new ArrayAdapter<String>(getContext(), R.layout.quest_item);
+
+
+        autoCompleteTextView.setAdapter(adapterItems);
+
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = adapterItems.getItem(position);
+                Log.e("quests", item);
+            }
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);
