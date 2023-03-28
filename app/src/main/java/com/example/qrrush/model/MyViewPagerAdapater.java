@@ -28,7 +28,7 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new ProfileFragment(user, true, mediaPlayer);
+                return new ProfileFragment(user, true);
             case 1:
                 return new ShopFragment(user);
             case 2:

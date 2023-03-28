@@ -143,7 +143,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                                                 // scannedByList.get(pos) returns the name -> STRING
                                                                 // send the user object to the profile fragment
                                                                 requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false, mediaPlayer)).commit();
+                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
                                                             });
 

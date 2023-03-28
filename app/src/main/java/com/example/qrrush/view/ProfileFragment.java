@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import android.app.Dialog;
 import android.database.DataSetObserver;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,8 @@ public class ProfileFragment extends Fragment implements Serializable {
 
     Boolean editable;
 
+    MediaPlayer mediaPlayer;
+
     private ImageButton settingsButton;
 
     /**
@@ -77,12 +80,12 @@ public class ProfileFragment extends Fragment implements Serializable {
         super.onViewCreated(view, savedInstanceState);
 
 
-        settingsButton = view.findViewById(R.id.edit_name);
+        settingsButton = view.findViewById(R.id.settings_button);
 
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SettingsFragment settingsFragment = new SettingsFragment();
+                SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
                 settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
             }
         });
