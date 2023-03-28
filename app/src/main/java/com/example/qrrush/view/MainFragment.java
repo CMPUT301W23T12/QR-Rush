@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
@@ -59,10 +58,10 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         cameraButton = view.findViewById(R.id.camera_button);
         cameraButton.setOnClickListener((v) -> {
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new CameraFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+            new CameraFragment(user).show(
+                    requireActivity().getSupportFragmentManager(),
+                    "Scan a QR code"
+            );
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);
@@ -71,6 +70,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         // Obtain the SupportMapFragment object from the layout using getChildFragmentManager()
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
+
 
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
@@ -94,7 +94,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         // When map is loaded
         Geo.getCurrentLocation(location -> {
-            ((MainActivity) requireActivity()).removeLoadingScreen();
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
@@ -122,7 +121,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             // Add marker click listener to show alert dialog
                             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
-                                public boolean onMarkerClick(Marker marker) {
+                                public boolean onMarkerClick(@NonNull Marker marker) {
                                     // Create and show alert dialog
                                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -140,7 +139,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                                                 // scannedByList.get(pos) returns the name -> STRING
                                                                 // send the user object to the profile fragment
                                                                 requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
                                                             });
 

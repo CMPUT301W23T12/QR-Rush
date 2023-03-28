@@ -4,26 +4,20 @@ import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.example.qrrush.controller.RankComparator;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +31,6 @@ import java.util.function.Consumer;
  * <a href="https://github.com/CMPUT301W23T12/6ixStacks/wiki/FirebaseWrapper-API-Documentation"> the wiki.</a>
  */
 public class FirebaseWrapper {
-
     /**
      * This methods creates a new collection (collectionName) and new Document (documentName)
      * you must create a hashmap of type &lt;String, Object&gt; and populate the data before adding
@@ -193,8 +186,7 @@ public class FirebaseWrapper {
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
                             ds.getLong("score").intValue(),
-                            new ArrayList<>(),
-                            ds.getLong("money").intValue()
+                            new ArrayList<>()
                     );
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
@@ -320,8 +312,7 @@ public class FirebaseWrapper {
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
                     d.getLong("score").intValue(),
-                    codes,
-                    d.getLong("money").intValue()
+                    codes
             ));
         }
 
@@ -374,4 +365,5 @@ public class FirebaseWrapper {
                     }
                 });
     }
+
 }

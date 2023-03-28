@@ -6,29 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
 import com.example.qrrush.controller.ScoreComparator;
-import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
-import com.example.qrrush.model.UserUtil;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * The fragment which displays the users profile.
@@ -36,21 +30,19 @@ import java.util.Optional;
  * sorting the users QR codes by date, score and name,
  * letting the user edit there username by interacting with firebase
  */
-public class ProfileFragment extends Fragment implements Serializable {
+public class ProfileDialogFragment extends DialogFragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
-    Boolean editable;
 
     /**
      * Grabs User object from the main activity
      *
      * @param user The user who's profile should be displayed.
      */
-    public ProfileFragment(User user, Boolean editable) {
+    public ProfileDialogFragment(User user) {
         // Required empty public constructor
         this.user = user;
-        this.editable = editable;
     }
 
 
@@ -92,7 +84,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         scoreText.setText("SCORE");
 
         // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
+        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, false);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
 
@@ -149,67 +141,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
         // Get the button view from the layout
         ImageButton editNameButton = view.findViewById(R.id.edit_name);
-        if (!editable) {
-            editNameButton.setVisibility(View.GONE);
-        }
-        editNameButton.setOnClickListener(v -> {
-            View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
-            alertDialogBuilder.setView(addNewName);
-            alertDialogBuilder.setTitle("Input new name:");
-            alertDialogBuilder.setPositiveButton("Confirm", null);
-            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
-            userNameEdit.setHint(user.getUserName());
-
-            AlertDialog dialog = alertDialogBuilder.create();
-            dialog.setOnShowListener(dialogInterface -> {
-                TextView errorText = addNewName.findViewById(R.id.errorText);
-                TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                //add a positive button on the alertdialog that tells user to confirm their input
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(newView -> {
-                    // store the new name input of the user
-
-                    String newUserName = userNameEdit.getText().toString();
-                    if (newUserName.isEmpty()) {
-                        dialog.dismiss();
-                        return;
-                    } else if (newUserName.length() > 10) {
-                        errorText1.setVisibility(View.VISIBLE);
-                        errorText.setVisibility(View.GONE);
-
-                        return;
-                    }
-
-                    FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
-                        if (userResult.isPresent()) {
-                            // Username is taken, prompt user to pick a new name
-                            errorText.setVisibility(View.VISIBLE);
-                            errorText1.setVisibility(View.GONE);
-                            return;
-                        }
-
-                        User user = userResult.get();
-
-                        // Username is unique, continue with edit the process
-                        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
-                            Map<String, Object> updatedProfile = documentSnapshot.getData();
-
-                            // Add name + UUID and phone number to FB
-                            FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
-                            FirebaseWrapper.deleteDocument("profiles", user.getUserName());
-
-                            user.setUserName(newUserName);
-                            UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
-
-                            nameView.setText(user.getUserName());
-                            dialog.dismiss();
-                        });
-                    });
-                });
-            });
-            dialog.show();
-        });
+        editNameButton.setVisibility(View.GONE);
     }
 
 }

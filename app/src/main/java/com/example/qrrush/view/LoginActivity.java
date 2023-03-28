@@ -100,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
                     profiles.put("phone-number", phoneNumber);
                     profiles.put("rank", 0);
                     profiles.put("score", 0);
-                    profiles.put("money", 100);
                     profiles.put("qrcodes", new ArrayList<QRCode>());
                     profiles.put("qrcodescomments", new ArrayList<String>());
                     // Add name + UUID and phone number to FB
