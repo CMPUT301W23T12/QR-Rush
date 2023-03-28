@@ -6,6 +6,7 @@ import java.util.Comparator;
  * Custom Comparator to sort the users by score to set there rank.
  */
 public class RankComparator implements Comparator<User> {
+
     /**
      * Compares two User objects based on their score.
      * If the first score is greater than the second, -1 will be returned.
