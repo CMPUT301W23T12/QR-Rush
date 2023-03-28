@@ -146,6 +146,7 @@ public class User implements Serializable {
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
+
             return;
         }
 
