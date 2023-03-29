@@ -199,6 +199,16 @@ public class User implements Serializable {
         });
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
+    }
 
     /**
      * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a
