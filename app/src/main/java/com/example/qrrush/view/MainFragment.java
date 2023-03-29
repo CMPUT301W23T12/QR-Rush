@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -102,6 +103,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
 
             // Fetch QRCode locations from Firebase
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -165,7 +167,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             });
         });
     }
-
 }
 
 

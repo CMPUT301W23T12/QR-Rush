@@ -42,6 +42,31 @@ public class ShopFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
+    private int rarityPrice(Rarity rarity) {
+        int price;
+
+        if (rarity == Common) {
+            price = 1;
+        } else if (rarity == Rare) {
+            price = 5;
+        } else {
+            price = 10;
+        }
+        return price;
+    }
+
+
+    private void tryPurchaseQRCode(QRCode code) {
+        int price = rarityPrice(code.getRarity());
+        if (user.getMoney() >= price) {
+            user.addQRCode(code);
+            user.setMoney(user.getMoney() - price);
+            Toast.makeText(getContext(), "QR code purchased!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Insufficient funds.", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
