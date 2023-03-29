@@ -31,6 +31,10 @@ public class User implements Serializable {
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
 
+
+    private int money;
+
+
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
      *
@@ -122,6 +126,7 @@ public class User implements Serializable {
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
+
             return;
         }
 

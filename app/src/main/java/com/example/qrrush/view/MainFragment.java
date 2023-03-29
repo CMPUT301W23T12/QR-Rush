@@ -165,7 +165,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             });
         });
     }
-
 }
 
 
