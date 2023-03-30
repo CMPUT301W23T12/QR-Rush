@@ -196,7 +196,6 @@ public class ProfileFragment extends Fragment implements Serializable {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        FirebaseWrapper.getAllCollection(user);
         TextView nameView = view.findViewById(R.id.nameView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
@@ -209,7 +208,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         moneyView.setText(String.valueOf(user.getMoney()));
-//        getAllCollection(user, rankView);
+        getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
