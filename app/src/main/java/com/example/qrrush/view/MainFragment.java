@@ -37,6 +37,7 @@ import com.google.firebase.firestore.GeoPoint;
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
+    TextView loadingText;
 
     /**
      * Grabs the User object from the main activity
@@ -74,6 +75,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
+
+        loadingText = view.findViewById(R.id.map_loading_text);
     }
 
     @Override
@@ -94,6 +97,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         // When map is loaded
         Geo.getCurrentLocation(location -> {
+            loadingText.setVisibility(View.GONE);
+
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
