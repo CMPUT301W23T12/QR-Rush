@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,22 @@ import androidx.fragment.app.Fragment;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -71,6 +81,44 @@ public class ProfileFragment extends Fragment implements Serializable {
         qrCodeAdapter.notifyDataSetChanged();
     }
 
+    public void getAllCollection(User user, TextView rankView) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            ArrayList<User> users = new ArrayList<User>();
+                            users.clear();
+                            for (QueryDocumentSnapshot document : value) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                User u = new User(document.getId(),
+                                        "",
+                                        0,
+                                        new ArrayList<>(),
+                                        0);
+                                ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                for (String hash : hashes) {
+                                    u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                                }
+
+                                users.add(u);
+                            }
+                            Collections.sort(users, new RankComparator());
+                            for (int i = 0; i < users.size(); ++i) {
+                                if (user.getUserName().matches(users.get(i).getUserName())) {
+                                    user.setRank(((users.indexOf(users.get(i))) + 1));
+                                    rankView.setText(String.valueOf(user.getRank()));
+                                }
+                            }
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ", error.fillInStackTrace());
+                        }
+                    }
+                });
+    }
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,6 +139,9 @@ public class ProfileFragment extends Fragment implements Serializable {
         rankText.setText("RANK");
         QRText.setText("QRCODES FOUND");
         scoreText.setText("SCORE");
+        rankView.setText("Loading...");
+
+        getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
@@ -141,7 +192,8 @@ public class ProfileFragment extends Fragment implements Serializable {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText(String.valueOf(user.getRank()));
+                rankView.setText("Loading...");
+                getAllCollection(user, rankView);
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 moneyView.setText(String.valueOf(user.getMoney()));
