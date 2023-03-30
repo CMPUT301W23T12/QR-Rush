@@ -186,7 +186,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
                                             ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.main_view, new ProfileFragment(user.get(), false)).commit();
+                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
                                         });
 

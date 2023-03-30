@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.Geo;
@@ -26,7 +26,7 @@ import com.google.mlkit.vision.barcode.common.Barcode;
  * The fragment displaying the screen after a QR code is scanned and asking the user to
  * confirm that they want to add the QR code to their account.
  */
-public class QRConfirmFragment extends Fragment {
+public class QRConfirmFragment extends DialogFragment {
     User user;
     Barcode code;
     Button retakeButton;
@@ -37,6 +37,7 @@ public class QRConfirmFragment extends Fragment {
     TextView rarityView;
     TextView locationView;
     CheckBox geolocationToggle;
+    FragmentManager manager;
 
     public QRConfirmFragment(User user, Barcode b) {
         this.user = user;
@@ -64,20 +65,14 @@ public class QRConfirmFragment extends Fragment {
         QRCode qrCode = new QRCode(this.code.getRawBytes());
 
         retakeButton.setOnClickListener(v -> {
-            FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-            t.replace(R.id.main_view, new CameraFragment(user));
-            t.addToBackStack(null);
-            t.commit();
+            new CameraFragment(user).show(manager, "Confirm QR code");
+            dismiss();
         });
 
         confirmButton.setOnClickListener(v -> {
             Geo.getCurrentLocation(l -> {
                 user.addQRCode(qrCode);
-
-                FragmentTransaction t = requireActivity().getSupportFragmentManager().beginTransaction();
-                t.replace(R.id.main_view, new MainFragment(user));
-                t.addToBackStack(null);
-                t.commit();
+                dismiss();
             });
         });
 
@@ -109,6 +104,8 @@ public class QRConfirmFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_qr_confirm, container, false);
+        View result = inflater.inflate(R.layout.fragment_qr_confirm, container, false);
+        manager = getParentFragmentManager();
+        return result;
     }
 }

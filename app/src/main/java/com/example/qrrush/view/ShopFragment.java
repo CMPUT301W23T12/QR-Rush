@@ -1,9 +1,5 @@
 package com.example.qrrush.view;
 
-import static com.example.qrrush.model.Rarity.Common;
-import static com.example.qrrush.model.Rarity.Legendary;
-import static com.example.qrrush.model.Rarity.Rare;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,18 +39,20 @@ public class ShopFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
     private int rarityPrice(Rarity rarity) {
         int price;
 
-        if (rarity == Common) {
+        if (rarity == Rarity.Common) {
             price = 1;
-        } else if (rarity == Rare) {
+        } else if (rarity == Rarity.Rare) {
             price = 5;
         } else {
             price = 10;
         }
         return price;
     }
+
 
     private void tryPurchaseQRCode(QRCode code) {
         int price = rarityPrice(code.getRarity());
@@ -87,7 +85,7 @@ public class ShopFragment extends Fragment {
         // TODO: add these scores to the current User.
         commonButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
-            QRCode code = QRCode.withRarity(Common);
+            QRCode code = QRCode.withRarity(Rarity.Common);
             tryPurchaseQRCode(code);
             int FinalMoney = user.getMoney();
             if (initialMoney != FinalMoney) {
@@ -102,7 +100,7 @@ public class ShopFragment extends Fragment {
 
         rareButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
-            QRCode code = QRCode.withRarity(Rare);
+            QRCode code = QRCode.withRarity(Rarity.Rare);
             tryPurchaseQRCode(code);
             int FinalMoney = user.getMoney();
             if (initialMoney != FinalMoney) {
@@ -117,7 +115,7 @@ public class ShopFragment extends Fragment {
 
         legendaryButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
-            QRCode code = QRCode.withRarity(Legendary);
+            QRCode code = QRCode.withRarity(Rarity.Legendary);
             tryPurchaseQRCode(code);
             int FinalMoney = user.getMoney();
             if (initialMoney != FinalMoney) {

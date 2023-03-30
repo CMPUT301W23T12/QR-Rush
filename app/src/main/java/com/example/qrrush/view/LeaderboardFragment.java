@@ -27,7 +27,8 @@ import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserAdapter;
-import com.google.android.material.color.utilities.Score;
+
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -119,17 +120,17 @@ public class LeaderboardFragment extends Fragment {
                             users.clear();
                             for (QueryDocumentSnapshot document : value) {
                                 Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
-                                if (!user.getUserName().matches(document.getId())){
-                                    users.add(new User(document.getId(),
-                                            "",
-                                            0,
-                                            ((Long) document.getData().get("score")).intValue(),
-                                            new ArrayList<>(),
-                                            ((Long) document.getData().get("money")).intValue()));
-                                } else{
-                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
-                                    users.add(user);
+                                User u = new User(document.getId(),
+                                        "",
+                                        0,
+                                        new ArrayList<>(),
+                                        0);
+                                ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                for (String hash : hashes) {
+                                    u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
                                 }
+
+                                users.add(u);
                             }
                             Collections.sort(users, new RankComparator());
                             for (int i = 0; i < users.size(); ++i){
@@ -137,7 +138,7 @@ public class LeaderboardFragment extends Fragment {
                             }
                             ArrayList<User> topUsers = new ArrayList<>();
                             ArrayList<User> otherUsers = new ArrayList<>();
-                            userAdapter = new UserAdapter(requireContext(), otherUsers);
+                            userAdapter = new UserAdapter(requireActivity(), otherUsers);
                             leaderboardView.setVisibility(View.VISIBLE);
                             leaderboardView.setAdapter(userAdapter);
 
@@ -173,7 +174,7 @@ public class LeaderboardFragment extends Fragment {
                     ScoreComparator s = new ScoreComparator();
 
                     Collections.sort(qrCodes,s);
-                    qrCodeAdapter = new LeaderboardQRCodeAdapter(requireContext(),qrCodes);
+                    qrCodeAdapter = new LeaderboardQRCodeAdapter(requireActivity(),qrCodes);
                     leaderboardView.setVisibility(View.VISIBLE);
                     leaderboardView.setAdapter(qrCodeAdapter);
                 });
@@ -190,8 +191,7 @@ public class LeaderboardFragment extends Fragment {
                 String bruh = user1Name.getText().toString();
                 FirebaseWrapper.getUserData(bruh, user1 -> {
                     User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+                    new ProfileDialogFragment(user2).show(requireActivity().getSupportFragmentManager(),user2.getUserName());
                 });
 
 
@@ -204,8 +204,7 @@ public class LeaderboardFragment extends Fragment {
                 String bruh = user2Name.getText().toString();
                 FirebaseWrapper.getUserData(bruh, user1 -> {
                     User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+                    new ProfileDialogFragment(user2).show(requireActivity().getSupportFragmentManager(),user2.getUserName());
                 });
 
 
@@ -218,8 +217,7 @@ public class LeaderboardFragment extends Fragment {
                 String bruh = user3Name.getText().toString();
                 FirebaseWrapper.getUserData(bruh, user1 -> {
                     User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+                    new ProfileDialogFragment(user2).show(requireActivity().getSupportFragmentManager(),user2.getUserName());
                 });
 
 
@@ -234,8 +232,7 @@ public class LeaderboardFragment extends Fragment {
                 String nameUser = v.getText().toString();
                 FirebaseWrapper.getUserData(nameUser, user1 -> {
                     User user2 = user1.get();
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.main_view, new ProfileFragment(user2, false)).commit();
+                    new ProfileDialogFragment(user2).show(requireActivity().getSupportFragmentManager(),user2.getUserName());
                 });
                 Log.e("name",v.getText().toString());
 //                requireActivity().getSupportFragmentManager().beginTransaction()
@@ -253,7 +250,7 @@ public class LeaderboardFragment extends Fragment {
         userImage.setImageResource(R.drawable.discordpic);
         userName.setText(user.getUserName());
         Log.e("name",user.getUserName());
-        userScore.setText(String.valueOf(user.getTotalScoreMemeber()));
+        userScore.setText(String.valueOf(user.getTotalScore()));
         rankTextView.setText(String.valueOf(rank)); // set the rank TextView
 
     }

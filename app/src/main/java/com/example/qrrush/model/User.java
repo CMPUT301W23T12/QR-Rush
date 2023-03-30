@@ -34,48 +34,32 @@ public class User implements Serializable {
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
 
+
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
      *
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
-     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
-        this.totalScore = totalScore;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
-    }
-
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
+        this.money = money;
     }
 
     public String getUserName() {
         return userName;
-    }
-
-    public int getMoney() {
-        return money;
-    }
-
-
-    public void setMoney(int money) {
-        this.money = money;
-        Map<String, Object> updatedMoney = new HashMap<>();
-        updatedMoney.put("money", this.money);
-        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
     }
 
     public void setUserName(String userName) {
@@ -121,9 +105,6 @@ public class User implements Serializable {
 
         return result;
     }
-    public int getTotalScoreMemeber() {
-        return totalScore;
-    }
 
     /**
      * Removes a QR Code from the user's account, both locally and in Firebase.
@@ -146,6 +127,7 @@ public class User implements Serializable {
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
+
             return;
         }
 
@@ -218,6 +200,16 @@ public class User implements Serializable {
         });
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
+    }
 
     /**
      * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a

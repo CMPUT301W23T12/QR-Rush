@@ -192,7 +192,6 @@ public class FirebaseWrapper {
                             username,
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
-                            ds.getLong("score").intValue(),
                             new ArrayList<>(),
                             ds.getLong("money").intValue()
                     );
@@ -323,7 +322,6 @@ public class FirebaseWrapper {
                     d.getId(),
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
-                    d.getLong("score").intValue(),
                     codes,
                     d.getLong("money").intValue()
             ));
