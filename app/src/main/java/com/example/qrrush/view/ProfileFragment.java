@@ -1,6 +1,7 @@
 package com.example.qrrush.view;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.media.MediaPlayer;
 import android.graphics.Color;
@@ -154,15 +155,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         super.onViewCreated(view, savedInstanceState);
 
 
-        settingsButton = view.findViewById(R.id.settings_button);
 
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
-                settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
-            }
-        });
 
 
         TextView nameView = view.findViewById(R.id.nameView);
@@ -270,74 +263,172 @@ public class ProfileFragment extends Fragment implements Serializable {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {
-            View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
-            alertDialogBuilder.setView(addNewName);
-            alertDialogBuilder.setTitle("Input new name:");
-            alertDialogBuilder.setPositiveButton("Confirm", null);
-            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
-            userNameEdit.setHint(user.getUserName());
+                    View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+                    alertDialogBuilder.setView(Settings);
+                    alertDialogBuilder.setTitle("Settings");
+                    alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
+                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+                                    alertDialogBuilder.setView(addNewName);
+                                    alertDialogBuilder.setTitle("Input new name:");
+                                    alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+                                            userNameEdit.setHint(user.getUserName());
+                                            TextView errorText = addNewName.findViewById(R.id.errorText);
+                                            TextView errorText1 = addNewName.findViewById(R.id.errorText1);
+                                            String newUserName = userNameEdit.getText().toString();
+                                            if (newUserName.isEmpty()) {
+                                                dialog.dismiss();
+                                                return;
+                                            } else if (newUserName.length() > 10) {
+                                                errorText1.setVisibility(View.VISIBLE);
+                                                errorText.setVisibility(View.GONE);
 
-            AlertDialog dialog = alertDialogBuilder.create();
-            dialog.setOnShowListener(dialogInterface -> {
-                TextView errorText = addNewName.findViewById(R.id.errorText);
-                TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                // add a positive button on the alertdialog that tells user to confirm their
-                // input
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(newView -> {
-                    // store the new name input of the user
+                                                return;
+                                            }
 
-                    String newUserName = userNameEdit.getText().toString();
-                    if (newUserName.isEmpty()) {
-                        dialog.dismiss();
-                        return;
-                    } else if (newUserName.length() > 10) {
-                        errorText1.setVisibility(View.VISIBLE);
-                        errorText.setVisibility(View.GONE);
+                                            FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+                                                if (userResult.isPresent()) {
+                                                    // Username is taken, prompt user to pick a new name
+                                                    errorText.setVisibility(View.VISIBLE);
+                                                    errorText1.setVisibility(View.GONE);
+                                                    return;
+                                                }
 
-                        return;
-                    }
+                                                // Username is unique, continue with edit the process
+                                                FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+                                                    Map<String, Object> updatedProfile = documentSnapshot.getData();
 
-                    FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
-                        if (userResult.isPresent()) {
-                            // Username is taken, prompt user to pick a new name
-                            errorText.setVisibility(View.VISIBLE);
-                            errorText1.setVisibility(View.GONE);
-                            return;
-                        }
+                                                    // Add name + UUID and phone number to FB
+                                                    FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+                                                    FirebaseWrapper.deleteDocument("profiles", user.getUserName());
 
-                        // Username is unique, continue with edit the process
-                        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
-                            Map<String, Object> updatedProfile = documentSnapshot.getData();
+                                                    user.setUserName(newUserName);
+                                                    UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
 
-                            // Add name + UUID and phone number to FB
-                            FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
-                            FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+                                                    nameView.setText(user.getUserName());
+                                                    dialog.dismiss();
+                                                    ColorGenerator newgenerator = ColorGenerator.MATERIAL;
 
-                            user.setUserName(newUserName);
-                            UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
+                                                    int newcolor = newgenerator.getColor(user.getUserName());
 
-                            nameView.setText(user.getUserName());
-                            dialog.dismiss();
-                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+                                                    TextDrawable newdrawable = TextDrawable.builder()
+                                                            .beginConfig()
+                                                            .textColor(Color.WHITE)
+                                                            .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                                            .toUpperCase()
+                                                            .endConfig()
+                                                            .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+                                                    profilePicture.setImageDrawable(newdrawable);
+                                                });
+                                            });
+                                        }
+                                    }).show();
+                                }
+                            });
+                    alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                                SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
+                                settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
 
-                            int newcolor = newgenerator.getColor(user.getUserName());
+                            }
+                        }).show();
 
-                            TextDrawable newdrawable = TextDrawable.builder()
-                                    .beginConfig()
-                                    .textColor(Color.WHITE)
-                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                                    .toUpperCase()
-                                    .endConfig()
-                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
-                            profilePicture.setImageDrawable(newdrawable);
-                        });
-                    });
-                });
-            });
-            dialog.show();
+
+
+
+
+
         });
+
+
+
+
+
+
+
+
+
+
+//        ImageButton editNameButton = view.findViewById(R.id.settings_button);
+//        if (!editable) {
+//            editNameButton.setVisibility(View.GONE);
+//        }
+//        editNameButton.setOnClickListener(v -> {
+//            View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+//            alertDialogBuilder.setView(addNewName);
+//            alertDialogBuilder.setTitle("Input new name:");
+//            alertDialogBuilder.setPositiveButton("Confirm", null);
+//            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+//            userNameEdit.setHint(user.getUserName());
+//
+//            AlertDialog dialog = alertDialogBuilder.create();
+//            dialog.setOnShowListener(dialogInterface -> {
+//                TextView errorText = addNewName.findViewById(R.id.errorText);
+//                TextView errorText1 = addNewName.findViewById(R.id.errorText1);
+//                // add a positive button on the alertdialog that tells user to confirm their
+//                // input
+//                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+//                button.setOnClickListener(newView -> {
+//                    // store the new name input of the user
+//
+//                    String newUserName = userNameEdit.getText().toString();
+//                    if (newUserName.isEmpty()) {
+//                        dialog.dismiss();
+//                        return;
+//                    } else if (newUserName.length() > 10) {
+//                        errorText1.setVisibility(View.VISIBLE);
+//                        errorText.setVisibility(View.GONE);
+//
+//                        return;
+//                    }
+//
+//                    FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+//                        if (userResult.isPresent()) {
+//                            // Username is taken, prompt user to pick a new name
+//                            errorText.setVisibility(View.VISIBLE);
+//                            errorText1.setVisibility(View.GONE);
+//                            return;
+//                        }
+//
+//                        // Username is unique, continue with edit the process
+//                        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+//                            Map<String, Object> updatedProfile = documentSnapshot.getData();
+//
+//                            // Add name + UUID and phone number to FB
+//                            FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+//                            FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+//
+//                            user.setUserName(newUserName);
+//                            UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
+//
+//                            nameView.setText(user.getUserName());
+//                            dialog.dismiss();
+//                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+//
+//                            int newcolor = newgenerator.getColor(user.getUserName());
+//
+//                            TextDrawable newdrawable = TextDrawable.builder()
+//                                    .beginConfig()
+//                                    .textColor(Color.WHITE)
+//                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+//                                    .toUpperCase()
+//                                    .endConfig()
+//                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+//                            profilePicture.setImageDrawable(newdrawable);
+//                        });
+//                    });
+//                });
+//            });
+//            dialog.show();
+//        });
     }
 
 }
