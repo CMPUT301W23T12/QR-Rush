@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
+
                     errorText.setVisibility(View.GONE);
                     HashMap<String, Object> profiles = new HashMap<>();
                     profiles.put("UUID", UserUtil.generateUUID());
