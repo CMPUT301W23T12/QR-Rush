@@ -1,20 +1,24 @@
 package com.example.qrrush.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,12 +97,14 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
+
                     errorText.setVisibility(View.GONE);
                     HashMap<String, Object> profiles = new HashMap<>();
                     profiles.put("UUID", UserUtil.generateUUID());
                     profiles.put("phone-number", phoneNumber);
                     profiles.put("rank", 0);
                     profiles.put("score", 0);
+                    profiles.put("money", 100);
                     profiles.put("qrcodes", new ArrayList<QRCode>());
                     profiles.put("qrcodescomments", new ArrayList<String>());
                     // Add name + UUID and phone number to FB
