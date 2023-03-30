@@ -140,6 +140,59 @@ public class LeaderboardFragment extends Fragment {
                         }
                     }
                 });
+        playersTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topThreeUser.setVisibility(View.VISIBLE);
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                ArrayList<User> users = new ArrayList<User>();
+                db.collection("profiles")
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                if (error != null) {
+                                    Log.d("FirebaseWrapper", "Error getting documents: ", error.fillInStackTrace());
+                                }
+
+                                users.clear();
+                                for (QueryDocumentSnapshot document : value) {
+                                    Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                    User u = new User(document.getId(),
+                                            "",
+                                            0,
+                                            new ArrayList<>(),
+                                            0);
+                                    ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                    for (String hash : hashes) {
+                                        u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                                    }
+
+                                    users.add(u);
+                                }
+                                Collections.sort(users, new RankComparator());
+                                for (int i = 0; i < users.size(); ++i) {
+                                    users.get(i).setRank(users.indexOf(users.get(i)));
+                                }
+                                ArrayList<User> topUsers = new ArrayList<>();
+                                ArrayList<User> otherUsers = new ArrayList<>();
+                                userAdapter = new UserAdapter(requireActivity(), otherUsers);
+                                leaderboardView.setVisibility(View.VISIBLE);
+                                leaderboardView.setAdapter(userAdapter);
+
+                                for (int i = 0; i < 3 && users.size() > i; i++) {
+                                    topUsers.add(users.get(i));
+                                }
+                                for (int i = 3; i < users.size(); i++) {
+                                    otherUsers.add(users.get(i));
+                                }
+
+                                for (int i = 0; i < topUsers.size(); i += 1) {
+                                    updateTopUserView(view, topUsers.get(i), i + 1);
+                                }
+                            }
+                        });
+            }
+        });
         // Separate the top 3 users
         qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
