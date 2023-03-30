@@ -49,8 +49,7 @@
             android:layout_width="166dp"
             android:layout_height="160dp"
             android:layout_gravity="center_horizontal"
-            android:onClick="profileButton"
-            android:src="@drawable/discordpic" />
+            android:onClick="profileButton" />
 
         <TextView
             android:id="@+id/nameView"

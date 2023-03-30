@@ -1,6 +1,8 @@
 package com.example.qrrush.model;
 
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
@@ -29,7 +31,7 @@ public class User implements Serializable {
     private int totalScore;
     private ArrayList<QRCode> qrCodes;
     // unsure of data type for now
-    private String profilePicture;
+    private Bitmap profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
 
@@ -42,13 +44,14 @@ public class User implements Serializable {
      * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money, Bitmap profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
         this.totalScore = totalScore;
+        this.profilePicture = profilePicture;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
@@ -81,11 +84,11 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-    public String getProfilePicture() {
+    public Bitmap getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(Bitmap profilePicture) {
         this.profilePicture = profilePicture;
     }
 

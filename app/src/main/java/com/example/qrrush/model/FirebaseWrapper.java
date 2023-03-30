@@ -1,6 +1,10 @@
 package com.example.qrrush.model;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -186,14 +190,17 @@ public class FirebaseWrapper {
                         userConsumer.accept(Optional.empty());
                         return;
                     }
-
+                    String encodedImage = ds.getString("profile_picture");
+                    byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                     User user = new User(
                             username,
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
                             ds.getLong("score").intValue(),
                             new ArrayList<>(),
-                            ds.getLong("money").intValue()
+                            ds.getLong("money").intValue(),
+                            decodedBitmap
                     );
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
@@ -313,14 +320,17 @@ public class FirebaseWrapper {
             for (String hash : hashes) {
                 codes.add(qrCodes.get(hash));
             }
-
+            String encodedImage = d.getString("profile_picture");
+            byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
             users.add(new User(
                     d.getId(),
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
                     d.getLong("score").intValue(),
                     codes,
-                    d.getLong("money").intValue()
+                    d.getLong("money").intValue(),
+                    decodedBitmap
             ));
         }
 

@@ -3,12 +3,14 @@ package com.example.qrrush.view;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
@@ -41,16 +44,23 @@ import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -92,7 +102,43 @@ public class ProfileFragment extends Fragment implements Serializable {
                 // photo picker.
                 if (uri != null) {
                     Log.e("PhotoPicker", "Selected URI: " + uri);
-                    profilePicture.setImageURI(uri);
+                    HashMap<String, Object> FBprofilePicture = new HashMap<>();
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = BitmapFactory.decodeStream(requireActivity().getContentResolver().openInputStream(uri));
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReference().child("images/image.jpg");
+                        UploadTask uploadTask = storageRef.putBytes(data);
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get the download URL of the uploaded image
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        Glide.with(getContext())
+                                                .load(downloadUrl)
+                                                .into(profilePicture);
+                                        // Update your profile picture with the download URL
+                                        // ...
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle failed upload
+                            }
+                        });
+
+                    }catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     Log.e("PhotoPicker", "No media selected");
                 }
@@ -110,13 +156,18 @@ public class ProfileFragment extends Fragment implements Serializable {
                             users.clear();
                             for (QueryDocumentSnapshot document : value) {
                                 Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+
                                 if (!user.getUserName().matches(document.getId())){
+                                    String encodedImage = document.getString("profile_picture");
+                                    byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
+                                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                                     users.add(new User(document.getId(),
                                             "",
                                             0,
                                             ((Long) document.getData().get("score")).intValue(),
                                             new ArrayList<>(),
-                                            0));
+                                            0,
+                                            decodedBitmap));
                                 } else{
                                     user.setTotalScore(((Long) document.getData().get("score")).intValue());
                                     users.add(user);
@@ -139,6 +190,7 @@ public class ProfileFragment extends Fragment implements Serializable {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
     }
 
     @Override
@@ -164,8 +216,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         moneyView.setText(String.valueOf(user.getMoney()));
-        getAllCollection(user, rankView);
-
+//        getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
@@ -192,7 +243,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                 .toUpperCase()
                 .endConfig()
                 .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
-        profilePicture.setImageDrawable(drawable);
+//        profilePicture.setImageDrawable(drawable);
 
         sortingTracker = 1;
 
