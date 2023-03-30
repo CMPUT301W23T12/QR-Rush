@@ -97,6 +97,8 @@ public class LeaderboardFragment extends Fragment {
         View user2View = view.findViewById(R.id.top_user2);
         View user3View = view.findViewById(R.id.top_user3);
 
+        View topThreeUser = view.findViewById(R.id.top_users_container);
+
         TextView user1Name = user1View.findViewById(R.id.OtherUserNameView);
         TextView user2Name = user2View.findViewById(R.id.OtherUserNameView);
         TextView user3Name = user3View.findViewById(R.id.OtherUserNameView);
@@ -142,7 +144,7 @@ public class LeaderboardFragment extends Fragment {
                             leaderboardView.setVisibility(View.VISIBLE);
                             leaderboardView.setAdapter(userAdapter);
 
-                            for(int i = 0; topUsers.size()>2 && i<3; i++){
+                            for(int i = 0;  i<3; i++){
                                 topUsers.add(users.get(i));
                             }
                             for(int i = 3; i<users.size(); i++){
@@ -166,10 +168,75 @@ public class LeaderboardFragment extends Fragment {
                         }
                     }
                 });
+
+        playersTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topThreeUser.setVisibility(View.VISIBLE);
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                ArrayList<User> users = new ArrayList<User>();
+                db.collection("profiles")
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                                if (error == null) {
+
+                                    users.clear();
+                                    for (QueryDocumentSnapshot document : value) {
+                                        Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                        User u = new User(document.getId(),
+                                                "",
+                                                0,
+                                                new ArrayList<>(),
+                                                0);
+                                        ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                        for (String hash : hashes) {
+                                            u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                                        }
+
+                                        users.add(u);
+                                    }
+                                    Collections.sort(users, new RankComparator());
+                                    for (int i = 0; i < users.size(); ++i){
+                                        users.get(i).setRank(users.indexOf(users.get(i)));
+                                    }
+                                    ArrayList<User> topUsers = new ArrayList<>();
+                                    ArrayList<User> otherUsers = new ArrayList<>();
+                                    userAdapter = new UserAdapter(requireActivity(), otherUsers);
+                                    leaderboardView.setVisibility(View.VISIBLE);
+                                    leaderboardView.setAdapter(userAdapter);
+
+                                    for(int i = 0;  i<3; i++){
+                                        topUsers.add(users.get(i));
+                                    }
+                                    for(int i = 3; i<users.size(); i++){
+                                        otherUsers.add(users.get(i));
+                                    }
+                                    if (topUsers.size() > 0) {
+                                        updateTopUserView(user1View, topUsers.get(0), 1);
+
+                                    }
+                                    if (topUsers.size() > 1) {
+                                        updateTopUserView(user2View, topUsers.get(1), 2);
+
+                                    }
+                                    if (topUsers.size() > 2) {
+                                        updateTopUserView(user3View, topUsers.get(2), 3);
+
+                                    }
+
+                                } else {
+                                    Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
+                                }
+                            }
+                        });
+            }
+        });
         // Separate the top 3 users
         qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                topThreeUser.setVisibility(View.GONE);
                 FirebaseWrapper.getAllQRCodes(qrCodes -> {
                     ScoreComparator s = new ScoreComparator();
 
