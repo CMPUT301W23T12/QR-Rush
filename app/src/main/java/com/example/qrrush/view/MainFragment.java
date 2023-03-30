@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.content.ContextCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +40,7 @@ import com.google.firebase.firestore.GeoPoint;
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
+    private GoogleMap mMap;
     TextView loadingText;
 
     /**
@@ -96,12 +100,16 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         // When map is loaded
+        mMap = googleMap;
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
         Geo.getCurrentLocation(location -> {
             loadingText.setVisibility(View.GONE);
 
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
-            googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
 
             // Fetch QRCode locations from Firebase
