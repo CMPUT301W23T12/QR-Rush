@@ -101,5 +101,20 @@
         app:layout_constraintStart_toEndOf="@+id/social_image"
         app:srcCompat="@drawable/leaderboard" />
 
+    <TextView
+        android:id="@+id/loading_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:elevation="1dp"
+        android:gravity="center"
+        android:text="Loading..."
+        android:textAlignment="gravity"
+        android:textSize="35sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
