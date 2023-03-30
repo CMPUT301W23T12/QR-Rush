@@ -84,39 +84,48 @@ public class ShopFragment extends Fragment {
         // Add click listeners to buttons
         // TODO: add these scores to the current User.
         commonButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Common);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
-
-            user.addQRCode(code);
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getName());
+            }
         });
 
         rareButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Rare);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
-
-            user.addQRCode(code);
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getName());
+            }
         });
 
         legendaryButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Legendary);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
-
-            user.addQRCode(code);
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                qrContentText.setText("QR content: " + code.getHash());
+                nameContentText.setText("Name: " + code.getName());
+            }
         });
 
         return view;

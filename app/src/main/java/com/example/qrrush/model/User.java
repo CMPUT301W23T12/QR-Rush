@@ -30,8 +30,6 @@ public class User implements Serializable {
     // unsure of data type for now
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
-
-
     private int money;
 
 
@@ -41,20 +39,21 @@ public class User implements Serializable {
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
-     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
     }
 
-    public User(String userName, int rank, ArrayList<QRCode> qrCodes) {
+    public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
     }
 
     public String getUserName() {

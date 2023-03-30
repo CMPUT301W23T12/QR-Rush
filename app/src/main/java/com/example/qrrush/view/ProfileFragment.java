@@ -53,7 +53,6 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.editable = editable;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,11 +81,13 @@ public class ProfileFragment extends Fragment implements Serializable {
         TextView rankText = view.findViewById(R.id.rankText);
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
+        TextView moneyView = view.findViewById(R.id.moneyView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
+        moneyView.setText(String.valueOf(user.getMoney()));
         rankText.setText("RANK");
         QRText.setText("QRCODES FOUND");
         scoreText.setText("SCORE");
@@ -133,7 +134,6 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-
         qrCodeAdapter.notifyDataSetChanged();
 
         // Update the UI whenever the arrayAdapter gets a change.
@@ -144,6 +144,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                 rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
+                moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
 
