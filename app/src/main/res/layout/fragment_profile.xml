@@ -44,12 +44,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profileView"
             android:layout_width="166dp"
-            android:layout_height="160dp"
-            android:layout_gravity="center_horizontal"
-            android:onClick="profileButton" />
+            android:layout_height="166dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"/>
 
         <TextView
             android:id="@+id/nameView"

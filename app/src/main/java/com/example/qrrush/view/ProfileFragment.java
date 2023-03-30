@@ -123,6 +123,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                         String downloadUrl = uri.toString();
                                         FBprofilePicture.put("profile_picture", downloadUrl);
                                         FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
+                                        user.setProfilePictureURL(downloadUrl);
                                     }
                                 });
                             }
@@ -226,25 +227,27 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
-            String Url = documentSnapshot.getString("profile_picture");
-            if (Url != null){
+        if (user.getProfilePictureURL() != null){
+                Log.e("BEN","cringe");
                 Glide.with(getContext())
-                .load(Url)
+                .load(user.getProfilePictureURL())
+                        .dontAnimate()
                 .into(profilePicture);
             } else{
+                Log.e("BEN","I RAN");
                 int color = generator.getColor(user.getUserName());
-
-                TextDrawable drawable = TextDrawable.builder()
+            profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
                         .beginConfig()
                         .textColor(Color.WHITE)
                         .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
                         .toUpperCase()
+                        .width(200)
+                        .height(200)
                         .endConfig()
-                        .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
+                        .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
         profilePicture.setImageDrawable(drawable);
             }
-        });
 
 
 
@@ -354,17 +357,20 @@ public class ProfileFragment extends Fragment implements Serializable {
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
                             ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+                            if (user.getProfilePictureURL().isEmpty()){
+                                int newcolor = newgenerator.getColor(user.getUserName());
 
-                            int newcolor = newgenerator.getColor(user.getUserName());
-
-                            TextDrawable newdrawable = TextDrawable.builder()
-                                    .beginConfig()
-                                    .textColor(Color.WHITE)
-                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                                    .toUpperCase()
-                                    .endConfig()
-                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
-                            profilePicture.setImageDrawable(newdrawable);
+                                TextDrawable newdrawable = TextDrawable.builder()
+                                        .beginConfig()
+                                        .textColor(Color.WHITE)
+                                        .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                        .toUpperCase()
+                                        .width(200)
+                                        .height(200)
+                                        .endConfig()
+                                        .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+                                profilePicture.setImageDrawable(newdrawable);
+                            }
                         });
                     });
                 });
