@@ -30,8 +30,7 @@ public class User implements Serializable {
     private int rank;
     private int totalScore;
     private ArrayList<QRCode> qrCodes;
-    // unsure of data type for now
-    private Bitmap profilePicture;
+    private String profilePictureURL;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
 
@@ -44,14 +43,14 @@ public class User implements Serializable {
      * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money, Bitmap profilePicture) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money, String profilePictureURL) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
         this.totalScore = totalScore;
-        this.profilePicture = profilePicture;
+        this.profilePictureURL = profilePictureURL;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
@@ -84,12 +83,13 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-    public Bitmap getProfilePicture() {
-        return profilePicture;
+
+    public String getProfilePictureURL() {
+        return profilePictureURL;
     }
 
-    public void setProfilePicture(Bitmap profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setProfilePictureURL(String profilePictureURL) {
+        this.profilePictureURL = profilePictureURL;
     }
 
     public String getPhoneNumber() {

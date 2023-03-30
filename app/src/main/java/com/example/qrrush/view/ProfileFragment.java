@@ -103,6 +103,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                 if (uri != null) {
                     Log.e("PhotoPicker", "Selected URI: " + uri);
                     HashMap<String, Object> FBprofilePicture = new HashMap<>();
+                    profilePicture.setImageURI(uri);
                     Bitmap bitmap = null;
                     try {
                         bitmap = BitmapFactory.decodeStream(requireActivity().getContentResolver().openInputStream(uri));
@@ -110,7 +111,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
                         FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReference().child("images/image.jpg");
+                        StorageReference storageRef = storage.getReference().child("images/"+user.getUserName()+".jpg");
                         UploadTask uploadTask = storageRef.putBytes(data);
                         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -120,25 +121,20 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         String downloadUrl = uri.toString();
-                                        Glide.with(getContext())
-                                                .load(downloadUrl)
-                                                .into(profilePicture);
-                                        // Update your profile picture with the download URL
-                                        // ...
+                                        FBprofilePicture.put("profile_picture", downloadUrl);
+                                        FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
                                     }
                                 });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
-                                // Handle failed upload
+                                return;
                             }
                         });
-
                     }catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-
                 } else {
                     Log.e("PhotoPicker", "No media selected");
                 }
@@ -158,16 +154,13 @@ public class ProfileFragment extends Fragment implements Serializable {
                                 Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
 
                                 if (!user.getUserName().matches(document.getId())){
-                                    String encodedImage = document.getString("profile_picture");
-                                    byte[] decodedBytes = Base64.decode(encodedImage, Base64.DEFAULT);
-                                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                                     users.add(new User(document.getId(),
                                             "",
                                             0,
                                             ((Long) document.getData().get("score")).intValue(),
                                             new ArrayList<>(),
                                             0,
-                                            decodedBitmap));
+                                            ""));
                                 } else{
                                     user.setTotalScore(((Long) document.getData().get("score")).intValue());
                                     users.add(user);
@@ -190,7 +183,6 @@ public class ProfileFragment extends Fragment implements Serializable {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
     }
 
     @Override
@@ -234,16 +226,28 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        int color = generator.getColor(user.getUserName());
+        FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+            String Url = documentSnapshot.getString("profile_picture");
+            if (Url != null){
+                Glide.with(getContext())
+                .load(Url)
+                .into(profilePicture);
+            } else{
+                int color = generator.getColor(user.getUserName());
 
-        TextDrawable drawable = TextDrawable.builder()
-                .beginConfig()
-                .textColor(Color.WHITE)
-                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                .toUpperCase()
-                .endConfig()
-                .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
-//        profilePicture.setImageDrawable(drawable);
+                TextDrawable drawable = TextDrawable.builder()
+                        .beginConfig()
+                        .textColor(Color.WHITE)
+                        .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                        .toUpperCase()
+                        .endConfig()
+                        .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
+        profilePicture.setImageDrawable(drawable);
+            }
+        });
+
+
+
 
         sortingTracker = 1;
 
