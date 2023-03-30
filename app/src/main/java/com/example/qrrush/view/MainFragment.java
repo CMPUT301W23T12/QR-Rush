@@ -128,8 +128,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000); // Update interval in milliseconds
-        locationRequest.setFastestInterval(500); // Fastest update interval in milliseconds
+        locationRequest.setInterval(500); // Update interval in milliseconds
+        locationRequest.setFastestInterval(100); // Fastest update interval in milliseconds
 
         locationCallback = new LocationCallback() {
             @Override
