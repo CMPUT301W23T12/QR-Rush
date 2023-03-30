@@ -228,13 +228,11 @@ public class ProfileFragment extends Fragment implements Serializable {
         });
 
         if (user.getProfilePictureURL() != null){
-                Log.e("BEN","cringe");
                 Glide.with(getContext())
                 .load(user.getProfilePictureURL())
                         .dontAnimate()
                 .into(profilePicture);
             } else{
-                Log.e("BEN","I RAN");
                 int color = generator.getColor(user.getUserName());
             profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             TextDrawable drawable = TextDrawable.builder()
@@ -249,11 +247,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         profilePicture.setImageDrawable(drawable);
             }
 
-
-
-
         sortingTracker = 1;
-
         sortingButton.setText("By Date (Newest First)");
         DateComparator dateComparator = new DateComparator();
         Collections.sort(user.getQRCodes(), dateComparator);
