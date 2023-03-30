@@ -12,6 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:rotationX="180"
+        android:background="@android:color/transparent"
+
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.tabs.TabItem
@@ -19,7 +21,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="644dp" />
+            tools:layout_editor_absoluteY="644dp"
+            android:background="@android:color/transparent"
+
+            />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/shop_swipe"
@@ -27,24 +32,36 @@
             android:layout_height="wrap_content"
             android:text="Tab6"
             tools:layout_editor_absoluteX="148dp"
-            tools:layout_editor_absoluteY="642dp" />
+            tools:layout_editor_absoluteY="642dp"
+            android:background="@android:color/transparent"
+
+            />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/main_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout_editor_absoluteX="167dp"
-            tools:layout_editor_absoluteY="657dp" />
+            tools:layout_editor_absoluteY="657dp"
+            android:background="@android:color/transparent"
+
+            />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/social_swipe"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+
+            />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/leaderboard_swipe"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+
+            />
 
     </com.google.android.material.tabs.TabLayout>
 
@@ -67,7 +84,10 @@
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:srcCompat="@drawable/profile"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="0dp"
+        android:background="@android:color/transparent"
+
+        />
 
     <ImageView
         android:id="@+id/shop_image"
@@ -75,7 +95,10 @@
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profile_image"
-        app:srcCompat="@drawable/shop" />
+        app:srcCompat="@drawable/shop"
+        android:background="@android:color/transparent"
+
+        />
 
     <ImageView
         android:id="@+id/main_image"
@@ -83,7 +106,11 @@
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/shop_image"
-        app:srcCompat="@drawable/main" />
+        app:srcCompat="@drawable/main"
+        android:background="@android:color/transparent"
+
+
+        />
 
     <ImageView
         android:id="@+id/social_image"
@@ -91,7 +118,10 @@
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/main_image"
-        app:srcCompat="@drawable/social" />
+        app:srcCompat="@drawable/social"
+        android:background="@android:color/transparent"
+
+        />
 
     <ImageView
         android:id="@+id/leader_image"
@@ -99,7 +129,9 @@
         android:layout_height="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/social_image"
-        app:srcCompat="@drawable/leaderboard" />
+        app:srcCompat="@drawable/leaderboard"
+
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
