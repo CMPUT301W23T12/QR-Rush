@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +12,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +52,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
     private Button cameraButton;
     private GoogleMap mMap;
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private Marker userLocationMarker;
     TextView loadingText;
 
     /**
@@ -97,83 +113,263 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
      *
      * @param googleMap The GoogleMap object which is ready to display.
      */
+//    @Override
+//    public void onMapReady(@NonNull GoogleMap googleMap) {
+//        // When map is loaded
+//        mMap = googleMap;
+//        mMap = googleMap;
+//
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+//
+//        locationRequest = LocationRequest.create();
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        locationRequest.setInterval(1000); // Update interval in milliseconds
+//        locationRequest.setFastestInterval(500); // Fastest update interval in milliseconds
+//
+//        locationCallback = new LocationCallback() {
+//            @Override
+//            public void onLocationResult(LocationResult locationResult) {
+//                if (locationResult == null) {
+//                    return;
+//                }
+//                for (Location location : locationResult.getLocations()) {
+//                    LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+//                    if (userLocationMarker == null) {
+//                        userLocationMarker = mMap.addMarker(new MarkerOptions()
+//                                .position(userLocation)
+//                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))); // Change the color of the marker to azure blue
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f));
+//                    } else {
+//                        userLocationMarker.setPosition(userLocation);
+//                    }
+//                }
+//            }
+//        };
+//
+//        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            mMap.setMyLocationEnabled(true);
+//            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        } else {
+//            // Request location permission
+//            ActivityCompat.requestPermissions(requireActivity(),
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                    1);
+//        }
+//        Geo.getCurrentLocation(location -> {
+//            loadingText.setVisibility(View.GONE);
+//
+//            LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
+//            Log.e("permission", deviceLocation.toString());
+//            googleMap.addMarker(new MarkerOptions().position(deviceLocation));
+//            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
+//
+//            // Fetch QRCode locations from Firebase
+//            FirebaseFirestore db = FirebaseFirestore.getInstance();
+//            db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
+//                if (error != null) {
+//                    Log.w("MainFragment", "Listen failed.", error);
+//                    return;
+//                }
+//
+//                if (querySnapshot != null) {
+//                    googleMap.clear(); // Clear previous markers from the map
+//                    // Add the device location marker again after clearing the map
+//                    googleMap.addMarker(new MarkerOptions().position(deviceLocation));
+//
+//                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+//                        GeoPoint geoPoint = document.getGeoPoint("location");
+//                        if (geoPoint != null) {
+//                            LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+//                            googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+//
+//                            // Add marker click listener to show alert dialog
+//                            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//                                @Override
+//                                public boolean onMarkerClick(@NonNull Marker marker) {
+//                                    // Create and show alert dialog
+//                                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
+//                                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                                        builder.setTitle("QR CODE\nHash:" + document.getId());
+//                                        if (scannedByList.isEmpty()) {
+//                                            builder.setMessage("No other user has scanned this QR code yet.");
+//                                        } else {
+//                                            builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+//                                                    new DialogInterface.OnClickListener() {
+//                                                        @Override
+//                                                        public void onClick(DialogInterface dialog, int pos) {
+//                                                            // position is tracked by "pos" so now we pass the clickable profile
+//                                                            // We need to create a user object with that so we gotta use getUserData
+//                                                            FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+//                                                                // scannedByList.get(pos) returns the name -> STRING
+//                                                                // send the user object to the profile fragment
+//                                                                requireActivity().getSupportFragmentManager().beginTransaction()
+//                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+//
+//                                                            });
+//
+//
+//                                                        }
+//                                                    });
+//                                        }
+//                                        builder.setPositiveButton("OK", null);
+//                                        builder.show();
+//                                    });
+//                                    return true; // Return true to indicate that we've handled the marker click event
+//                                }
+//                            });
+//                        }
+//                    }
+//                } else {
+//                    Log.d("MainFragment", "Current data: null");
+//                }
+//            });
+//        });
+//        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
+//            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+//        }
+//    }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        // When map is loaded
         mMap = googleMap;
+
+        setupLocationUpdates();
+        checkLocationPermission();
+
+        Geo.getCurrentLocation(location -> {
+            handleQrCodeMarkers(location);
+        });
+    }
+
+    private void setupLocationUpdates() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000); // Update interval in milliseconds
+        locationRequest.setFastestInterval(500); // Fastest update interval in milliseconds
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    if (userLocationMarker == null) {
+                        userLocationMarker = mMap.addMarker(new MarkerOptions()
+                                .position(userLocation)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))); // Change the color of the marker to azure blue
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f));
+                    } else {
+                        userLocationMarker.setPosition(userLocation);
+                    }
+                }
+            }
+        };
+    }
+    private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        } else {
+            // Request location permission
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
         }
-        Geo.getCurrentLocation(location -> {
-            loadingText.setVisibility(View.GONE);
+    }
+    private void handleQrCodeMarkers(Location location) {
+        loadingText.setVisibility(View.GONE);
 
-            LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            Log.e("permission", deviceLocation.toString());
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
+        LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        Log.e("permission", deviceLocation.toString());
+        mMap.addMarker(new MarkerOptions().position(deviceLocation));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
 
-            // Fetch QRCode locations from Firebase
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
-                if (error != null) {
-                    Log.w("MainFragment", "Listen failed.", error);
-                    return;
-                }
+        // Fetch QRCode locations from Firebase
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
+            if (error != null) {
+                Log.w("MainFragment", "Listen failed.", error);
+                return;
+            }
 
-                if (querySnapshot != null) {
-                    googleMap.clear(); // Clear previous markers from the map
-                    // Add the device location marker again after clearing the map
-                    googleMap.addMarker(new MarkerOptions().position(deviceLocation));
+            if (querySnapshot != null) {
+                mMap.clear(); // Clear previous markers from the map
+                // Add the device location marker again after clearing the map
+                mMap.addMarker(new MarkerOptions().position(deviceLocation));
 
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        GeoPoint geoPoint = document.getGeoPoint("location");
-                        if (geoPoint != null) {
-                            LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                            googleMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                    GeoPoint geoPoint = document.getGeoPoint("location");
+                    if (geoPoint != null) {
+                        LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
 
-                            // Add marker click listener to show alert dialog
-                            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(@NonNull Marker marker) {
-                                    // Create and show alert dialog
-                                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                        builder.setTitle("QR CODE\nHash:" + document.getId());
-                                        if (scannedByList.isEmpty()) {
-                                            builder.setMessage("No other user has scanned this QR code yet.");
-                                        } else {
-                                            builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
-                                                    new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int pos) {
-                                                            // position is tracked by "pos" so now we pass the clickable profile
-                                                            // We need to create a user object with that so we gotta use getUserData
-                                                            FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                                                // scannedByList.get(pos) returns the name -> STRING
-                                                                // send the user object to the profile fragment
-                                                                requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                        // Add marker click listener to show alert dialog
+                        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(@NonNull Marker marker) {
+                                // Create and show alert dialog
+                                FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    builder.setTitle("QR CODE\nHash:" + document.getId());
+                                    if (scannedByList.isEmpty()) {
+                                        builder.setMessage("No other user has scanned this QR code yet.");
+                                    } else {
+                                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+                                                new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int pos) {
+                                                        // position is tracked by "pos" so now we pass the clickable profile
+                                                        // We need to create a user object with that so we gotta use getUserData
+                                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+                                                            // scannedByList.get(pos) returns the name -> STRING
+                                                            // send the user object to the profile fragment
+                                                            requireActivity().getSupportFragmentManager().beginTransaction()
+                                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
-                                                            });
-
-
-                                                        }
-                                                    });
-                                        }
-                                        builder.setPositiveButton("OK", null);
-                                        builder.show();
-                                    });
-                                    return true; // Return true to indicate that we've handled the marker click event
-                                }
-                            });
-                        }
+                                                        });
+                                                    }
+                                                });
+                                    }
+                                    builder.setPositiveButton("OK", null);
+                                    builder.show();
+                                });
+                                return true; // Return true to indicate that we've handled the marker click event
+                            }
+                        });
                     }
-                } else {
-                    Log.d("MainFragment", "Current data: null");
                 }
-            });
+            } else {
+                Log.d("MainFragment", "Current data: null");
+            }
         });
     }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == 1) {
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                onMapReady(mMap);
+//            } else {
+//                // Show a message to the user that location permission is required
+//                Toast.makeText(requireContext(), "Location permission is required", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 }
 
 
