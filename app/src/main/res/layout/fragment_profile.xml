@@ -46,11 +46,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/profileView"
             android:layout_width="166dp"
             android:layout_height="160dp"
             android:layout_gravity="center_horizontal"
+            android:onClick="profileButton"
             android:src="@drawable/discordpic" />
 
         <TextView
@@ -76,13 +77,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
 
+    <Space
+        android:id="@+id/space3"
+        android:layout_width="1dp"
+        android:layout_height="30dp"
+        app:layout_constraintEnd_toStartOf="@+id/space2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/space2" />
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="1dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+    <Space
+        android:id="@+id/space4"
+        android:layout_width="1dp"
+        android:layout_height="19dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/space2"
+        app:layout_constraintTop_toTopOf="@+id/space2" />
+
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout4"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout4"
+        app:layout_constraintEnd_toStartOf="@+id/space3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/linearLayout4">
 
@@ -116,11 +142,10 @@
         android:id="@+id/linearLayout4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+        app:layout_constraintEnd_toStartOf="@+id/space2"
+        app:layout_constraintStart_toEndOf="@+id/space3"
+        app:layout_constraintTop_toTopOf="@+id/space2">
 
         <TextView
             android:id="@+id/rankView"
@@ -149,12 +174,13 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout4"
+        app:layout_constraintEnd_toStartOf="@+id/space4"
+        app:layout_constraintStart_toEndOf="@+id/space2"
         app:layout_constraintTop_toTopOf="@+id/linearLayout4">
 
         <TextView
@@ -177,6 +203,41 @@
             android:fontFamily="@font/gatekept"
             android:text="QRCODES FOUND"
             android:textAlignment="center"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/space4"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout4">
+
+        <TextView
+            android:id="@+id/moneyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/gatekeptsemibold"
+            android:gravity="center"
+            android:text="TextView"
+            android:textAlignment="gravity"
+            android:textColor="#3c6f83"
+            android:textColorHint="#3c6f83" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/gatekept"
+            android:gravity="center"
+            android:text="RUSH COINS"
+            android:textAlignment="gravity"
             android:textColor="#3c6f83"
             android:textColorHint="#3c6f83"
             android:textSize="12sp" />

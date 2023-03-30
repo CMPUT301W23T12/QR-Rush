@@ -46,11 +46,13 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
 
     static final String[] PERMISSIONS = {
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.INTERNET,
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
     };
 
     /**
@@ -182,20 +184,20 @@ public class MainActivity extends AppCompatActivity {
 
         main();
     }
-    protected void onPause() {
-
-        super.onPause();
-        mediaPlayer.pause();
-    }
-
-    protected void onResume() {
-        super.onResume();
-
-        if (mediaPlayer != null){
-            mediaPlayer.start();
-        }
-
-    }
+//    protected void onPause() {
+//
+//        super.onPause();
+//        mediaPlayer.pause();
+//    }
+//
+//    protected void onResume() {
+//        super.onResume();
+//
+//        if (mediaPlayer != null){
+//            mediaPlayer.start();
+//        }
+//
+//    }
 
 
 }
