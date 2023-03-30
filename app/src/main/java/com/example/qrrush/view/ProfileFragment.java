@@ -192,8 +192,6 @@ public class ProfileFragment extends Fragment implements Serializable {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText("Loading...");
-                getAllCollection(user, rankView);
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 moneyView.setText(String.valueOf(user.getMoney()));
