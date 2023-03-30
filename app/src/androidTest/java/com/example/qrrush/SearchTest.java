@@ -58,7 +58,7 @@ public class SearchTest {
     @Test
     public void testFailedSearch() {
         // Click the social button
-        solo.clickOnView(solo.getView(R.id.social_button));
+        solo.clickOnView(solo.getView(R.id.social_swipe));
         // Click the search player edit text
         solo.clickOnView(solo.getView(R.id.searchPlayer));
         // Enter "mdncv" as the search term
@@ -76,7 +76,7 @@ public class SearchTest {
     @Test
     public void testSuccessfulSearch() {
         // Click the social button
-        solo.clickOnView(solo.getView(R.id.social_button));
+        solo.clickOnView(solo.getView(R.id.social_swipe));
         // Click the search player edit text
         solo.clickOnView(solo.getView(R.id.searchPlayer));
         // Enter "Bruh123" as the search term

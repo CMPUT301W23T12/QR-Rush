@@ -57,7 +57,7 @@ public class ProfileTest {
             e.printStackTrace();
         }
 
-        solo.clickOnView(solo.getView(R.id.profile_button));
+        solo.clickOnView(solo.getView(R.id.profile_swipe));
         TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
 
         // Get the text from the QR code count view
@@ -70,16 +70,16 @@ public class ProfileTest {
         int qrCountSub = Integer.parseInt(numericPart);
 
 
-        solo.clickOnView(solo.getView(R.id.shop_button));
+        solo.clickOnView(solo.getView(R.id.shop_swipe));
         solo.clickOnView(solo.getView(R.id.common_button));
         solo.clickOnView(solo.getView(R.id.rare_button));
-        solo.clickOnView(solo.getView(R.id.profile_button));
+        solo.clickOnView(solo.getView(R.id.profile_swipe));
         solo.waitForView(R.id.qrCodesView);
 
 
 // Check if the view appeared within the timeout period
         //assertTrue(viewAppeared);
-        solo.waitForView(R.id.profile_button);
+        solo.waitForView(R.id.profile_swipe);
         // Get the QR code count view
         TextView qrCountView1 = (TextView) solo.getView(R.id.qrCodesView);
 
