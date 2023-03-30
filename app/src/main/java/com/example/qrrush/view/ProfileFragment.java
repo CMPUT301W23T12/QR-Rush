@@ -1,6 +1,7 @@
 package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,14 +10,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
@@ -42,7 +50,8 @@ import java.util.Optional;
 
 /**
  * The fragment which displays the users profile.
- * This class is responsible for creating and setting up the users info for display,
+ * This class is responsible for creating and setting up the users info for
+ * display,
  * sorting the users QR codes by date, score and name,
  * letting the user edit there username by interacting with firebase
  */
@@ -50,6 +59,7 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
+    ImageView profilePicture;
     Boolean editable;
 
     /**
@@ -62,6 +72,18 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
+
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
+            new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.e("PhotoPicker", "Selected URI: " + uri);
+                    profilePicture.setImageURI(uri);
+                } else {
+                    Log.e("PhotoPicker", "No media selected");
+                }
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,7 +140,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                 });
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -130,6 +151,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
         TextView moneyView = view.findViewById(R.id.moneyView);
+        profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
@@ -147,10 +169,32 @@ public class ProfileFragment extends Fragment implements Serializable {
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
+        ColorGenerator generator = ColorGenerator.MATERIAL;
+
+        profilePicture.setClickable(true);
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
+
+        int color = generator.getColor(user.getUserName());
+
+        TextDrawable drawable = TextDrawable.builder()
+                .beginConfig()
+                .textColor(Color.WHITE)
+                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                .toUpperCase()
+                .endConfig()
+                .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
+        profilePicture.setImageDrawable(drawable);
 
         // On launch sorting is set by date (sortingTracker = 1)
-        //      by points (sortingTracker = 2)
-        //      by score (sortingTracker = 0)
+        // by points (sortingTracker = 2)
+        // by score (sortingTracker = 0)
         sortingTracker = 1;
 
         sortingButton.setText("By Date (Newest First)");
@@ -216,7 +260,8 @@ public class ProfileFragment extends Fragment implements Serializable {
             dialog.setOnShowListener(dialogInterface -> {
                 TextView errorText = addNewName.findViewById(R.id.errorText);
                 TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                //add a positive button on the alertdialog that tells user to confirm their input
+                // add a positive button on the alertdialog that tells user to confirm their
+                // input
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(newView -> {
                     // store the new name input of the user
@@ -240,8 +285,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                             return;
                         }
 
-                        User user = userResult.get();
-
                         // Username is unique, continue with edit the process
                         FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
                             Map<String, Object> updatedProfile = documentSnapshot.getData();
@@ -255,6 +298,18 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
+                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+
+                            int newcolor = newgenerator.getColor(user.getUserName());
+
+                            TextDrawable newdrawable = TextDrawable.builder()
+                                    .beginConfig()
+                                    .textColor(Color.WHITE)
+                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                    .toUpperCase()
+                                    .endConfig()
+                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+                            profilePicture.setImageDrawable(newdrawable);
                         });
                     });
                 });
@@ -264,4 +319,3 @@ public class ProfileFragment extends Fragment implements Serializable {
     }
 
 }
-
