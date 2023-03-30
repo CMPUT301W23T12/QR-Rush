@@ -140,7 +140,8 @@ public class LeaderboardFragment extends Fragment {
                             userAdapter = new UserAdapter(requireContext(), otherUsers);
                             leaderboardView.setVisibility(View.VISIBLE);
                             leaderboardView.setAdapter(userAdapter);
-                            for(int i = 0; i<3; i++){
+
+                            for(int i = 0; topUsers.size()>2 && i<3; i++){
                                 topUsers.add(users.get(i));
                             }
                             for(int i = 3; i<users.size(); i++){
@@ -251,6 +252,7 @@ public class LeaderboardFragment extends Fragment {
         // Replace with the actual method to get the user image
         userImage.setImageResource(R.drawable.discordpic);
         userName.setText(user.getUserName());
+        Log.e("name",user.getUserName());
         userScore.setText(String.valueOf(user.getTotalScoreMemeber()));
         rankTextView.setText(String.valueOf(rank)); // set the rank TextView
 

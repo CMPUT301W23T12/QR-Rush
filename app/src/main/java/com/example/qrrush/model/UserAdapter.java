@@ -1,6 +1,7 @@
 package com.example.qrrush.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,8 @@ public class UserAdapter extends ArrayAdapter<User> {
         rank.setText(String.valueOf(index)); // set the rank TextView
 
         name.setText(user.getUserName());
-        score.setText(String.valueOf(user.getTotalScoreMemeber()));
+        score.setText(String.valueOf(user.getTotalScore()));
+        Log.e("score",String.valueOf(user.getTotalScore()));
         image.setImageResource(R.drawable.discordpic);
         return view;
     }
