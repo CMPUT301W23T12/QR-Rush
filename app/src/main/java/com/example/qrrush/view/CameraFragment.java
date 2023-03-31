@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import static androidx.camera.core.ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,14 +44,22 @@ public class CameraFragment extends DialogFragment {
     FragmentManager manager;
     View container;
     Boolean foundCode = false;
+    Runnable onDismiss;
 
     /**
      * Creates a CameraFragment for the given user.
      *
      * @param user The user to create the CameraFragment for.
      */
-    public CameraFragment(User user) {
+    public CameraFragment(User user, Runnable onDismiss) {
         this.user = user;
+        this.onDismiss = onDismiss;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        this.onDismiss.run();
     }
 
     @Override
@@ -80,7 +89,8 @@ public class CameraFragment extends DialogFragment {
 
                     synchronized (foundCode) {
                         if (!results.isEmpty() && !foundCode) {
-                            new QRConfirmFragment(user, results.get(0)).show(manager, "Confirm QR code");
+                            new QRConfirmFragment(user, results.get(0), this.onDismiss)
+                                    .show(manager, "Confirm QR code");
                             dismiss();
                             foundCode = true;
                         }

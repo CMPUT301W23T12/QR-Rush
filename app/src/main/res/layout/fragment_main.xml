@@ -10,12 +10,13 @@
     <TextView
         android:id="@+id/scoreView"
         android:layout_width="match_parent"
-        android:fontFamily="@font/gatekept"
-        android:textColor="@color/black"
         android:layout_height="match_parent"
+        android:elevation="2dp"
+        android:fontFamily="@font/gatekept"
+        android:text="Score"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:elevation="2dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/camera_button"
@@ -30,22 +31,58 @@
         android:id="@+id/maps"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.fragment.app.FragmentContainerView>
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/map_loading_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:elevation="1dp"
+        android:elevation="20dp"
         android:gravity="center"
         android:text="Loading..."
         android:textAlignment="gravity"
         android:textSize="35dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="1dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weekly Quests"
+            android:textAlignment="center" />
+
+        <CheckBox
+            android:id="@+id/quest1box"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Quest 1 description" />
+
+        <CheckBox
+            android:id="@+id/quest2box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quest 2 description" />
+
+        <CheckBox
+            android:id="@+id/quest3box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quest 3 description" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

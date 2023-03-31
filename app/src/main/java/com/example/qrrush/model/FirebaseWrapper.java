@@ -189,6 +189,15 @@ public class FirebaseWrapper {
                             ds.getLong("money").intValue()
                     );
 
+                    Map<String, Object> data = ds.getData();
+                    for (int i = 0; i < 3; i += 1) {
+                        int progress = (Integer) data.get("quests-progress");
+                        // TODO: load the user with their quest progress. when its the first day
+                        //       check if we've reset the tasks, and if not do that.
+                    }
+
+                    user.setQuestsDateRefreshedWithoutFirebase(ds.getTimestamp("quests-date-refreshed"));
+
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
                     ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
                     for (String hash : hashes) {

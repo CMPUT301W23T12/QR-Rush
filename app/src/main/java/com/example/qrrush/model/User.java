@@ -31,7 +31,8 @@ public class User implements Serializable {
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
-
+    private ArrayList<Integer> questProgress = new ArrayList<>(3);
+    Timestamp questsRefreshed;
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -47,6 +48,9 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.questProgress.add(0);
+        this.questProgress.add(0);
+        this.questProgress.add(0);
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
@@ -54,6 +58,9 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.questProgress.add(0);
+        this.questProgress.add(0);
+        this.questProgress.add(0);
     }
 
     public String getUserName() {
@@ -90,6 +97,40 @@ public class User implements Serializable {
 
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
+    }
+
+    public ArrayList<Integer> getQuestProgress() {
+        return questProgress;
+    }
+
+    public void setQuestProgress(int quest, int progress) {
+        this.questProgress.set(quest, progress);
+    }
+
+    public void setQuestsDateRefreshed() {
+        Map<String, Object> update = new HashMap<>();
+        update.put("quests-date-refreshed", new Timestamp(new Date()));
+        FirebaseWrapper.updateData("profiles", this.getUserName(), update);
+    }
+
+    public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {
+        questsRefreshed = t;
+    }
+
+    public boolean isQuestCompleted(int quest) {
+        Quest q = Quest.getCurrentQuests().get(quest);
+        int progress = questProgress.get(quest);
+        switch (q.getType()) {
+            case ScanNCodes:
+            case SaveGeolocationForNCodes:
+            case LeaveACommentOnNCodes:
+                return progress >= q.getN();
+            case BuyCodeOfRarity:
+            case ScanCodeOfRarity:
+                return progress > 0;
+        }
+
+        return false;
     }
 
     /**
