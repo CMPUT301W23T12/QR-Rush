@@ -1,6 +1,8 @@
 package com.example.qrrush.model;
 
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
@@ -26,12 +28,11 @@ public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private int rank;
+    private int totalScore;
     private ArrayList<QRCode> qrCodes;
-    // unsure of data type for now
-    private String profilePicture;
+    private String profilePictureURL;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
-
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -39,37 +40,56 @@ public class User implements Serializable {
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
+     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money) {
+    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money, String profilePictureURL) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.totalScore = totalScore;
+        this.profilePictureURL = profilePictureURL;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
-        this.money = money;
+    }
+
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
     }
 
     public String getUserName() {
         return userName;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public String getProfilePicture() {
-        return profilePicture;
+
+    public String getProfilePictureURL() {
+        return profilePictureURL;
     }
 
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setProfilePictureURL(String profilePictureURL) {
+        this.profilePictureURL = profilePictureURL;
     }
 
     public String getPhoneNumber() {
@@ -88,6 +108,7 @@ public class User implements Serializable {
         this.rank = rank;
     }
 
+
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
     }
@@ -102,6 +123,9 @@ public class User implements Serializable {
         }
 
         return result;
+    }
+    public int getTotalScoreMemeber() {
+        return totalScore;
     }
 
     /**
@@ -125,7 +149,6 @@ public class User implements Serializable {
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
-
             return;
         }
 
@@ -198,16 +221,6 @@ public class User implements Serializable {
         });
     }
 
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-        Map<String, Object> updatedMoney = new HashMap<>();
-        updatedMoney.put("money", this.money);
-        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
-    }
 
     /**
      * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a
