@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,6 +27,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.qrrush.R;
+import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
@@ -40,6 +42,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -165,18 +169,19 @@ public class QRConfirmFragment extends DialogFragment {
             // Display the image in an ImageView
             locationImage.setVisibility(View.VISIBLE);
             // correct the positioning on the emulator -> devices?
-            locationImage.setRotation(270);
+            // Device is fine
+            // locationImage.setRotation(270);
             locationImage.setImageBitmap(photo);
             // Save it to Firebase
             FirebaseStorage storage = FirebaseStorage.getInstance();
             // Get a reference to the Firebase Storage location to store the image
-            Log.e("Debug", "Code ran");
             StorageReference imagesRef = storage.getReference().child("qrcodeimage/" + user.getUserName() + ".jpg");
-            Log.e("Debug", "Code ran");
             // Convert the image to a byte array
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.JPEG, CAMERA_REQUEST_CODE, baos);
             byte[] imageData = baos.toByteArray();
+            HashMap<String, Object> QRCodePicture = new HashMap<>();
+            ArrayList<String> QRCodePictureLocation = new ArrayList<>();
 
             // Upload the image data to Firebase Storage
             UploadTask uploadTask = imagesRef.putBytes(imageData);
@@ -186,7 +191,19 @@ public class QRConfirmFragment extends DialogFragment {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     // Image upload successful
-                    Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                    // Now we need to send it to firebase wrapper
+                    imagesRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String downloadUrl = uri.toString();
+                            // send the downloadUrl at that given index of the qr code
+                            QRCodePictureLocation.add(downloadUrl);
+                            QRCodePicture.put("qrcodespictures", QRCodePictureLocation);
+                            FirebaseWrapper.updateData("profiles", user.getUserName(), QRCodePicture);
+                            user.setProfilePictureURL(downloadUrl);
+                        }
+                    });
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

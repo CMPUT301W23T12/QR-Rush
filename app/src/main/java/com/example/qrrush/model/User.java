@@ -182,10 +182,12 @@ public class User implements Serializable {
             Map<String, Object> data = documentSnapshot.getData();
             ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) documentSnapshot.get("qrcodespictures");
 
             comments.set(hashes.indexOf(code.getHash()), null);
+            pictures.set(hashes.indexOf(code.getHash()), null);
             data.replace("qrcodescomments", comments);
-
+            data.replace("qrcodespictures", pictures);
             FirebaseWrapper.updateData("profiles", this.getUserName(), data);
         });
     }
@@ -213,9 +215,13 @@ public class User implements Serializable {
             Map<String, Object> data = documentSnapshot.getData();
             ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) documentSnapshot.get("qrcodespictures");
 
             comments.set(hashes.indexOf(code.getHash()), commentText);
+            pictures.set(hashes.indexOf(code.getHash()), null);
+
             data.replace("qrcodescomments", comments);
+            data.replace("qrcodespictures", pictures);
 
             FirebaseWrapper.updateData("profiles", this.getUserName(), data);
         });
@@ -294,10 +300,13 @@ public class User implements Serializable {
             this.qrCodes.add(code);
             ArrayList<String> codes = (ArrayList<String>) profileData.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) profileData.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) profileData.get("qrcodespictures");
             codes.add(code.getHash());
             comments.add(null);
+            pictures.add(null);
             profileData.replace("qrcodescomments", comments);
             profileData.replace("qrcodes", codes);
+            profileData.replace("qrcodespictures", pictures);
             profileData.put("score", this.getTotalScore());
             FirebaseWrapper.updateData("profiles", this.getUserName(), profileData);
         });

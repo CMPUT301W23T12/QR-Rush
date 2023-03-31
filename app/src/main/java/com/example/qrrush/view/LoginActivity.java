@@ -107,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                     profiles.put("money", 100);
                     profiles.put("qrcodes", new ArrayList<QRCode>());
                     profiles.put("qrcodescomments", new ArrayList<String>());
+                    profiles.put("qrcodespictures", new ArrayList<String>());
                     // Add name + UUID and phone number to FB
                     Task<Void> t = FirebaseWrapper.addData("profiles", username, profiles);
                     while (!t.isComplete()) {

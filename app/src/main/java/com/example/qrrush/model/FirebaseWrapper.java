@@ -129,6 +129,8 @@ public class FirebaseWrapper {
 
             ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) documentSnapshot.get("qrcodespictures");
+
 
             DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName).document(documentName);
             Map<String, Object> updates = new HashMap<>();
@@ -136,7 +138,9 @@ public class FirebaseWrapper {
             int i = hashes.indexOf(hash);
             if (comments.size() > 0 && comments.size() >= hashes.size() && i != -1) {
                 String comment = comments.get(i);
+                String picture = pictures.get(i);
                 updates.put("qrcodescomments", FieldValue.arrayRemove(comment));
+                updates.put("qrcodespictures", FieldValue.arrayRemove(picture));
             }
             docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
