@@ -41,43 +41,44 @@
             android:id="@+id/qrCode_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/gatekept"
             android:text="name"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:fontFamily="@font/gatekept"
-            android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@+id/qr_code_image" />
 
         <TextView
             android:id="@+id/qrCode_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="score"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/gatekept"
+            android:text="score"
             android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/qrCode_name" />
 
         <TextView
             android:id="@+id/qrCode_rarity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/gatekept"
             android:text="rarity"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:fontFamily="@font/gatekept"
-            android:textColor="@color/black"
             app:layout_constraintTop_toBottomOf="@+id/qrCode_score" />
 
         <TextView
             android:id="@+id/qrCode_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/gatekept"
             android:text="location"
             android:textColor="@color/black"
@@ -87,11 +88,12 @@
 
         <CheckBox
             android:id="@+id/geolocation_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="11dp"
+            android:layout_width="141dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="4dp"
             android:text="Save Location?"
             app:layout_constraintEnd_toStartOf="@+id/space"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/qrCode_rarity" />
 
@@ -109,7 +111,7 @@
             android:id="@+id/foundLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="40dp"
             android:text="PICTURE LOCATION"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -28,6 +30,10 @@ import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
 import java.io.ByteArrayOutputStream;
@@ -55,6 +61,7 @@ public class QRConfirmFragment extends DialogFragment {
     FragmentManager manager;
     Button foundLocationButton;
     ImageView locationImage;
+    private StorageReference mStorageRef;
 
     private static final int CAMERA_REQUEST_CODE = 100;
 
@@ -157,8 +164,37 @@ public class QRConfirmFragment extends DialogFragment {
 
             // Display the image in an ImageView
             locationImage.setVisibility(View.VISIBLE);
+            // correct the positioning on the emulator -> devices?
+            locationImage.setRotation(270);
             locationImage.setImageBitmap(photo);
+            // Save it to Firebase
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            // Get a reference to the Firebase Storage location to store the image
+            Log.e("Debug", "Code ran");
+            StorageReference imagesRef = storage.getReference().child("qrcodeimage/" + user.getUserName() + ".jpg");
+            Log.e("Debug", "Code ran");
+            // Convert the image to a byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, CAMERA_REQUEST_CODE, baos);
+            byte[] imageData = baos.toByteArray();
 
+            // Upload the image data to Firebase Storage
+            UploadTask uploadTask = imagesRef.putBytes(imageData);
+
+            // Register observers to listen for when the upload is done or if it fails
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Image upload successful
+                    Toast.makeText(getContext(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Image upload failed
+                    Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
         }
     }
