@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -96,7 +97,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
         pointView.setText("Score: " + qrCode.getScore());
 
-        Button deleteButton = view.findViewById(R.id.deleteButton);
+        ImageButton deleteButton = view.findViewById(R.id.deleteButton);
 
         if(!editable){
             deleteButton.setVisibility(View.GONE);
@@ -120,7 +121,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             }
         });
 
-        Button commentButton = view.findViewById(R.id.commentButton);
+        ImageButton commentButton = view.findViewById(R.id.commentButton);
         if (!editable){
             commentButton.setVisibility(View.GONE);
         }
