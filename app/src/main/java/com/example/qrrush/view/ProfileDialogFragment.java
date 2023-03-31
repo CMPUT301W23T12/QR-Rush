@@ -70,7 +70,6 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
         this.user = user;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,8 +114,10 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
                                 User u = new User(document.getId(),
                                         "",
                                         0,
+                                        ((Long) document.getData().get("score")).intValue(),
                                         new ArrayList<>(),
-                                        0);
+                                        0,
+                                "");
                                 ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                 for (String hash : hashes) {
                                     u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));

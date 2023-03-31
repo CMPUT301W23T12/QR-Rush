@@ -6,6 +6,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
 
     MyViewPagerAdapater myViewPagerAdapater;
-
+    TextView loadingText;
 
     private FirebaseFirestore firestore;
 
@@ -115,15 +116,16 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        loadingText = findViewById(R.id.loading_text);
+
         // Retrieve data from Firebase:
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
         // Get everything from firebase
-        // TODO: show a loading animation while we get everything from firebase, then load the UI
-        //       once its done.
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
+            loadingText.setVisibility(View.GONE);
 
             // TabLayout//Viewpager2 allows swiping and icons to be
             // highlighted at the bottom
