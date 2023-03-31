@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -33,15 +32,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 /**
- * The MainFragment class represents the main fragment(home page) of the QR Rush app.
+ * The MainFragment class represents the main fragment(home page) of the QR Rush
+ * app.
  * Displays the user's total score,
- * the device's current location on a map, and providing a button to access the camera feature.
+ * the device's current location on a map, and providing a button to access the
+ * camera feature.
  */
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
 
-    ImageButton cameraButton;
     private MediaPlayer mediaPlayer;
+    private ImageButton cameraButton;
+    TextView loadingText;
 
     /**
      * Grabs the User object from the main activity
@@ -65,20 +67,21 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         cameraButton.setOnClickListener((v) -> {
             new CameraFragment(user).show(
                     requireActivity().getSupportFragmentManager(),
-                    "Scan a QR code"
-            );
+                    "Scan a QR code");
         });
 
         TextView scoreView = view.findViewById(R.id.scoreView);
         // sets users total score on the main page
         scoreView.setText(String.valueOf(user.getTotalScore()));
 
-        // Obtain the SupportMapFragment object from the layout using getChildFragmentManager()
+        // Obtain the SupportMapFragment object from the layout using
+        // getChildFragmentManager()
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.maps);
-
 
         // Replace the Fragment with the SupportMapFragment
         mapFragment.getMapAsync(this);
+
+        loadingText = view.findViewById(R.id.map_loading_text);
     }
 
     @Override
@@ -89,7 +92,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
-
     /**
      * Runs when the map is ready to display.
      *
@@ -99,11 +101,13 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         // When map is loaded
         Geo.getCurrentLocation(location -> {
+            loadingText.setVisibility(View.GONE);
+
             LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
             Log.e("permission", deviceLocation.toString());
             googleMap.addMarker(new MarkerOptions().position(deviceLocation));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
-            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.style_json));
 
             // Fetch QRCode locations from Firebase
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -129,33 +133,45 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                 @Override
                                 public boolean onMarkerClick(@NonNull Marker marker) {
                                     // Create and show alert dialog
-                                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                        builder.setTitle("QR CODE\nHash:" + document.getId());
-                                        if (scannedByList.isEmpty()) {
-                                            builder.setMessage("No other user has scanned this QR code yet.");
-                                        } else {
-                                            builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
-                                                    new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int pos) {
-                                                            // position is tracked by "pos" so now we pass the clickable profile
-                                                            // We need to create a user object with that so we gotta use getUserData
-                                                            FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                                                // scannedByList.get(pos) returns the name -> STRING
-                                                                // send the user object to the profile fragment
-                                                                requireActivity().getSupportFragmentManager().beginTransaction()
-                                                                        .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(),
+                                            (scannedByList) -> {
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                                builder.setTitle("QR CODE\nHash:" + document.getId());
+                                                if (scannedByList.isEmpty()) {
+                                                    builder.setMessage("No other user has scanned this QR code yet.");
+                                                } else {
+                                                    builder.setItems(
+                                                            scannedByList.toArray(new String[scannedByList.size()]),
+                                                            new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int pos) {
+                                                                    // position is tracked by "pos" so now we pass the
+                                                                    // clickable profile
+                                                                    // We need to create a user object with that so we
+                                                                    // gotta use getUserData
+                                                                    FirebaseWrapper.getUserData(scannedByList.get(pos),
+                                                                            user -> {
+                                                                                // scannedByList.get(pos) returns the
+                                                                                // name -> STRING
+                                                                                // send the user object to the profile
+                                                                                // fragment
+                                                                                requireActivity()
+                                                                                        .getSupportFragmentManager()
+                                                                                        .beginTransaction()
+                                                                                        .replace(R.id.tabLayout,
+                                                                                                new ProfileFragment(
+                                                                                                        user.get(),
+                                                                                                        false))
+                                                                                        .commit();
 
+                                                                            });
+
+                                                                }
                                                             });
-
-
-                                                        }
-                                                    });
-                                        }
-                                        builder.setPositiveButton("OK", null);
-                                        builder.show();
-                                    });
+                                                }
+                                                builder.setPositiveButton("OK", null);
+                                                builder.show();
+                                            });
                                     return true; // Return true to indicate that we've handled the marker click event
                                 }
                             });
@@ -168,7 +184,3 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 }
-
-
-
-

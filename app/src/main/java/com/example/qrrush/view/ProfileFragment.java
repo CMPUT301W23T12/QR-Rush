@@ -4,8 +4,17 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.media.MediaPlayer;
+import android.content.Intent;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,28 +37,45 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
 import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
-import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.google.firebase.Timestamp;
+import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,29 +115,46 @@ public class ProfileFragment extends Fragment implements Serializable {
                 // photo picker.
                 if (uri != null) {
                     Log.e("PhotoPicker", "Selected URI: " + uri);
+                    HashMap<String, Object> FBprofilePicture = new HashMap<>();
                     profilePicture.setImageURI(uri);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = BitmapFactory
+                                .decodeStream(requireActivity().getContentResolver().openInputStream(uri));
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReference()
+                                .child("images/" + user.getUserName() + ".jpg");
+                        UploadTask uploadTask = storageRef.putBytes(data);
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get the download URL of the uploaded image
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        FBprofilePicture.put("profile_picture", downloadUrl);
+                                        FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
+                                        user.setProfilePictureURL(downloadUrl);
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                return;
+                            }
+                        });
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Log.e("PhotoPicker", "No media selected");
                 }
             });
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        qrCodeAdapter.notifyDataSetChanged();
-    }
 
     public void getAllCollection(User user, TextView rankView) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -124,17 +167,19 @@ public class ProfileFragment extends Fragment implements Serializable {
                             users.clear();
                             for (QueryDocumentSnapshot document : value) {
                                 Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
-                                User u = new User(document.getId(),
-                                        "",
-                                        0,
-                                        new ArrayList<>(),
-                                        0);
-                                ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
-                                for (String hash : hashes) {
-                                    u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
-                                }
 
-                                users.add(u);
+                                if (!user.getUserName().matches(document.getId())) {
+                                    users.add(new User(document.getId(),
+                                            "",
+                                            0,
+                                            ((Long) document.getData().get("score")).intValue(),
+                                            new ArrayList<>(),
+                                            0,
+                                            ""));
+                                } else {
+                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
+                                    users.add(user);
+                                }
                             }
                             Collections.sort(users, new RankComparator());
                             for (int i = 0; i < users.size(); ++i) {
@@ -151,21 +196,26 @@ public class ProfileFragment extends Fragment implements Serializable {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
-
-
         TextView nameView = view.findViewById(R.id.nameView);
-        TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
-        TextView rankText = view.findViewById(R.id.rankText);
-        TextView QRText = view.findViewById(R.id.qrCodesText);
-        TextView scoreText = view.findViewById(R.id.scoreText);
         TextView moneyView = view.findViewById(R.id.moneyView);
+        TextView rankView = view.findViewById(R.id.rankView);
         profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
@@ -173,11 +223,6 @@ public class ProfileFragment extends Fragment implements Serializable {
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         moneyView.setText(String.valueOf(user.getMoney()));
-        rankText.setText("RANK");
-        QRText.setText("QRCODES FOUND");
-        scoreText.setText("SCORE");
-        rankView.setText("Loading...");
-
         getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
@@ -196,22 +241,27 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        int color = generator.getColor(user.getUserName());
+        if (user.getProfilePictureURL() != null) {
+            Glide.with(getContext())
+                    .load(user.getProfilePictureURL())
+                    .dontAnimate()
+                    .into(profilePicture);
+        } else {
+            int color = generator.getColor(user.getUserName());
+            profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            profilePicture.setImageDrawable(drawable);
+        }
 
-        TextDrawable drawable = TextDrawable.builder()
-                .beginConfig()
-                .textColor(Color.WHITE)
-                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                .toUpperCase()
-                .endConfig()
-                .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
-        profilePicture.setImageDrawable(drawable);
-
-        // On launch sorting is set by date (sortingTracker = 1)
-        // by points (sortingTracker = 2)
-        // by score (sortingTracker = 0)
         sortingTracker = 1;
-
         sortingButton.setText("By Date (Newest First)");
         DateComparator dateComparator = new DateComparator();
         Collections.sort(user.getQRCodes(), dateComparator);
@@ -251,94 +301,95 @@ public class ProfileFragment extends Fragment implements Serializable {
             @Override
             public void onChanged() {
                 super.onChanged();
+                rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
 
-
         ImageButton editNameButton = view.findViewById(R.id.settings_button);
         if (!editable) {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {
-                    View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+            View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+            alertDialogBuilder.setView(Settings);
+            alertDialogBuilder.setTitle("Settings");
+            alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
-                    alertDialogBuilder.setView(Settings);
-                    alertDialogBuilder.setTitle("Settings");
-                    alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
-                                    alertDialogBuilder.setView(addNewName);
-                                    alertDialogBuilder.setTitle("Input new name:");
-                                    alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
-                                            userNameEdit.setHint(user.getUserName());
-                                            TextView errorText = addNewName.findViewById(R.id.errorText);
-                                            TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                                            String newUserName = userNameEdit.getText().toString();
-                                            if (newUserName.isEmpty()) {
-                                                dialog.dismiss();
-                                                return;
-                                            } else if (newUserName.length() > 10) {
-                                                errorText1.setVisibility(View.VISIBLE);
-                                                errorText.setVisibility(View.GONE);
-
-                                                return;
-                                            }
-
-                                            FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
-                                                if (userResult.isPresent()) {
-                                                    // Username is taken, prompt user to pick a new name
-                                                    errorText.setVisibility(View.VISIBLE);
-                                                    errorText1.setVisibility(View.GONE);
-                                                    return;
-                                                }
-
-                                                // Username is unique, continue with edit the process
-                                                FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
-                                                    Map<String, Object> updatedProfile = documentSnapshot.getData();
-
-                                                    // Add name + UUID and phone number to FB
-                                                    FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
-                                                    FirebaseWrapper.deleteDocument("profiles", user.getUserName());
-
-                                                    user.setUserName(newUserName);
-                                                    UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
-
-                                                    nameView.setText(user.getUserName());
-                                                    dialog.dismiss();
-                                                    ColorGenerator newgenerator = ColorGenerator.MATERIAL;
-
-                                                    int newcolor = newgenerator.getColor(user.getUserName());
-
-                                                    TextDrawable newdrawable = TextDrawable.builder()
-                                                            .beginConfig()
-                                                            .textColor(Color.WHITE)
-                                                            .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                                                            .toUpperCase()
-                                                            .endConfig()
-                                                            .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
-                                                    profilePicture.setImageDrawable(newdrawable);
-                                                });
-                                            });
-                                        }
-                                    }).show();
-                                }
-                            });
-                    alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
+                    alertDialogBuilder.setView(addNewName);
+                    alertDialogBuilder.setTitle("Input new name:");
+                    alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                                SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
-                                settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
+                            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+                            userNameEdit.setHint(user.getUserName());
+                            TextView errorText = addNewName.findViewById(R.id.errorText);
+                            TextView errorText1 = addNewName.findViewById(R.id.errorText1);
+                            String newUserName = userNameEdit.getText().toString();
+                            if (newUserName.isEmpty()) {
+                                dialog.dismiss();
+                                return;
+                            } else if (newUserName.length() > 10) {
+                                errorText1.setVisibility(View.VISIBLE);
+                                errorText.setVisibility(View.GONE);
 
+                                return;
                             }
-                        }).show();
+
+                            FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+                                if (userResult.isPresent()) {
+                                    // Username is taken, prompt user to pick a new name
+                                    errorText.setVisibility(View.VISIBLE);
+                                    errorText1.setVisibility(View.GONE);
+                                    return;
+                                }
+
+                                // Username is unique, continue with edit the process
+                                FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+                                    Map<String, Object> updatedProfile = documentSnapshot.getData();
+
+                                    // Add name + UUID and phone number to FB
+                                    FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+                                    FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+
+                                    user.setUserName(newUserName);
+                                    UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
+
+                                    nameView.setText(user.getUserName());
+                                    dialog.dismiss();
+                                    ColorGenerator newgenerator = ColorGenerator.MATERIAL;
+
+                                    int newcolor = newgenerator.getColor(user.getUserName());
+
+                                    TextDrawable newdrawable = TextDrawable.builder()
+                                            .beginConfig()
+                                            .textColor(Color.WHITE)
+                                            .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                            .toUpperCase()
+                                            .endConfig()
+                                            .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor,
+                                                    1000);
+                                    profilePicture.setImageDrawable(newdrawable);
+                                });
+                            });
+                        }
+                    }).show();
+                }
+            });
+            alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
+                    settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
+
+                }
+            }).show();
         });
     }
 
