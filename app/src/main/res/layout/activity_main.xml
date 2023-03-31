@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/backgrounddark"
     tools:context=".view.MainActivity">
 
     <com.google.android.material.tabs.TabLayout
@@ -12,20 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:rotationX="180"
+        android:background="@drawable/backgroundnoise"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/profile_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="644dp" />
+            tools:layout_editor_absoluteX="-2dp"
+            tools:layout_editor_absoluteY="639dp" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/shop_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tab6"
             tools:layout_editor_absoluteX="148dp"
             tools:layout_editor_absoluteY="642dp" />
 
@@ -53,7 +53,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="95dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -63,49 +63,62 @@
 
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/profile"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/profile" />
 
     <ImageView
         android:id="@+id/shop_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profile_image"
         app:srcCompat="@drawable/shop" />
 
     <ImageView
         android:id="@+id/main_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/shop_image"
         app:srcCompat="@drawable/main" />
 
     <ImageView
         android:id="@+id/social_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/main_image"
         app:srcCompat="@drawable/social" />
 
     <ImageView
         android:id="@+id/leader_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
+        android:layout_width="42dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/social_image"
         app:srcCompat="@drawable/leaderboard" />
 
     <TextView
         android:id="@+id/loading_text"
+        android:textColor="@color/white_wash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@drawable/backgroundnoise"
         android:elevation="1dp"
         android:gravity="center"
         android:text="Loading..."

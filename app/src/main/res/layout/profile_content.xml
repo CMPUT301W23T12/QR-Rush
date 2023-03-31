@@ -27,7 +27,8 @@
             android:layout_marginTop="0dp"
             android:fontFamily="@font/gatekept"
             android:text="name"
-            android:textColor="@color/black"
+            android:textColor= "@color/bright_blue"
+            android:textColorHint="@color/bright_blue"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +43,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/gatekept"
             android:text="points"
-            android:textColor="@color/black"
+            android:textColor= "@color/bright_blue"
+            android:textColorHint="@color/bright_blue"
             app:layout_constraintBottom_toBottomOf="@+id/nameView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/nameView" />
@@ -88,7 +90,8 @@
             android:fontFamily="@font/gatekept"
             android:padding="16dp"
             android:text="location"
-            android:textColor="@color/black"
+            android:textColor= "@color/bright_blue"
+            android:textColorHint="@color/bright_blue"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/pointView" />
 
@@ -140,6 +143,9 @@
         android:minHeight="20dp"
         android:textSize="20sp"
         android:visibility="invisible"
+        android:textColor= "@color/bright_blue"
+        android:textColorHint="@color/bright_blue"
+        android:fontFamily="@font/gatekept"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
