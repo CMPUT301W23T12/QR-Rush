@@ -1,9 +1,10 @@
 package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
@@ -39,7 +41,6 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,10 +53,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -83,14 +84,46 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
-
-    ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
-            new ActivityResultContracts.PickVisualMedia(), uri -> {
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 // Callback is invoked after the user selects a media item or closes the
                 // photo picker.
                 if (uri != null) {
                     Log.e("PhotoPicker", "Selected URI: " + uri);
+                    HashMap<String, Object> FBprofilePicture = new HashMap<>();
                     profilePicture.setImageURI(uri);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = BitmapFactory.decodeStream(requireActivity().getContentResolver().openInputStream(uri));
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReference().child("images/"+user.getUserName()+".jpg");
+                        UploadTask uploadTask = storageRef.putBytes(data);
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get the download URL of the uploaded image
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        FBprofilePicture.put("profile_picture", downloadUrl);
+                                        FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
+                                        user.setProfilePicture(downloadUrl);
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                return;
+                            }
+                        });
+                    }catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     Log.e("PhotoPicker", "No media selected");
                 }
@@ -194,9 +227,9 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        if (user.getProfilePictureURL() != null){
+        if (user.getProfilePicture() != null){
                 Glide.with(getContext())
-                .load(user.getProfilePictureURL())
+                .load(user.getProfilePicture())
                         .dontAnimate()
                 .into(profilePicture);
             } else{
@@ -321,7 +354,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
-                            if (user.getProfilePictureURL().isEmpty()){
+                            if (user.getProfilePicture().isEmpty()){
                                 ColorGenerator newgenerator = ColorGenerator.MATERIAL;
                                 int newcolor = newgenerator.getColor(user.getUserName());
 

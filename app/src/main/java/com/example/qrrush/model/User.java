@@ -41,13 +41,13 @@ public class User implements Serializable {
      * @param rank        The rank to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money, String profilePictureURL) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money, String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
-        this.profilePictureURL = profilePictureURL;
+        this.profilePicture = profilePicture;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
