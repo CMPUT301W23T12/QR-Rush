@@ -1,8 +1,6 @@
 package com.example.qrrush.model;
 
-import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
@@ -32,6 +30,7 @@ public class User implements Serializable {
     private String profilePictureURL;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
+
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.

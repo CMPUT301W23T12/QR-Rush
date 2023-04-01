@@ -1,16 +1,11 @@
 package com.example.qrrush.view;
 
-import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +39,6 @@ import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
@@ -57,19 +51,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +62,8 @@ import java.util.Optional;
 
 /**
  * The fragment which displays the users profile.
- * This class is responsible for creating and setting up the users info for display,
+ * This class is responsible for creating and setting up the users info for
+ * display,
  * sorting the users QR codes by date, score and name,
  * letting the user edit there username by interacting with firebase
  */
