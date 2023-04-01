@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,8 +36,8 @@ import java.util.ArrayList;
 public class QRConfirmFragment extends DialogFragment {
     User user;
     Barcode code;
-    Button retakeButton;
-    Button confirmButton;
+    ImageButton retakeButton;
+    ImageButton confirmButton;
     ImageView qrCodeImage;
     TextView nameView;
     TextView scoreView;
@@ -67,8 +68,8 @@ public class QRConfirmFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        retakeButton = view.findViewById(R.id.retake_button);
-        confirmButton = view.findViewById(R.id.qr_confirm_button);
+        retakeButton = (ImageButton) view.findViewById(R.id.retake_button);
+        confirmButton = (ImageButton) view.findViewById(R.id.qr_confirm_button);
         qrCodeImage = view.findViewById(R.id.qr_code_image);
         nameView = view.findViewById(R.id.qrCode_name);
         scoreView = view.findViewById(R.id.qrCode_score);

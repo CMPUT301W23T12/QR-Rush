@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +39,8 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
     Context context;
 
+    MediaPlayer mediaPlayer;
+
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
      *
@@ -50,7 +55,6 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         this.editable = editable;
         this.context = context;
     }
-
 
     @NonNull
     @Override
@@ -87,7 +91,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
         pointView.setText("Score: " + qrCode.getScore());
 
-        Button deleteButton = view.findViewById(R.id.deleteButton);
+        ImageButton deleteButton = view.findViewById(R.id.deleteButton);
 
         if (!editable) {
             deleteButton.setVisibility(View.GONE);
@@ -111,7 +115,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             }
         });
 
-        Button commentButton = view.findViewById(R.id.commentButton);
+        ImageButton commentButton = view.findViewById(R.id.commentButton);
         if (!editable) {
             commentButton.setVisibility(View.GONE);
         }
@@ -166,7 +170,6 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             }
         });
 
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,10 +190,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
                                             ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false))
+                                                    .commit();
 
                                         });
-
 
                                     }
                                 });
@@ -201,7 +204,6 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
             }
         });
-
 
         return view;
     }

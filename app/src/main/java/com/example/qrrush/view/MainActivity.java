@@ -3,7 +3,9 @@ package com.example.qrrush.view;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -23,11 +25,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
 /**
  * The main activity class for the QR Rush app.
- * This activity serves as the entry point to the app and handles the main UI and user interactions.
- * This class also sets up the main User object that that other fragments will be using via constructor
+ * This activity serves as the entry point to the app and handles the main UI
+ * and user interactions.
+ * This class also sets up the main User object that that other fragments will
+ * be using via constructor
  */
 public class MainActivity extends AppCompatActivity {
     View mainView;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
 
     MyViewPagerAdapater myViewPagerAdapater;
+
+    private MediaPlayer mediaPlayer;
+
     TextView loadingText;
 
     private FirebaseFirestore firestore;
@@ -53,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     /**
-     * Checks if the necessary permissions for the app have been granted by the user.
+     * Checks if the necessary permissions for the app have been granted by the
+     * user.
      *
      * @return true if all permissions have been granted, false otherwise
      */
@@ -69,14 +76,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when the user responds to the permission request dialog.
-     * Checks if the necessary permissions have been granted and initializes the app if so.
+     * Checks if the necessary permissions have been granted and initializes the app
+     * if so.
      *
      * @param requestCode  The code that was used to make the permission request
      * @param permissions  The requested permissions
      * @param grantResults The grant results for the corresponding permissions
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
 
@@ -126,6 +135,12 @@ public class MainActivity extends AppCompatActivity {
             myViewPagerAdapater = new MyViewPagerAdapater(this, user);
             viewPager2.setAdapter(myViewPagerAdapater);
 
+            tabLayout.getTabAt(0).setIcon(R.drawable.profile);
+            tabLayout.getTabAt(1).setIcon(R.drawable.shop);
+            tabLayout.getTabAt(2).setIcon(R.drawable.main);
+            tabLayout.getTabAt(3).setIcon(R.drawable.social);
+            tabLayout.getTabAt(4).setIcon(R.drawable.leaderboard);
+
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -162,8 +177,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wait_for_permission);
 
-        // TODO: If they say no, explain what the permissions are for and explain that they are
-        //  needed for the app to work?
+        // TODO: If they say no, explain what the permissions are for and explain that
+        // they are
+        // needed for the app to work?
 
         // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
@@ -171,9 +187,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Permission", "!hasPermissions line 166");
             return;
         }
-
         main();
     }
 
 }
-

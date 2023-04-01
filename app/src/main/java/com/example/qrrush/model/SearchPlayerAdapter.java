@@ -92,7 +92,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         TextView searchedScore = view.findViewById(R.id.playerScoreView);
         ImageView searchedPlayerImageView = view.findViewById(R.id.searchedPlayerImageView);
         searchedName.setText(user.getUserName());
-        searchedScore.setText(String.valueOf(user.getTotalScore()));
+        searchedScore.setText("Score: " + String.valueOf(user.getTotalScore()));
 
         if (user.hasProfilePicture()) {
             Glide.with(getContext())

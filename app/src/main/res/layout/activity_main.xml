@@ -4,42 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/backgrounddark"
     tools:context=".view.MainActivity">
+
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:rotationX="180"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="70dp"
+        android:background="@drawable/backgroundnoise"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:tabIndicatorGravity="top"
+        app:tabIconTint="@color/color_select"
+        app:tabIndicatorColor="@color/bright_cyan">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/profile_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="644dp" />
+            android:gravity="center" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/shop_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tab6"
-            tools:layout_editor_absoluteX="148dp"
-            tools:layout_editor_absoluteY="642dp" />
+            android:gravity="center" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/main_swipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="167dp"
-            tools:layout_editor_absoluteY="657dp" />
+            android:gravity="center" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/social_swipe"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:gravity="center" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/leaderboard_swipe"
@@ -53,7 +54,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="75dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -61,51 +62,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/profile"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <ImageView
-        android:id="@+id/shop_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_image"
-        app:srcCompat="@drawable/shop" />
-
-    <ImageView
-        android:id="@+id/main_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/shop_image"
-        app:srcCompat="@drawable/main" />
-
-    <ImageView
-        android:id="@+id/social_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/main_image"
-        app:srcCompat="@drawable/social" />
-
-    <ImageView
-        android:id="@+id/leader_image"
-        android:layout_width="82dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/social_image"
-        app:srcCompat="@drawable/leaderboard" />
-
     <TextView
         android:id="@+id/loading_text"
+        android:textColor="@color/white_wash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@drawable/backgroundnoise"
         android:elevation="1dp"
         android:gravity="center"
         android:text="Loading..."

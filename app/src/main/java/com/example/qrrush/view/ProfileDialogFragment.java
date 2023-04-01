@@ -287,7 +287,7 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
         });
 
         // Get the button view from the layout
-        ImageButton editNameButton = view.findViewById(R.id.edit_name);
+        ImageButton editNameButton = view.findViewById(R.id.settings_button);
         editNameButton.setVisibility(View.GONE);
         editNameButton.setOnClickListener(v -> {
             View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);

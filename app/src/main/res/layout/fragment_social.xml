@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:windowSoftInputMode="adjustPan|adjustResize"
+    android:isScrollContainer="false"
     tools:context=".view.SocialFragment">
 
 
@@ -16,7 +18,8 @@
         android:fontFamily="@font/gatekept"
         android:hint="Search a player..."
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="@+id/searchButton"
+        android:textColor="@color/bright_cyan"
+        android:textColorHint="@color/light_cyan"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -27,7 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Refreshing Player List..."
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="@color/bright_cyan"
+        android:textColorHint="@color/bright_cyan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/noPlayerFound"
@@ -35,21 +42,31 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/gatekeptsemibold"
         android:text="No players found!"
-        android:textSize="20dp"
         android:textAlignment="center"
         android:textColor="#FF0000"
         android:textColorHint="#3c6f83"
-        android:visibility="invisible" />
+        android:textSize="20dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/searchPlayerList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchPlayer"
+        app:layout_constraintVertical_bias="0.452" />
 
     <ListView
         android:id="@+id/searchPlayerList"
-        android:layout_width="409dp"
-        android:layout_height="644dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/noPlayerFound"
-        app:layout_constraintTop_toBottomOf="@+id/searchPlayer"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="-14dp" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gatekept"
+        android:textColor="@color/bright_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </ListView>
+
 
 </LinearLayout>
 

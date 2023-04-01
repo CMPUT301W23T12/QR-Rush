@@ -1,5 +1,7 @@
 package com.example.qrrush.model;
 
+import android.media.MediaPlayer;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -14,6 +16,8 @@ import com.example.qrrush.view.SocialFragment;
 public class MyViewPagerAdapater extends FragmentStateAdapter {
 
     User user;
+
+    MediaPlayer mediaPlayer;
     public MyViewPagerAdapater(@NonNull FragmentActivity fragmentActivity, User user) {
         super(fragmentActivity);
         this.user = user;
