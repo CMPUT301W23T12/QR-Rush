@@ -8,14 +8,9 @@
     tools:context=".view.SocialFragment">
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
         <EditText
             android:id="@+id/searchPlayer"
-            android:layout_width="330dp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:ems="10"
             android:fontFamily="@font/gatekept"
@@ -26,23 +21,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ImageButton
-            android:id="@+id/searchButton"
-            android:layout_width="65dp"
-            android:layout_height="60dp"
-            android:backgroundTint="@color/white_wash"
-            android:scaleType="centerCrop"
-            android:src="@drawable/search"
-            />
-    </LinearLayout>
-
 
     <TextView
         android:id="@+id/noPlayerFound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/gatekeptsemibold"
-        android:text="No player found!"
+        android:text="No players found!"
         android:textSize="20dp"
         android:textAlignment="center"
         android:textColor="#FF0000"

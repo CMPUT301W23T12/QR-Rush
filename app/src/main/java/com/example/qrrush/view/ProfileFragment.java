@@ -207,7 +207,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         scoreView.setText(String.valueOf(user.getTotalScore()));
         moneyView.setText(String.valueOf(user.getMoney()));
         rankText.setText("RANK");
-        QRText.setText("QRCODES FOUND");
+        QRText.setText("QRCODES");
         scoreText.setText("SCORE");
         rankView.setText("Loading...");
 

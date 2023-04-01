@@ -1,16 +1,22 @@
 package com.example.qrrush.model;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 
 import java.util.List;
@@ -42,10 +48,31 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
         // Set the user data to the appropriate UI components
         TextView searchedName = view.findViewById(R.id.nameViewSocial);
-        TextView searchedRank = view.findViewById(R.id.rankView);
-
+        TextView searchedScore = view.findViewById(R.id.playerScoreView);
+        ImageView searchedPlayerImageView = view.findViewById(R.id.searchedPlayerImageView);
         searchedName.setText(user.getUserName());
-        searchedRank.setText(String.valueOf(user.getRank()));
+        searchedScore.setText(String.valueOf(user.getTotalScore()));
+
+        if (user.hasProfilePicture()) {
+            Glide.with(getContext())
+                    .load(user.getProfilePicture())
+                    .dontAnimate()
+                    .into(searchedPlayerImageView);
+        } else {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            int color = generator.getColor(user.getUserName());
+            searchedPlayerImageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(getContext(), R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            searchedPlayerImageView.setImageDrawable(drawable);
+        }
 
         return view;
     }
