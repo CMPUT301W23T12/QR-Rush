@@ -69,6 +69,10 @@ public class User implements Serializable {
         return profilePicture;
     }
 
+    public boolean hasProfilePicture() {
+        return profilePicture != null && !profilePicture.isEmpty();
+    }
+
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }

@@ -84,6 +84,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
+
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 // Callback is invoked after the user selects a media item or closes the
@@ -99,7 +100,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
                         FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReference().child("images/"+user.getUserName()+".jpg");
+                        StorageReference storageRef = storage.getReference().child("images/" + user.getUserName() + ".jpg");
                         UploadTask uploadTask = storageRef.putBytes(data);
                         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -121,7 +122,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                 return;
                             }
                         });
-                    }catch (FileNotFoundException e) {
+                    } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                 } else {
@@ -227,25 +228,25 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        if (user.getProfilePicture() != null){
-                Glide.with(getContext())
-                .load(user.getProfilePicture())
-                        .dontAnimate()
-                .into(profilePicture);
-            } else{
+        if (user.hasProfilePicture()) {
+            Glide.with(getContext())
+                    .load(user.getProfilePicture())
+                    .dontAnimate()
+                    .into(profilePicture);
+        } else {
             ColorGenerator generator = ColorGenerator.MATERIAL;
             int color = generator.getColor(user.getUserName());
             profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             TextDrawable drawable = TextDrawable.builder()
-                        .beginConfig()
-                        .textColor(Color.WHITE)
-                        .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                        .toUpperCase()
-                        .width(200)
-                        .height(200)
-                        .endConfig()
-                        .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
-        profilePicture.setImageDrawable(drawable);
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            profilePicture.setImageDrawable(drawable);
         }
 
         // On launch sorting is set by date (sortingTracker = 1)
@@ -354,7 +355,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
-                            if (user.getProfilePicture().isEmpty()){
+                            if (!user.hasProfilePicture()) {
                                 ColorGenerator newgenerator = ColorGenerator.MATERIAL;
                                 int newcolor = newgenerator.getColor(user.getUserName());
 
