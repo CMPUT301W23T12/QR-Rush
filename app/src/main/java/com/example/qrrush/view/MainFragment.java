@@ -118,6 +118,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         setupLocationUpdates();
         checkLocationPermission();
+        mMap.getUiSettings().setCompassEnabled(true);
         Geo.getCurrentLocation(location -> {
             handleQrCodeMarkers(location);
         });
