@@ -134,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
             myViewPagerAdapater = new MyViewPagerAdapater(this, user);
             viewPager2.setAdapter(myViewPagerAdapater);
 
+            tabLayout.getTabAt(0).setIcon(R.drawable.profile);
+            tabLayout.getTabAt(1).setIcon(R.drawable.shop);
+            tabLayout.getTabAt(2).setIcon(R.drawable.main);
+            tabLayout.getTabAt(3).setIcon(R.drawable.social);
+            tabLayout.getTabAt(4).setIcon(R.drawable.leaderboard);
+
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
