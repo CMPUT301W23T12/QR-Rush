@@ -62,7 +62,7 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Weekly Quests"
+            android:text="Daily Quests"
             android:textAlignment="center" />
 
         <CheckBox

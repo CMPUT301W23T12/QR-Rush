@@ -182,7 +182,6 @@ public class FirebaseWrapper {
                         return;
                     }
 
-
                     User user = new User(
                             username,
                             ds.getString("phone-number"),
@@ -203,13 +202,12 @@ public class FirebaseWrapper {
                     Calendar today = Calendar.getInstance();
 
                     // Do we need to reset the quests progress?
-                    if (today.get(Calendar.DAY_OF_MONTH) == 1 &&
-                            (dateRefreshed.get(Calendar.YEAR) != today.get(Calendar.YEAR) ||
-                                    dateRefreshed.get(Calendar.MONTH) != today.get(Calendar.MONTH) ||
-                                    dateRefreshed.get(Calendar.DAY_OF_MONTH) != today.get(Calendar.DAY_OF_MONTH))) {
-                        user.setQuestProgress(0, 0);
-                        user.setQuestProgress(1, 0);
-                        user.setQuestProgress(2, 0);
+                    if (dateRefreshed.get(Calendar.YEAR) != today.get(Calendar.YEAR) ||
+                            dateRefreshed.get(Calendar.MONTH) != today.get(Calendar.MONTH) ||
+                            dateRefreshed.get(Calendar.DAY_OF_MONTH) != today.get(Calendar.DAY_OF_MONTH)) {
+                        user.setQuestProgressWithoutFirebase(0, 0);
+                        user.setQuestProgressWithoutFirebase(1, 0);
+                        user.setQuestProgressWithoutFirebase(2, 0);
 
                         HashMap<String, Object> newData = new HashMap<>();
                         ArrayList<Integer> progress = new ArrayList<>();
@@ -220,8 +218,6 @@ public class FirebaseWrapper {
                         newData.put("quests-date-refreshed", new Timestamp(new Date()));
                         FirebaseWrapper.updateData("profiles", user.getUserName(), newData);
                     }
-
-                    user.setQuestsDateRefreshedWithoutFirebase(ds.getTimestamp("quests-date-refreshed"));
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
                     ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
