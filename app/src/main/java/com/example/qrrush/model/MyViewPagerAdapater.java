@@ -18,15 +18,18 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
     User user;
 
     MediaPlayer mediaPlayer;
+    FragmentActivity activity;
+
     public MyViewPagerAdapater(@NonNull FragmentActivity fragmentActivity, User user) {
         super(fragmentActivity);
+        this.activity = fragmentActivity;
         this.user = user;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 return new ProfileFragment(user, true);
             case 1:
@@ -36,7 +39,7 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
             case 3:
                 return new SocialFragment(user);
             case 4:
-                return new LeaderboardFragment(user);
+                return new LeaderboardFragment(user, activity);
             default:
                 return new MainFragment(user);
         }

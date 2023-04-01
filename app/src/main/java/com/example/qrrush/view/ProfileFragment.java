@@ -1,14 +1,11 @@
 package com.example.qrrush.view;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.database.DataSetObserver;
-import android.media.MediaPlayer;
-import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,17 +55,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import org.w3c.dom.Text;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -160,7 +146,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
@@ -378,17 +364,26 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     dialog.dismiss();
                                     ColorGenerator newgenerator = ColorGenerator.MATERIAL;
 
-                                    int newcolor = newgenerator.getColor(user.getUserName());
-
-                                    TextDrawable newdrawable = TextDrawable.builder()
-                                            .beginConfig()
-                                            .textColor(Color.WHITE)
-                                            .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                                            .toUpperCase()
-                                            .endConfig()
-                                            .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor,
-                                                    1000);
-                                    profilePicture.setImageDrawable(newdrawable);
+                                    if (user.hasProfilePicture()) {
+                                        Glide.with(getContext())
+                                                .load(user.getProfilePicture())
+                                                .dontAnimate()
+                                                .into(profilePicture);
+                                    } else {
+                                        ColorGenerator generator = ColorGenerator.MATERIAL;
+                                        int color = generator.getColor(user.getUserName());
+                                        profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                                        TextDrawable drawable = TextDrawable.builder()
+                                                .beginConfig()
+                                                .textColor(Color.WHITE)
+                                                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                                .toUpperCase()
+                                                .width(200)
+                                                .height(200)
+                                                .endConfig()
+                                                .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+                                        profilePicture.setImageDrawable(drawable);
+                                    }
                                 });
                             });
                         }

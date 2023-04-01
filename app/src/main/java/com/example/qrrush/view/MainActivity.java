@@ -11,11 +11,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.MyViewPagerAdapater;
@@ -23,7 +25,14 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * The main activity class for the QR Rush app.
