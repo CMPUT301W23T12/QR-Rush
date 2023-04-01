@@ -1,7 +1,9 @@
 package com.example.qrrush.model;
 
+import android.app.Activity;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -33,6 +35,9 @@ public class User implements Serializable {
     private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
+    private ArrayList<Integer> questProgress = new ArrayList<>(3);
+    Timestamp questsRefreshed;
+    Activity activity;
 
     /**
      * Creates a new user with the given username, phone number, rank, total score,
@@ -50,6 +55,9 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.questProgress.add(0);
+        this.questProgress.add(0);
+        this.questProgress.add(0);
         this.profilePicture = profilePicture;
     }
 
@@ -58,6 +66,13 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.questProgress.add(0);
+        this.questProgress.add(0);
+        this.questProgress.add(0);
+    }
+
+    public void setActivity(Activity a) {
+        this.activity = a;
     }
 
     @NonNull
@@ -104,6 +119,56 @@ public class User implements Serializable {
 
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
+    }
+
+    public ArrayList<Integer> getQuestProgress() {
+        return questProgress;
+    }
+
+    public void setQuestProgress(int quest, int progress) {
+        if (isQuestCompleted(quest)) {
+            return;
+        }
+
+        this.questProgress.set(quest, progress);
+        Map<String, Object> update = new HashMap<>();
+        update.put("quests-progress", this.questProgress);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), update);
+
+        if (isQuestCompleted(quest) && activity != null) {
+            Toast.makeText(
+                    activity,
+                    "You completed a quest! You got 2 Rush Coins!",
+                    Toast.LENGTH_LONG).show();
+            this.setMoney(this.getMoney() + 2);
+        }
+    }
+
+    public void setQuestProgressWithoutFirebase(int quest, int progress) {
+        if (isQuestCompleted(quest)) {
+            return;
+        }
+        this.questProgress.set(quest, progress);
+    }
+
+    public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {
+        questsRefreshed = t;
+    }
+
+    public boolean isQuestCompleted(int quest) {
+        Quest q = Quest.getCurrentQuests().get(quest);
+        int progress = questProgress.get(quest);
+        switch (q.getType()) {
+            case ScanNCodes:
+            case SaveGeolocationForNCodes:
+            case LeaveACommentOnNCodes:
+                return progress >= q.getN();
+            case BuyCodeOfRarity:
+            case ScanCodeOfRarity:
+                return progress > 0;
+        }
+
+        return false;
     }
 
     /**

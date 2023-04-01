@@ -1,7 +1,9 @@
 package com.example.qrrush.view;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,12 @@ import androidx.fragment.app.FragmentManager;
 import com.example.qrrush.R;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Quest;
+import com.example.qrrush.model.QuestType;
 import com.example.qrrush.model.User;
 import com.google.mlkit.vision.barcode.common.Barcode;
+
+import java.util.ArrayList;
 
 /**
  * this class is responsible for
@@ -38,10 +44,18 @@ public class QRConfirmFragment extends DialogFragment {
     TextView locationView;
     CheckBox geolocationToggle;
     FragmentManager manager;
+    Runnable onDismiss;
 
-    public QRConfirmFragment(User user, Barcode b) {
+    public QRConfirmFragment(User user, Barcode b, Runnable onDismiss) {
         this.user = user;
         this.code = b;
+        this.onDismiss = onDismiss;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        this.onDismiss.run();
     }
 
     @Override
@@ -65,12 +79,40 @@ public class QRConfirmFragment extends DialogFragment {
         QRCode qrCode = new QRCode(this.code.getRawBytes());
 
         retakeButton.setOnClickListener(v -> {
-            new CameraFragment(user).show(manager, "Confirm QR code");
+            new CameraFragment(user, onDismiss).show(manager, "Confirm QR code");
             dismiss();
         });
 
         confirmButton.setOnClickListener(v -> {
             Geo.getCurrentLocation(l -> {
+                ArrayList<Quest> quests = Quest.getCurrentQuests();
+                ArrayList<Integer> progress = user.getQuestProgress();
+
+                for (int i = 0; i < quests.size(); i += 1) {
+                    Quest quest = quests.get(i);
+                    int current = progress.get(i);
+
+                    if (quest.getType() == QuestType.ScanNCodes && current <= quest.getN()) {
+                        user.setQuestProgress(i, current + 1);
+                        continue;
+                    }
+
+                    if (quest.getType() == QuestType.ScanCodeOfRarity &&
+                            qrCode.getRarity() == quest.getRarity() &&
+                            current == 0) {
+                        Log.e("Quest", "Quest progress");
+                        user.setQuestProgress(i, 1);
+                        continue;
+                    }
+
+                    if (quest.getType() == QuestType.SaveGeolocationForNCodes &&
+                            geolocationToggle.isChecked() &&
+                            current <= quest.getN()) {
+                        user.setQuestProgress(i, current + 1);
+                        continue;
+                    }
+                }
+
                 user.addQRCode(qrCode);
                 dismiss();
             });

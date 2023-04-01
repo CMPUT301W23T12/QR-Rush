@@ -18,6 +18,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -180,7 +182,6 @@ public class FirebaseWrapper {
                         return;
                     }
 
-
                     User user = new User(
                             username,
                             ds.getString("phone-number"),
@@ -189,6 +190,34 @@ public class FirebaseWrapper {
                             ds.getLong("money").intValue(),
                             ds.getString("profile_picture")
                     );
+
+                    Map<String, Object> data = ds.getData();
+                    for (int i = 0; i < 3; i += 1) {
+                        long progress = ((ArrayList<Long>) data.get("quests-progress")).get(i);
+                        user.setQuestProgressWithoutFirebase(i, (int) progress);
+                    }
+
+                    Calendar dateRefreshed = Calendar.getInstance();
+                    dateRefreshed.setTime(((Timestamp) data.get("quests-date-refreshed")).toDate());
+                    Calendar today = Calendar.getInstance();
+
+                    // Do we need to reset the quests progress?
+                    if (dateRefreshed.get(Calendar.YEAR) != today.get(Calendar.YEAR) ||
+                            dateRefreshed.get(Calendar.MONTH) != today.get(Calendar.MONTH) ||
+                            dateRefreshed.get(Calendar.DAY_OF_MONTH) != today.get(Calendar.DAY_OF_MONTH)) {
+                        user.setQuestProgressWithoutFirebase(0, 0);
+                        user.setQuestProgressWithoutFirebase(1, 0);
+                        user.setQuestProgressWithoutFirebase(2, 0);
+
+                        HashMap<String, Object> newData = new HashMap<>();
+                        ArrayList<Integer> progress = new ArrayList<>();
+                        progress.add(0);
+                        progress.add(0);
+                        progress.add(0);
+                        newData.put("quests-progress", progress);
+                        newData.put("quests-date-refreshed", new Timestamp(new Date()));
+                        FirebaseWrapper.updateData("profiles", user.getUserName(), newData);
+                    }
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
                     ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");

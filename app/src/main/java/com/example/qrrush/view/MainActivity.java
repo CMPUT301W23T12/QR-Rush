@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         // Get everything from firebase
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
+            user.setActivity(this);
             loadingText.setVisibility(View.GONE);
 
             // TabLayout//Viewpager2 allows swiping and icons to be
@@ -129,12 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     viewPager2.setCurrentItem(tab.getPosition());
-
-                    if (tab.getPosition() == 2) {
-                        viewPager2.setUserInputEnabled(false);
-                    } else {
-                        viewPager2.setUserInputEnabled(true);
-                    }
+                    viewPager2.setUserInputEnabled(tab.getPosition() != 2);
                 }
 
                 @Override

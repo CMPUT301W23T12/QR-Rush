@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
-import com.example.qrrush.model.QRCode;
-import com.example.qrrush.model.User;
 import com.example.qrrush.view.ProfileFragment;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -95,7 +89,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
 
         Button deleteButton = view.findViewById(R.id.deleteButton);
 
-        if(!editable){
+        if (!editable) {
             deleteButton.setVisibility(View.GONE);
         }
 
@@ -118,7 +112,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         });
 
         Button commentButton = view.findViewById(R.id.commentButton);
-        if (!editable){
+        if (!editable) {
             commentButton.setVisibility(View.GONE);
         }
         commentButton.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +142,14 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                         }
 
                         user.setCommentFor(qrCode, comment);
+                        ArrayList<Quest> quests = Quest.getCurrentQuests();
+                        for (int i = 0; i < 3; i += 1) {
+                            Quest q = quests.get(i);
+                            if (q.getType() == QuestType.LeaveACommentOnNCodes) {
+                                user.setQuestProgress(i, user.getQuestProgress().get(i) + 1);
+                                break;
+                            }
+                        }
 
                         commentEditText.setVisibility(View.VISIBLE);
                         commentEditText.setText("Comment: " + user.getCommentFor(qrCode).get());
@@ -184,7 +186,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
-                                            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction()
+                                            ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
                                                     .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 
                                         });
