@@ -114,7 +114,7 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
                                 User u = new User(document.getId(),
                                         "",
                                         0,
-                                        ((Long) document.getData().get("score")).intValue(),
+
                                         new ArrayList<>(),
                                         0,
                                 "");

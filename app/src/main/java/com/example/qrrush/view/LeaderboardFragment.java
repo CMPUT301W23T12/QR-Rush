@@ -110,7 +110,7 @@ public class LeaderboardFragment extends Fragment {
                                     "",
                                     0,
                                     new ArrayList<>(),
-                                    0);
+                                    0, "");
                             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                             for (String hash : hashes) {
                                 u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -161,7 +161,7 @@ public class LeaderboardFragment extends Fragment {
                                             "",
                                             0,
                                             new ArrayList<>(),
-                                            0);
+                                            0, "");
                                     ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                     for (String hash : hashes) {
                                         u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -194,20 +194,7 @@ public class LeaderboardFragment extends Fragment {
             }
         });
         // Separate the top 3 users
-        qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                topThreeUser.setVisibility(View.GONE);
-                FirebaseWrapper.getAllQRCodes(qrCodes -> {
-                    ScoreComparator s = new ScoreComparator();
 
-                    Collections.sort(qrCodes, s);
-                    qrCodeAdapter = new LeaderboardQRCodeAdapter(requireActivity(), qrCodes);
-                    leaderboardView.setVisibility(View.VISIBLE);
-                    leaderboardView.setAdapter(qrCodeAdapter);
-                });
-            }
-        });
 
         loadingText.setVisibility(View.GONE);
 
@@ -224,6 +211,20 @@ public class LeaderboardFragment extends Fragment {
                 Log.e("name", v.getText().toString());
 //                requireActivity().getSupportFragmentManager().beginTransaction()
 //                        .replace(R.id.main_view, new ProfileFragment(leaderboardView.get(position), false)).commit();
+            }
+        });
+        qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topThreeUser.setVisibility(View.GONE);
+                FirebaseWrapper.getAllQRCodes(qrCodes -> {
+                    ScoreComparator s = new ScoreComparator();
+
+                    Collections.sort(qrCodes, s);
+                    qrCodeAdapter = new LeaderboardQRCodeAdapter(requireActivity(), qrCodes);
+                    leaderboardView.setVisibility(View.VISIBLE);
+                    leaderboardView.setAdapter(qrCodeAdapter);
+                });
             }
         });
     }

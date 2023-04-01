@@ -123,7 +123,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                         String downloadUrl = uri.toString();
                                         FBprofilePicture.put("profile_picture", downloadUrl);
                                         FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
-                                        user.setProfilePictureURL(downloadUrl);
+                                        user.setProfilePicture(downloadUrl);
                                     }
                                 });
                             }
@@ -158,7 +158,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     users.add(new User(document.getId(),
                                             "",
                                             0,
-                                            ((Long) document.getData().get("score")).intValue(),
+
                                             new ArrayList<>(),
                                             0,
                                             ""));
@@ -231,9 +231,9 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        if (user.getProfilePictureURL() != null){
+        if (user.getProfilePicture() != null){
                 Glide.with(getContext())
-                .load(user.getProfilePictureURL())
+                .load(user.getProfilePicture())
                         .dontAnimate()
                 .into(profilePicture);
             } else{
@@ -355,7 +355,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
                             ColorGenerator newgenerator = ColorGenerator.MATERIAL;
-                            if (user.getProfilePictureURL().isEmpty()){
+                            if (user.getProfilePicture().isEmpty()){
                                 int newcolor = newgenerator.getColor(user.getUserName());
 
                                 TextDrawable newdrawable = TextDrawable.builder()

@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.controller.RankComparator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -194,7 +196,7 @@ public class FirebaseWrapper {
                             username,
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
-                            ds.getLong("score").intValue(),
+
                             new ArrayList<>(),
                             ds.getLong("money").intValue(),
                             ds.getString("profile_picture")
@@ -322,7 +324,7 @@ public class FirebaseWrapper {
                     d.getId(),
                     d.getString("phone-number"),
                     d.getLong("rank").intValue(),
-                    d.getLong("score").intValue(),
+
                     codes,
                     d.getLong("money").intValue(),
                     d.getString("profile_picture")
@@ -334,14 +336,52 @@ public class FirebaseWrapper {
     }
 
     /**
-     * This method will get all users from firebase, and provide an ArrayList<User> for the person
+     * This method will get all QR codes from firebase, and provide an array of QRCode for the
+     * person who calls this.
+     *
+     * @param callback The callback which receives the list of users.
+     */
+    public static void getAllQRCodes(Consumer<ArrayList<QRCode>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("qrcodes").get().addOnSuccessListener(querySnapshot -> {
+                    // Get all the QR codes into a list
+                    ArrayList<QRCode> qrCodes = new ArrayList<>(querySnapshot.size());
+                    Iterator<QueryDocumentSnapshot> it = querySnapshot.iterator();
+                    while (it.hasNext()) {
+                        DocumentSnapshot d = it.next();
+
+                        QRCode code = new QRCode(d.getId(), d.getTimestamp("date"));
+                        Object maybeLocation = d.get("location");
+                        if (maybeLocation != null) {
+                            GeoPoint g = (GeoPoint) maybeLocation;
+                            Location l = new Location("");
+                            l.setLongitude(g.getLongitude());
+                            l.setLatitude(g.getLatitude());
+                            code.setLocation(l);
+                        }
+
+                        qrCodes.add(code);
+                    }
+
+                    ScoreComparator sc = new ScoreComparator();
+                    qrCodes.sort(sc);
+                    callback.accept(qrCodes);
+                })
+                .addOnFailureListener(exception -> {
+                    Log.d("getAllQRCodes", "task failed!");
+                });
+    }
+
+    /**
+     * This method will get all users from firebase, and provide an array of User for the person
      * who calls this.
      *
      * @param callback The callback which receives the list of users.
      */
     public static void getAllUsers(Consumer<ArrayList<User>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("profiles").get().addOnSuccessListener(querySnapshot -> {
+        db.collection("profiles").orderBy("score", Query.Direction.DESCENDING)
+                .get().addOnSuccessListener(querySnapshot -> {
                     db.collection("qrcodes").get()
                             .addOnSuccessListener(qrCodeQuerySnapshot -> {
                                 getUsers(querySnapshot, qrCodeQuerySnapshot, callback);
