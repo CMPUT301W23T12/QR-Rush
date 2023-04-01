@@ -242,6 +242,7 @@ public class FirebaseWrapper {
 
                     ArrayList<String> hashes = (ArrayList<String>) ds.get("qrcodes");
                     ArrayList<String> comments = (ArrayList<String>) ds.get("qrcodescomments");
+                    ArrayList<String> pictures = (ArrayList<String>) ds.get("qrcodespictures");
                     for (String hash : hashes) {
                         Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
                             GeoPoint g = (GeoPoint) ds.get("location");
@@ -257,6 +258,9 @@ public class FirebaseWrapper {
                             user.addQRCodeWithoutFirebase(code);
                             if (comments.size() > 0 && comments.size() >= hashes.size()) {
                                 user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
+                            }
+                            if (pictures.size() > 0 && pictures.size() >= hashes.size()) {
+                                code.setLocationImage(pictures.get(hashes.indexOf(hash)));
                             }
                         });
 
