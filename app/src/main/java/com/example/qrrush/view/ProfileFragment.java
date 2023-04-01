@@ -1,10 +1,9 @@
 package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import androidx.fragment.app.Fragment;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
@@ -41,6 +39,7 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,10 +52,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -84,46 +83,14 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.user = user;
         this.editable = editable;
     }
-    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
-            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
+            new ActivityResultContracts.PickVisualMedia(), uri -> {
                 // Callback is invoked after the user selects a media item or closes the
                 // photo picker.
                 if (uri != null) {
                     Log.e("PhotoPicker", "Selected URI: " + uri);
-                    HashMap<String, Object> FBprofilePicture = new HashMap<>();
                     profilePicture.setImageURI(uri);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = BitmapFactory.decodeStream(requireActivity().getContentResolver().openInputStream(uri));
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byte[] data = baos.toByteArray();
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReference().child("images/"+user.getUserName()+".jpg");
-                        UploadTask uploadTask = storageRef.putBytes(data);
-                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // Get the download URL of the uploaded image
-                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        String downloadUrl = uri.toString();
-                                        FBprofilePicture.put("profile_picture", downloadUrl);
-                                        FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
-                                        user.setProfilePictureURL(downloadUrl);
-                                    }
-                                });
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                return;
-                            }
-                        });
-                    }catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
                 } else {
                     Log.e("PhotoPicker", "No media selected");
                 }
@@ -133,6 +100,7 @@ public class ProfileFragment extends Fragment implements Serializable {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -164,6 +132,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                         new ArrayList<>(),
                                         0,
                                         "");
+
                                 ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                 for (String hash : hashes) {
                                     u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -185,15 +154,17 @@ public class ProfileFragment extends Fragment implements Serializable {
                 });
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         TextView nameView = view.findViewById(R.id.nameView);
+        TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
         TextView QRScanned = view.findViewById(R.id.qrCodesView);
+        TextView rankText = view.findViewById(R.id.rankText);
+        TextView QRText = view.findViewById(R.id.qrCodesText);
+        TextView scoreText = view.findViewById(R.id.scoreText);
         TextView moneyView = view.findViewById(R.id.moneyView);
-        TextView rankView = view.findViewById(R.id.rankView);
         profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
@@ -201,6 +172,11 @@ public class ProfileFragment extends Fragment implements Serializable {
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
         moneyView.setText(String.valueOf(user.getMoney()));
+        rankText.setText("RANK");
+        QRText.setText("QRCODES FOUND");
+        scoreText.setText("SCORE");
+        rankView.setText("Loading...");
+
         getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
@@ -237,9 +213,13 @@ public class ProfileFragment extends Fragment implements Serializable {
                         .endConfig()
                         .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
         profilePicture.setImageDrawable(drawable);
-            }
+        }
 
+        // On launch sorting is set by date (sortingTracker = 1)
+        // by points (sortingTracker = 2)
+        // by score (sortingTracker = 0)
         sortingTracker = 1;
+
         sortingButton.setText("By Date (Newest First)");
         DateComparator dateComparator = new DateComparator();
         Collections.sort(user.getQRCodes(), dateComparator);
@@ -272,7 +252,6 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-
         qrCodeAdapter.notifyDataSetChanged();
 
         // Update the UI whenever the arrayAdapter gets a change.
@@ -280,7 +259,6 @@ public class ProfileFragment extends Fragment implements Serializable {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
                 moneyView.setText(String.valueOf(user.getMoney()));
@@ -305,7 +283,8 @@ public class ProfileFragment extends Fragment implements Serializable {
             dialog.setOnShowListener(dialogInterface -> {
                 TextView errorText = addNewName.findViewById(R.id.errorText);
                 TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                //add a positive button on the alertdialog that tells user to confirm their input
+                // add a positive button on the alertdialog that tells user to confirm their
+                // input
                 Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 button.setOnClickListener(newView -> {
                     // store the new name input of the user
@@ -315,7 +294,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                         dialog.dismiss();
                         return;
                     } else if (newUserName.length() > 10) {
-                        errorText1.setVisibility(view.VISIBLE);
+                        errorText1.setVisibility(View.VISIBLE);
                         errorText.setVisibility(View.GONE);
 
                         return;
@@ -366,4 +345,3 @@ public class ProfileFragment extends Fragment implements Serializable {
     }
 
 }
-

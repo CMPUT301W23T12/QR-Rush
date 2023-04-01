@@ -27,7 +27,8 @@ public class User implements Serializable {
     private String phoneNumber;
     private int rank;
     private ArrayList<QRCode> qrCodes;
-    private String profilePictureURL;
+    // unsure of data type for now
+    private String profilePicture;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
 
@@ -53,36 +54,23 @@ public class User implements Serializable {
         this.userName = userName;
         this.rank = rank;
         this.qrCodes = qrCodes;
+        this.money = money;
     }
-
 
     public String getUserName() {
         return userName;
-    }
-
-    public int getMoney() {
-        return money;
-    }
-
-
-    public void setMoney(int money) {
-        this.money = money;
-        Map<String, Object> updatedMoney = new HashMap<>();
-        updatedMoney.put("money", this.money);
-        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
-
-    public String getProfilePictureURL() {
-        return profilePictureURL;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 
-    public void setProfilePictureURL(String profilePictureURL) {
-        this.profilePictureURL = profilePictureURL;
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public String getPhoneNumber() {
@@ -211,6 +199,16 @@ public class User implements Serializable {
         });
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+        Map<String, Object> updatedMoney = new HashMap<>();
+        updatedMoney.put("money", this.money);
+        FirebaseWrapper.updateData("profiles", this.getUserName(), updatedMoney);
+    }
 
     /**
      * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a
