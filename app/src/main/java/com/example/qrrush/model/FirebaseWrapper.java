@@ -358,9 +358,10 @@ public class FirebaseWrapper {
                             l.setLongitude(g.getLongitude());
                             l.setLatitude(g.getLatitude());
                             code.setLocation(l);
+                            qrCodes.add(code);
                         }
 
-                        qrCodes.add(code);
+                        //qrCodes.add(code);
                     }
 
                     ScoreComparator sc = new ScoreComparator();

@@ -1,6 +1,7 @@
 package com.example.qrrush.model;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 
 import java.util.ArrayList;
@@ -53,7 +58,27 @@ public class UserAdapter extends ArrayAdapter<User> {
         name.setText(user.getUserName());
         score.setText(String.valueOf(user.getTotalScore()));
         Log.e("score",String.valueOf(user.getTotalScore()));
-        image.setImageResource(R.drawable.discordpic);
+
+        if (user.hasProfilePicture()) {
+            Glide.with(getContext())
+                    .load(user.getProfilePicture())
+                    .dontAnimate()
+                    .into(image);
+        } else {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            int color = generator.getColor(user.getUserName());
+            image.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(getContext(), R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            image.setImageDrawable(drawable);
+        }
         return view;
     }
 }

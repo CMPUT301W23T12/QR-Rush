@@ -1,6 +1,7 @@
 package com.example.qrrush.view;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +17,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
@@ -105,12 +110,13 @@ public class LeaderboardFragment extends Fragment {
 
                         users.clear();
                         for (QueryDocumentSnapshot document : value) {
+
                             Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
                             User u = new User(document.getId(),
                                     "",
                                     0,
                                     new ArrayList<>(),
-                                    0, "");
+                                    0, document.getString("profile_picture"));
                             ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                             for (String hash : hashes) {
                                 u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -161,7 +167,7 @@ public class LeaderboardFragment extends Fragment {
                                             "",
                                             0,
                                             new ArrayList<>(),
-                                            0, "");
+                                            0,  document.getString("profile_picture"));
                                     ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                     for (String hash : hashes) {
                                         u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -252,7 +258,26 @@ public class LeaderboardFragment extends Fragment {
         TextView rankTextView = view.findViewById(R.id.rankTextView); // add TextView for rank
 
         // Replace with the actual method to get the user image
-        userImage.setImageResource(R.drawable.discordpic);
+        if (user.hasProfilePicture()) {
+            Glide.with(getContext())
+                    .load(user.getProfilePicture())
+                    .dontAnimate()
+                    .into(userImage);
+        } else {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            int color = generator.getColor(user.getUserName());
+            userImage.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            userImage.setImageDrawable(drawable);
+        }
         userName.setText(user.getUserName());
         Log.e("name", user.getUserName());
         userScore.setText(String.valueOf(user.getTotalScore()));
