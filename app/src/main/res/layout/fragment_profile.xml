@@ -27,7 +27,7 @@
         android:layout_height="42dp"
         android:backgroundTint="#00000000"
         android:scaleType="centerCrop"
-        android:src="@drawable/editpr"
+        android:src="@drawable/settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.951"

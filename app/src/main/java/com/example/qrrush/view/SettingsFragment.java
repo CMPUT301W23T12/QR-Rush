@@ -59,11 +59,7 @@ public class SettingsFragment extends DialogFragment {
 
         audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
 
-
         mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), R.raw.backgroundmusic);
-
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +68,6 @@ public class SettingsFragment extends DialogFragment {
                 mediaPlayer.start();
                 }
             });
-
 
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override

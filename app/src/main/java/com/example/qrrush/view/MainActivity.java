@@ -185,27 +185,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Permission", "!hasPermissions line 166");
             return;
         }
-
-        // mediaPlayer = MediaPlayer.create(getApplicationContext(),
-        // R.raw.backgroundmusic);
-        // mediaPlayer.start();
-        // mediaPlayer.setLooping(true);
-
         main();
     }
-    // protected void onPause() {
-    //
-    // super.onPause();
-    // mediaPlayer.pause();
-    // }
-    //
-    // protected void onResume() {
-    // super.onResume();
-    //
-    // if (mediaPlayer != null){
-    // mediaPlayer.start();
-    // }
-    //
-    // }
 
 }

@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     // Username is unique, continue with registration process
-                    if (username.length() > 10 & !isValidPhoneNumber(phoneNumber)) {
+                    if (username.length() > 11 & !isValidPhoneNumber(phoneNumber)) {
                         errorText.setText("Invalid phone number & Invalid username!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
@@ -91,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                         errorText.setText("Invalid phone number!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
-                    } else if (username.length() > 10) {
-                        errorText.setText("Username must be less then 10 or less characters!");
+                    } else if (username.length() > 11) {
+                        errorText.setText("Username must be less then 11 or less characters!");
                         errorText.setVisibility(View.VISIBLE);
                         return;
                     }
