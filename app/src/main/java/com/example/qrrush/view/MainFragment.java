@@ -32,7 +32,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * The MainFragment class represents the main fragment(home page) of the QR Rush app.
@@ -84,11 +83,13 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         loadingText = view.findViewById(R.id.map_loading_text);
     }
 
-    private void refreshStats(View v) {
-        Calendar today = Calendar.getInstance();
-        if (today.get(Calendar.DAY_OF_MONTH) == 1) {
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshStats(requireView());
+    }
 
+    private void refreshStats(View v) {
         // sets users total score on the main page
         TextView scoreView = v.findViewById(R.id.scoreView);
         scoreView.setText(String.valueOf(user.getTotalScore()));

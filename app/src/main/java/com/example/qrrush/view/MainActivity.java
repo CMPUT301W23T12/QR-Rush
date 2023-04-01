@@ -129,12 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     viewPager2.setCurrentItem(tab.getPosition());
-
-                    if (tab.getPosition() == 2) {
-                        viewPager2.setUserInputEnabled(false);
-                    } else {
-                        viewPager2.setUserInputEnabled(true);
-                    }
+                    viewPager2.setUserInputEnabled(tab.getPosition() != 2);
                 }
 
                 @Override

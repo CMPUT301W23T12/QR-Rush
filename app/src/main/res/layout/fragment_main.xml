@@ -70,18 +70,21 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:clickable="false"
             android:text="Quest 1 description" />
 
         <CheckBox
             android:id="@+id/quest2box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="false"
             android:text="Quest 2 description" />
 
         <CheckBox
             android:id="@+id/quest3box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="false"
             android:text="Quest 3 description" />
 
     </LinearLayout>

@@ -18,6 +18,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -191,9 +193,31 @@ public class FirebaseWrapper {
 
                     Map<String, Object> data = ds.getData();
                     for (int i = 0; i < 3; i += 1) {
-                        int progress = (Integer) data.get("quests-progress");
-                        // TODO: load the user with their quest progress. when its the first day
-                        //       check if we've reset the tasks, and if not do that.
+                        long progress = ((ArrayList<Long>) data.get("quests-progress")).get(i);
+                        user.setQuestProgress(i, (int) progress);
+                    }
+
+                    Calendar dateRefreshed = Calendar.getInstance();
+                    dateRefreshed.setTime(((Timestamp) data.get("quests-date-refreshed")).toDate());
+                    Calendar today = Calendar.getInstance();
+
+                    // Do we need to reset the quests progress?
+                    if (today.get(Calendar.DAY_OF_MONTH) == 1 &&
+                            (dateRefreshed.get(Calendar.YEAR) != today.get(Calendar.YEAR) ||
+                                    dateRefreshed.get(Calendar.MONTH) != today.get(Calendar.MONTH) ||
+                                    dateRefreshed.get(Calendar.DAY_OF_MONTH) != today.get(Calendar.DAY_OF_MONTH))) {
+                        user.setQuestProgress(0, 0);
+                        user.setQuestProgress(1, 0);
+                        user.setQuestProgress(2, 0);
+
+                        HashMap<String, Object> newData = new HashMap<>();
+                        ArrayList<Integer> progress = new ArrayList<>();
+                        progress.add(0);
+                        progress.add(0);
+                        progress.add(0);
+                        newData.put("quests-progress", progress);
+                        newData.put("quests-date-refreshed", new Timestamp(new Date()));
+                        FirebaseWrapper.updateData("profiles", user.getUserName(), newData);
                     }
 
                     user.setQuestsDateRefreshedWithoutFirebase(ds.getTimestamp("quests-date-refreshed"));

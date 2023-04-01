@@ -104,13 +104,19 @@ public class User implements Serializable {
     }
 
     public void setQuestProgress(int quest, int progress) {
-        this.questProgress.set(quest, progress);
-    }
+        if (isQuestCompleted(quest)) {
+            return;
+        }
 
-    public void setQuestsDateRefreshed() {
+        this.questProgress.set(quest, progress);
         Map<String, Object> update = new HashMap<>();
-        update.put("quests-date-refreshed", new Timestamp(new Date()));
+        update.put("quests-progress", this.questProgress);
         FirebaseWrapper.updateData("profiles", this.getUserName(), update);
+
+        if (isQuestCompleted(quest)) {
+            // TODO: display some text at the bottom letting the player know they finished a quest.
+            this.setMoney(this.getMoney() + 2);
+        }
     }
 
     public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {

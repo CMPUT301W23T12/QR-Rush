@@ -14,8 +14,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Quest;
+import com.example.qrrush.model.QuestType;
 import com.example.qrrush.model.Rarity;
 import com.example.qrrush.model.User;
+
+import java.util.ArrayList;
 
 /**
  * The fragment which displays the shop fragment
@@ -60,6 +64,14 @@ public class ShopFragment extends Fragment {
             user.addQRCode(code);
             user.setMoney(user.getMoney() - price);
             Toast.makeText(getContext(), "QR code purchased!", Toast.LENGTH_SHORT).show();
+            ArrayList<Quest> quests = Quest.getCurrentQuests();
+            for (int i = 0; i < quests.size(); i += 1) {
+                Quest q = quests.get(i);
+                if (q.getType() == QuestType.BuyCodeOfRarity &&
+                        q.getRarity() == code.getRarity()) {
+                    user.setQuestProgress(i, 1);
+                }
+            }
         } else {
             Toast.makeText(getContext(), "Insufficient funds.", Toast.LENGTH_SHORT).show();
         }
