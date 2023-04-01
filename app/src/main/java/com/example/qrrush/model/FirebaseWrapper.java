@@ -1,28 +1,17 @@
 package com.example.qrrush.model;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.qrrush.controller.ScoreComparator;
-import com.example.qrrush.controller.RankComparator;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,7 +20,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -142,34 +130,41 @@ public class FirebaseWrapper {
                 return;
             }
 
+            Map<String, Object> data = documentSnapshot.getData();
             ArrayList<String> hashes = (ArrayList<String>) documentSnapshot.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) documentSnapshot.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) documentSnapshot.get("qrcodespictures");
 
-            DocumentReference docRef = FirebaseFirestore.getInstance().collection(collectionName)
-                    .document(documentName);
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("qrcodes", FieldValue.arrayRemove(hash));
             int i = hashes.indexOf(hash);
-            if (comments.size() > 0 && comments.size() >= hashes.size() && i != -1) {
-                String comment = comments.get(i);
-                updates.put("qrcodescomments", FieldValue.arrayRemove(comment));
+            if (hashes.size() > 0 && i != -1) {
+                hashes.remove(i);
             }
-            docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d("FirebaseWrapper", "Document successfully updated!");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w("FirebaseWrapper", "Error updating document", e);
-                }
-            });
+
+            if (comments.size() > 0 && comments.size() >= hashes.size() && i != -1) {
+                comments.remove(i);
+            }
+
+            if (pictures.size() > 0 && pictures.size() >= hashes.size() && i != -1) {
+                pictures.remove(i);
+            }
+
+            data.put("qrcodes", hashes);
+            data.put("qrcodescomments", comments);
+            data.put("qrcodespictures", pictures);
+            FirebaseFirestore.getInstance().collection("profiles")
+                    .document(documentName)
+                    .set(data)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("FirebaseWrapper", "Document updated with ID: " + documentName);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("FirebaseWrapper", "Error updating document", e);
+                    });
         });
     }
 
     public static Task<DocumentSnapshot> getData(String collection, String documentID,
-            Consumer<DocumentSnapshot> callback) {
+                                                 Consumer<DocumentSnapshot> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         return db.collection(collection).document(documentID)
@@ -280,9 +275,9 @@ public class FirebaseWrapper {
      *
      * @param hash The hash string of the QR code for which to retrieve data.
      * @return A Task object representing the asynchronous Firestore database
-     *         operation.
-     *         The resulting DocumentSnapshot can be obtained from the task's
-     *         getResult() method.
+     * operation.
+     * The resulting DocumentSnapshot can be obtained from the task's
+     * getResult() method.
      */
     public static Task<DocumentSnapshot> getQRCodeData(String hash, Consumer<QRCode> qrCodeConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -307,7 +302,7 @@ public class FirebaseWrapper {
     }
 
     public static void getScannedQRCodeData(String hash, String username,
-            Consumer<List<String>> scannedByListConsumer) {
+                                            Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
         db.collection("qrcodes").document(hash)
@@ -361,7 +356,7 @@ public class FirebaseWrapper {
     }
 
     private static void getUsers(QuerySnapshot profileSnapshot, QuerySnapshot qrCodeSnapshot,
-            Consumer<ArrayList<User>> callback) {
+                                 Consumer<ArrayList<User>> callback) {
         // Get all the QR codes into a list
         HashMap<String, QRCode> qrCodes = new HashMap<>(qrCodeSnapshot.size());
         Iterator<QueryDocumentSnapshot> it = qrCodeSnapshot.iterator();
@@ -418,30 +413,30 @@ public class FirebaseWrapper {
     public static void getAllQRCodes(Consumer<ArrayList<QRCode>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("qrcodes").get().addOnSuccessListener(querySnapshot -> {
-            // Get all the QR codes into a list
-            ArrayList<QRCode> qrCodes = new ArrayList<>(querySnapshot.size());
-            Iterator<QueryDocumentSnapshot> it = querySnapshot.iterator();
-            while (it.hasNext()) {
-                DocumentSnapshot d = it.next();
+                    // Get all the QR codes into a list
+                    ArrayList<QRCode> qrCodes = new ArrayList<>(querySnapshot.size());
+                    Iterator<QueryDocumentSnapshot> it = querySnapshot.iterator();
+                    while (it.hasNext()) {
+                        DocumentSnapshot d = it.next();
 
-                QRCode code = new QRCode(d.getId(), d.getTimestamp("date"));
-                Object maybeLocation = d.get("location");
-                if (maybeLocation != null) {
-                    GeoPoint g = (GeoPoint) maybeLocation;
-                    Location l = new Location("");
-                    l.setLongitude(g.getLongitude());
-                    l.setLatitude(g.getLatitude());
-                    code.setLocation(l);
-                    qrCodes.add(code);
-                }
+                        QRCode code = new QRCode(d.getId(), d.getTimestamp("date"));
+                        Object maybeLocation = d.get("location");
+                        if (maybeLocation != null) {
+                            GeoPoint g = (GeoPoint) maybeLocation;
+                            Location l = new Location("");
+                            l.setLongitude(g.getLongitude());
+                            l.setLatitude(g.getLatitude());
+                            code.setLocation(l);
+                            qrCodes.add(code);
+                        }
 
-                // qrCodes.add(code);
-            }
+                        // qrCodes.add(code);
+                    }
 
-            ScoreComparator sc = new ScoreComparator();
-            qrCodes.sort(sc);
-            callback.accept(qrCodes);
-        })
+                    ScoreComparator sc = new ScoreComparator();
+                    qrCodes.sort(sc);
+                    callback.accept(qrCodes);
+                })
                 .addOnFailureListener(exception -> {
                     Log.d("getAllQRCodes", "task failed!");
                 });

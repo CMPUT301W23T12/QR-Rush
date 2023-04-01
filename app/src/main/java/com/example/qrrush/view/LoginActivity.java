@@ -111,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                     Timestamp today = new Timestamp(new Date());
                     profiles.put("quests-date-refreshed", today);
                     profiles.put("qrcodescomments", new ArrayList<String>());
+                    profiles.put("qrcodespictures", new ArrayList<String>());
                     // Add name + UUID and phone number to FB
                     Task<Void> t = FirebaseWrapper.addData("profiles", username, profiles);
                     while (!t.isComplete()) {
