@@ -115,8 +115,7 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
                                         "",
                                         0,
                                         new ArrayList<>(),
-                                        0,"");
-
+                                        0);
                                 ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                 for (String hash : hashes) {
                                     u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
