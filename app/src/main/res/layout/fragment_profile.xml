@@ -62,8 +62,8 @@
             android:fontFamily="@font/gatekeptbold"
             android:text="TextView"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="35sp" />
     </LinearLayout>
 
@@ -121,8 +121,8 @@
             android:gravity="center"
             android:text="Score"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="15sp" />
 
         <TextView
@@ -133,8 +133,8 @@
             android:fontFamily="@font/gatekept"
             android:text="SCORE"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -156,8 +156,8 @@
             android:gravity="center"
             android:text="Rank"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="15sp" />
 
         <TextView
@@ -168,8 +168,8 @@
             android:fontFamily="@font/gatekept"
             android:text="RANK"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -192,8 +192,8 @@
             android:gravity="center"
             android:text="QRCodes"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83" />
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan" />
 
         <TextView
             android:id="@+id/qrCodesText"
@@ -203,8 +203,8 @@
             android:fontFamily="@font/gatekept"
             android:text="QRCODES FOUND"
             android:textAlignment="center"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -226,8 +226,8 @@
             android:gravity="center"
             android:text="TextView"
             android:textAlignment="gravity"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83" />
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan" />
 
         <TextView
             android:id="@+id/textView3"
@@ -238,8 +238,8 @@
             android:gravity="center"
             android:text="RUSH COINS"
             android:textAlignment="gravity"
-            android:textColor="#3c6f83"
-            android:textColorHint="#3c6f83"
+            android:textColor="@color/pale_cyan"
+            android:textColorHint="@color/pale_cyan"
             android:textSize="12sp" />
     </LinearLayout>
 

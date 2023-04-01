@@ -344,6 +344,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                     SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
                     settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
 
+
                 }
             }).show();
         });
