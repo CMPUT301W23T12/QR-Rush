@@ -32,21 +32,23 @@ public class User implements Serializable {
     private HashMap<QRCode, String> commentMap = new HashMap<>();
     private int money;
 
-
     /**
-     * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
+     * Creates a new user with the given username, phone number, rank, total score,
+     * and QR Codes.
      *
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money,
+            String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+        this.profilePicture = profilePicture;
     }
 
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
@@ -66,6 +68,10 @@ public class User implements Serializable {
 
     public String getProfilePicture() {
         return profilePicture;
+    }
+
+    public boolean hasProfilePicture() {
+        return profilePicture != null && !profilePicture.isEmpty();
     }
 
     public void setProfilePicture(String profilePicture) {
@@ -108,7 +114,8 @@ public class User implements Serializable {
      * Removes a QR Code from the user's account, both locally and in Firebase.
      *
      * @param code The QR code to remove from the user's account.
-     * @throws InvalidParameterException The QR code given was not already in the user's account.
+     * @throws InvalidParameterException The QR code given was not already in the
+     *                                   user's account.
      */
     public void removeQRCode(QRCode code) {
         if (!this.qrCodes.contains(code)) {
@@ -141,7 +148,8 @@ public class User implements Serializable {
      * Removes the comment for the given QR code.
      *
      * @param code The QRCode to remove the comment for.
-     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     * @throws InvalidParameterException The QRCode given is not on the current
+     *                                   user's account.
      */
     public void removeCommentFor(QRCode code) {
         if (!this.getQRCodes().contains(code)) {
@@ -172,7 +180,8 @@ public class User implements Serializable {
      *
      * @param code        The QRCode to add a comment to.
      * @param commentText The text to set the comment to.
-     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     * @throws InvalidParameterException The QRCode given is not on the current
+     *                                   user's account.
      */
     public void setCommentFor(QRCode code, String commentText) {
         if (!this.getQRCodes().contains(code)) {
@@ -210,11 +219,13 @@ public class User implements Serializable {
     }
 
     /**
-     * Returns the comment for the given QR code or Optional.empty() if this QR code doesn't have a
+     * Returns the comment for the given QR code or Optional.empty() if this QR code
+     * doesn't have a
      * comment.
      *
      * @param code The QR code to get the comment for.
-     * @throws InvalidParameterException The QRCode given is not on the current user's account.
+     * @throws InvalidParameterException The QRCode given is not on the current
+     *                                   user's account.
      */
     public Optional<String> getCommentFor(QRCode code) {
         if (!this.getQRCodes().contains(code)) {
