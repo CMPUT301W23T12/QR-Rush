@@ -8,19 +8,26 @@
     tools:context=".view.SocialFragment">
 
 
-        <EditText
-            android:id="@+id/searchPlayer"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:ems="10"
-            android:fontFamily="@font/gatekept"
-            android:hint="Search a player..."
-            android:inputType="textPersonName"
-            app:layout_constraintBottom_toBottomOf="@+id/searchButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+    <EditText
+        android:id="@+id/searchPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:ems="10"
+        android:fontFamily="@font/gatekept"
+        android:hint="Search a player..."
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="@+id/searchButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
+
+    <TextView
+        android:id="@+id/refresh_player_list_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Refreshing Player List..."
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/noPlayerFound"
@@ -32,8 +39,7 @@
         android:textAlignment="center"
         android:textColor="#FF0000"
         android:textColorHint="#3c6f83"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible" />
 
     <ListView
         android:id="@+id/searchPlayerList"

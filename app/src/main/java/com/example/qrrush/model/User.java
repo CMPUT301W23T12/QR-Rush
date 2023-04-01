@@ -3,6 +3,8 @@ package com.example.qrrush.model;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -42,7 +44,7 @@ public class User implements Serializable {
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
     public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money,
-            String profilePicture) {
+                String profilePicture) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
@@ -56,6 +58,12 @@ public class User implements Serializable {
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getUserName().toLowerCase();
     }
 
     public String getUserName() {

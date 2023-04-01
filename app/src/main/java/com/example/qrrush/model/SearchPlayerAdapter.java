@@ -1,39 +1,80 @@
 package com.example.qrrush.model;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-
+import androidx.fragment.app.FragmentActivity;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
+import com.example.qrrush.view.ProfileDialogFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
-    private Context context;
+    private FragmentActivity context;
     private int resource;
     private List<User> mUsers;
+    private ArrayList<User> filteredUsers;
 
-    public SearchPlayerAdapter(Context context, int resource, List<User> users) {
+    public SearchPlayerAdapter(FragmentActivity context, int resource, List<User> users) {
         super(context, resource, users);
         this.context = context;
         this.resource = resource;
         this.mUsers = users;
+        this.filteredUsers = new ArrayList<>();
+        filteredUsers.addAll(this.mUsers);
     }
 
+    @Override
+    public int getCount() {
+        return filteredUsers.size();
+    }
+
+    @NonNull
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                if (charSequence == null) {
+                    return new FilterResults();
+                }
+
+                String pattern = charSequence.toString().toLowerCase();
+                FilterResults results = new FilterResults();
+                ArrayList<User> searchResults = new ArrayList<>();
+                for (User u : mUsers) {
+                    if (u.getUserName().toLowerCase().contains(pattern)) {
+                        searchResults.add(u);
+                    }
+                }
+
+                results.values = searchResults;
+                results.count = searchResults.size();
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                filteredUsers = (ArrayList<User>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 
     @NonNull
     @Override
@@ -44,7 +85,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
             view = inflater.inflate(resource, parent, false);
         }
 
-        User user = mUsers.get(position);
+        User user = filteredUsers.get(position);
 
         // Set the user data to the appropriate UI components
         TextView searchedName = view.findViewById(R.id.nameViewSocial);
@@ -74,12 +115,21 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
             searchedPlayerImageView.setImageDrawable(drawable);
         }
 
+        view.setOnClickListener(v -> {
+            new ProfileDialogFragment(user).show(
+                    context.getSupportFragmentManager().beginTransaction(),
+                    user.getUserName()
+            );
+        });
+
         return view;
     }
 
     public void setData(List<User> users) {
         mUsers.clear();
         mUsers.addAll(users);
+        filteredUsers.clear();
+        filteredUsers.addAll(users);
         notifyDataSetChanged();
     }
 
