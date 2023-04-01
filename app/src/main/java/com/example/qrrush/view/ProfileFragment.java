@@ -2,8 +2,6 @@ package com.example.qrrush.view;
 
 import android.database.DataSetObserver;
 import android.graphics.Color;
-import android.net.Uri;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,21 +35,12 @@ import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -101,7 +90,6 @@ public class ProfileFragment extends Fragment implements Serializable {
         super.onCreate(savedInstanceState);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -130,9 +118,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                         "",
                                         0,
                                         new ArrayList<>(),
-                                        0,
-                                        "");
-
+                                        0);
                                 ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
                                 for (String hash : hashes) {
                                     u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
@@ -183,6 +169,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
+        ColorGenerator generator = ColorGenerator.MATERIAL;
 
         profilePicture.setClickable(true);
         profilePicture.setOnClickListener(new View.OnClickListener() {
@@ -194,26 +181,16 @@ public class ProfileFragment extends Fragment implements Serializable {
             }
         });
 
-        if (user.getProfilePictureURL() != null){
-                Glide.with(getContext())
-                .load(user.getProfilePictureURL())
-                        .dontAnimate()
-                .into(profilePicture);
-            } else{
-            ColorGenerator generator = ColorGenerator.MATERIAL;
-            int color = generator.getColor(user.getUserName());
-            profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-            TextDrawable drawable = TextDrawable.builder()
-                        .beginConfig()
-                        .textColor(Color.WHITE)
-                        .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                        .toUpperCase()
-                        .width(200)
-                        .height(200)
-                        .endConfig()
-                        .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+        int color = generator.getColor(user.getUserName());
+
+        TextDrawable drawable = TextDrawable.builder()
+                .beginConfig()
+                .textColor(Color.WHITE)
+                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                .toUpperCase()
+                .endConfig()
+                .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), color, 1000);
         profilePicture.setImageDrawable(drawable);
-        }
 
         // On launch sorting is set by date (sortingTracker = 1)
         // by points (sortingTracker = 2)
@@ -321,21 +298,18 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
-                            if (user.getProfilePictureURL().isEmpty()){
-                                ColorGenerator newgenerator = ColorGenerator.MATERIAL;
-                                int newcolor = newgenerator.getColor(user.getUserName());
+                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
 
-                                TextDrawable newdrawable = TextDrawable.builder()
-                                        .beginConfig()
-                                        .textColor(Color.WHITE)
-                                        .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
-                                        .toUpperCase()
-                                        .width(200)
-                                        .height(200)
-                                        .endConfig()
-                                        .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
-                                profilePicture.setImageDrawable(newdrawable);
-                            }
+                            int newcolor = newgenerator.getColor(user.getUserName());
+
+                            TextDrawable newdrawable = TextDrawable.builder()
+                                    .beginConfig()
+                                    .textColor(Color.WHITE)
+                                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                    .toUpperCase()
+                                    .endConfig()
+                                    .buildRoundRect(String.valueOf(user.getUserName().charAt(0)), newcolor, 1000);
+                            profilePicture.setImageDrawable(newdrawable);
                         });
                     });
                 });
