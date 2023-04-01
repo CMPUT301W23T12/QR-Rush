@@ -286,6 +286,32 @@ public class FirebaseWrapper {
                     scannedByListConsumer.accept(scannedByList);
                 });
     }
+    public static void getScannedQRCodeDataLeader(String hash, Consumer<List<String>> scannedByListConsumer) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
+                        return;
+                    }
+
+                    // Retrieve the array of users who have scanned the QR code
+                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
+
+                    // Filter out the given username
+
+
+                    scannedByListConsumer.accept(scannedByList);
+                });
+    }
 
     private static void getUsers(QuerySnapshot profileSnapshot, QuerySnapshot qrCodeSnapshot,
                                  Consumer<ArrayList<User>> callback) {
