@@ -28,7 +28,6 @@ public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private int rank;
-    private int totalScore;
     private ArrayList<QRCode> qrCodes;
     private String profilePictureURL;
     private HashMap<QRCode, String> commentMap = new HashMap<>();
@@ -40,16 +39,14 @@ public class User implements Serializable {
      * @param userName    The username to initialize the user with.
      * @param phoneNumber The phone number to initialize the user with.
      * @param rank        The rank to initialize the user with.
-     * @param totalScore  The score to initialize the user with.
      * @param qrCodes     The list of QR Codes to initialize the user with.
      */
-    public User(String userName, String phoneNumber, int rank, int totalScore, ArrayList<QRCode> qrCodes, int money, String profilePictureURL) {
+    public User(String userName, String phoneNumber, int rank, ArrayList<QRCode> qrCodes, int money, String profilePictureURL) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.rank = rank;
         this.qrCodes = qrCodes;
         this.money = money;
-        this.totalScore = totalScore;
         this.profilePictureURL = profilePictureURL;
     }
 
@@ -59,9 +56,6 @@ public class User implements Serializable {
         this.qrCodes = qrCodes;
     }
 
-    public void setTotalScore(int totalScore) {
-        this.totalScore = totalScore;
-    }
 
     public String getUserName() {
         return userName;
@@ -108,7 +102,6 @@ public class User implements Serializable {
         this.rank = rank;
     }
 
-
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
     }
@@ -123,9 +116,6 @@ public class User implements Serializable {
         }
 
         return result;
-    }
-    public int getTotalScoreMemeber() {
-        return totalScore;
     }
 
     /**
@@ -149,6 +139,7 @@ public class User implements Serializable {
 
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
+
             return;
         }
 

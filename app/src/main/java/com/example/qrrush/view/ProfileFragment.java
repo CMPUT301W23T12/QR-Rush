@@ -40,12 +40,14 @@ import com.example.qrrush.controller.NameComparator;
 import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -141,46 +143,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                 }
             });
 
-
-    public void getAllCollection(User user, TextView rankView){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("profiles")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error == null) {
-                            ArrayList<User> users = new ArrayList<User>();
-                            users.clear();
-                            for (QueryDocumentSnapshot document : value) {
-                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
-
-                                if (!user.getUserName().matches(document.getId())){
-                                    users.add(new User(document.getId(),
-                                            "",
-                                            0,
-                                            ((Long) document.getData().get("score")).intValue(),
-                                            new ArrayList<>(),
-                                            0,
-                                            ""));
-                                } else{
-                                    user.setTotalScore(((Long) document.getData().get("score")).intValue());
-                                    users.add(user);
-                                }
-                            }
-                            Collections.sort(users, new RankComparator());
-                            for (int i = 0; i < users.size(); ++i){
-                                if (user.getUserName().matches(users.get(i).getUserName())){
-                                    user.setRank(((users.indexOf(users.get(i)))+1));
-                                    rankView.setText(String.valueOf(user.getRank()));
-                                }
-                            }
-                        } else {
-                            Log.d("FirebaseWrapper", "Error getting documents: ",error.fillInStackTrace());
-                        }
-                    }
-                });
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,6 +154,51 @@ public class ProfileFragment extends Fragment implements Serializable {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        qrCodeAdapter.notifyDataSetChanged();
+    }
+
+    public void getAllCollection(User user, TextView rankView) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            ArrayList<User> users = new ArrayList<User>();
+                            users.clear();
+                            for (QueryDocumentSnapshot document : value) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                User u = new User(document.getId(),
+                                        "",
+                                        0,
+                                        new ArrayList<>(),
+                                        0,
+                                        "");
+                                ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                for (String hash : hashes) {
+                                    u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                                }
+
+                                users.add(u);
+                            }
+                            Collections.sort(users, new RankComparator());
+                            for (int i = 0; i < users.size(); ++i) {
+                                if (user.getUserName().matches(users.get(i).getUserName())) {
+                                    user.setRank(((users.indexOf(users.get(i))) + 1));
+                                    rankView.setText(String.valueOf(user.getRank()));
+                                }
+                            }
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ", error.fillInStackTrace());
+                        }
+                    }
+                });
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -214,7 +221,6 @@ public class ProfileFragment extends Fragment implements Serializable {
         qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
-        ColorGenerator generator = ColorGenerator.MATERIAL;
 
         profilePicture.setClickable(true);
         profilePicture.setOnClickListener(new View.OnClickListener() {
@@ -232,7 +238,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                         .dontAnimate()
                 .into(profilePicture);
             } else{
-                int color = generator.getColor(user.getUserName());
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            int color = generator.getColor(user.getUserName());
             profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             TextDrawable drawable = TextDrawable.builder()
                         .beginConfig()
@@ -349,8 +356,8 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                             nameView.setText(user.getUserName());
                             dialog.dismiss();
-                            ColorGenerator newgenerator = ColorGenerator.MATERIAL;
                             if (user.getProfilePictureURL().isEmpty()){
+                                ColorGenerator newgenerator = ColorGenerator.MATERIAL;
                                 int newcolor = newgenerator.getColor(user.getUserName());
 
                                 TextDrawable newdrawable = TextDrawable.builder()
