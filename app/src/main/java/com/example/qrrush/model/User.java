@@ -1,7 +1,9 @@
 package com.example.qrrush.model;
 
+import android.app.Activity;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -33,6 +35,7 @@ public class User implements Serializable {
     private int money;
     private ArrayList<Integer> questProgress = new ArrayList<>(3);
     Timestamp questsRefreshed;
+    Activity activity;
 
     /**
      * Creates a new user with the given username, phone number, rank, total score, and QR Codes.
@@ -61,6 +64,10 @@ public class User implements Serializable {
         this.questProgress.add(0);
         this.questProgress.add(0);
         this.questProgress.add(0);
+    }
+
+    public void setActivity(Activity a) {
+        this.activity = a;
     }
 
     public String getUserName() {
@@ -113,10 +120,21 @@ public class User implements Serializable {
         update.put("quests-progress", this.questProgress);
         FirebaseWrapper.updateData("profiles", this.getUserName(), update);
 
-        if (isQuestCompleted(quest)) {
-            // TODO: display some text at the bottom letting the player know they finished a quest.
+        if (isQuestCompleted(quest) && activity != null) {
+            Toast.makeText(
+                    activity,
+                    "You completed a quest! You got 2 Rush Coins!",
+                    Toast.LENGTH_LONG
+            ).show();
             this.setMoney(this.getMoney() + 2);
         }
+    }
+
+    public void setQuestProgressWithoutFirebase(int quest, int progress) {
+        if (isQuestCompleted(quest)) {
+            return;
+        }
+        this.questProgress.set(quest, progress);
     }
 
     public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {

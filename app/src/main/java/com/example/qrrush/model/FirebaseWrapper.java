@@ -194,7 +194,7 @@ public class FirebaseWrapper {
                     Map<String, Object> data = ds.getData();
                     for (int i = 0; i < 3; i += 1) {
                         long progress = ((ArrayList<Long>) data.get("quests-progress")).get(i);
-                        user.setQuestProgress(i, (int) progress);
+                        user.setQuestProgressWithoutFirebase(i, (int) progress);
                     }
 
                     Calendar dateRefreshed = Calendar.getInstance();
