@@ -1,12 +1,12 @@
 package com.example.qrrush.view;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,8 +27,12 @@ import java.util.ArrayList;
  */
 public class SocialFragment extends Fragment {
     User user;
+    TextView noPlayerFound;
+    EditText searchPlayerEditField;
     private ListView searchResultsList;
     private SearchPlayerAdapter searchResultsAdapter;
+    TextView refreshPlayerText;
+    ArrayList<User> userList;
 
     public SocialFragment(User user) {
         this.user = user;
@@ -47,9 +51,24 @@ public class SocialFragment extends Fragment {
 
         // Get the reference to the ListView and create the adapter
         searchResultsList = view.findViewById(R.id.searchPlayerList);
-        searchResultsAdapter = new SearchPlayerAdapter(getContext(), R.layout.searchedplayers_content, new ArrayList<User>());
+        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content, new ArrayList<User>());
         searchResultsList.setAdapter(searchResultsAdapter);
+        refreshPlayerText = view.findViewById(R.id.refresh_player_list_text);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshPlayerText.setVisibility(View.VISIBLE);
+        noPlayerFound.setVisibility(View.GONE);
+        FirebaseWrapper.getAllUsers(users -> {
+            refreshPlayerText.setVisibility(View.GONE);
+            noPlayerFound.setVisibility(View.GONE);
+            userList = users;
+            searchResultsAdapter.setData(users);
+            searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
+        });
     }
 
     /**
@@ -62,48 +81,27 @@ public class SocialFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ImageButton searchButton = view.findViewById(R.id.searchButton);
-        TextView noPlayerFound = getView().findViewById(R.id.noPlayerFound);
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        noPlayerFound = getView().findViewById(R.id.noPlayerFound);
+        searchPlayerEditField = view.findViewById(R.id.searchPlayer);
+        searchPlayerEditField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                EditText searchPlayerEditField = view.findViewById(R.id.searchPlayer);
-                String searchPlayer = searchPlayerEditField.getText().toString();
-                if (searchPlayer.matches("")) {
-                    // UX Experience: If search is empty and you press search, it will display "No player found!"
-                    noPlayerFound.setVisibility(View.VISIBLE);
-                    searchResultsList.setVisibility(View.GONE);
-                    return;
-                }
-                FirebaseWrapper.getUserData(searchPlayer, user -> {
-                    // we will retrieve the user information from firebase and create a user object
-                    // update the search results adapter with the retrieved user information
-                    if (!user.isPresent()) {
-                        noPlayerFound.setVisibility(View.VISIBLE);
-                        searchResultsList.setVisibility(View.GONE);
-                        return;
-                    }
-                    ArrayList<User> searchResults = new ArrayList<>();
-                    searchResults.add(user.get());
-                    searchResultsAdapter.setData(searchResults);
-                    noPlayerFound.setVisibility(View.GONE);
-                    searchResultsList.setVisibility(View.VISIBLE);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-                    searchResultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            new ProfileDialogFragment(searchResults.get(position)).show(
-                                    requireActivity().getSupportFragmentManager(),
-                                    searchResults.get(position).getUserName()
-                            );
-                        }
-                    });
-                });
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                noPlayerFound.setVisibility(View.GONE);
+                searchResultsAdapter.getFilter().filter(s.toString().toLowerCase(),
+                        numberOfResults -> {
+                            if (numberOfResults == 0) {
+                                noPlayerFound.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
     }
-
-
 }
