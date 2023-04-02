@@ -365,8 +365,11 @@ public class User implements Serializable {
             this.qrCodes.add(code);
             ArrayList<String> codes = (ArrayList<String>) profileData.get("qrcodes");
             ArrayList<String> comments = (ArrayList<String>) profileData.get("qrcodescomments");
+            ArrayList<String> pictures = (ArrayList<String>) profileData.get("qrcodespictures");
             codes.add(code.getHash());
             comments.add(null);
+            pictures.add(code.getLocationImage());
+
             profileData.replace("qrcodescomments", comments);
             profileData.replace("qrcodes", codes);
             profileData.put("score", this.getTotalScore());

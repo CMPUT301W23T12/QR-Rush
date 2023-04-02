@@ -68,11 +68,12 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         locationView.setTextColor(Color.BLACK);
         ImageView imageView = view.findViewById(R.id.imageView);
         TextView commentEditText = view.findViewById(R.id.commentEditText);
+        ImageView locationImage = view.findViewById(R.id.locationImageQRCode);
+        locationImage.setVisibility(View.GONE);
         commentEditText.setVisibility(View.GONE);
         nameView.setText(qrCode.getName());
 
         Optional<Location> l = qrCode.getLocation();
-
 
         String location = "no location available";
         if (l.isPresent()) {

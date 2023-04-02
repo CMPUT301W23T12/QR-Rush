@@ -21,6 +21,7 @@ import java.util.Random;
 public class QRCode {
     private final String hash;
     private Optional<Location> location;
+    private String locationImage;
 
     /**
      * TODO Set the date so that when the QR code is scanned its date is set here
@@ -58,6 +59,14 @@ public class QRCode {
         this.timestamp = timestamp;
         this.location = Optional.empty();
         this.hash = hash;
+    }
+
+    public void setLocationImage(String url) {
+        this.locationImage = url;
+    }
+
+    public String getLocationImage() {
+        return this.locationImage;
     }
 
     /**

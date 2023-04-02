@@ -1,6 +1,9 @@
 package com.example.qrrush.view;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +15,9 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -24,8 +29,12 @@ import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.Quest;
 import com.example.qrrush.model.QuestType;
 import com.example.qrrush.model.User;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -36,6 +45,7 @@ import java.util.ArrayList;
 public class QRConfirmFragment extends DialogFragment {
     User user;
     Barcode code;
+    QRCode qrCode;
     ImageButton retakeButton;
     ImageButton confirmButton;
     ImageView qrCodeImage;
@@ -43,9 +53,17 @@ public class QRConfirmFragment extends DialogFragment {
     TextView scoreView;
     TextView rarityView;
     TextView locationView;
+    TextView uploadingText;
     CheckBox geolocationToggle;
     FragmentManager manager;
     Runnable onDismiss;
+    byte[] picture = null;
+
+    Button foundLocationButton;
+    ImageView locationImage;
+    private StorageReference mStorageRef;
+    private ActivityResultLauncher<Intent> cameraLauncher;
+    private static final int CAMERA_REQUEST_CODE = 100;
 
     public QRConfirmFragment(User user, Barcode b, Runnable onDismiss) {
         this.user = user;
@@ -76,8 +94,12 @@ public class QRConfirmFragment extends DialogFragment {
         rarityView = view.findViewById(R.id.qrCode_rarity);
         locationView = view.findViewById(R.id.qrCode_location);
         geolocationToggle = view.findViewById(R.id.geolocation_checkbox);
+        foundLocationButton = view.findViewById(R.id.foundLocation);
+        locationImage = view.findViewById(R.id.locationImage);
+        uploadingText = view.findViewById(R.id.uploadingText);
+        uploadingText.setVisibility(View.GONE);
 
-        QRCode qrCode = new QRCode(this.code.getRawBytes());
+        qrCode = new QRCode(this.code.getRawBytes());
 
         retakeButton.setOnClickListener(v -> {
             new CameraFragment(user, onDismiss).show(manager, "Confirm QR code");
@@ -114,9 +136,48 @@ public class QRConfirmFragment extends DialogFragment {
                     }
                 }
 
-                user.addQRCode(qrCode);
-                dismiss();
+                if (picture != null) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference imagesRef = storage.getReference()
+                            .child("qrcodeimage/" + user.getUserName() + ".jpg");
+
+                    // Upload the image data to Firebase Storage
+                    UploadTask uploadTask = imagesRef.putBytes(picture);
+
+                    // display the uploading... message after clicking confirm
+                    setCancelable(false);
+                    uploadingText.setVisibility(View.VISIBLE);
+
+                    // Register observers to listen for when the upload is done or if it fails
+                    uploadTask.addOnSuccessListener(taskSnapshot -> {
+                        // Image upload successful
+                        // Now we need to send it to firebase wrapper
+                        imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            this.qrCode.setLocationImage(uri.toString());
+                            user.addQRCode(qrCode);
+                            dismiss();
+                        });
+
+                    }).addOnFailureListener(err -> {
+                        // Image upload failed
+                        Toast.makeText(
+                                getContext(),
+                                "Image upload failed: " + err.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                    });
+                } else {
+                    user.addQRCode(qrCode);
+                    dismiss();
+                }
             });
+        });
+
+
+        foundLocationButton.setOnClickListener(v -> {
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            // Start the camera activity and wait for the result
+            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
         });
 
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 200, 200, false);
@@ -150,5 +211,28 @@ public class QRConfirmFragment extends DialogFragment {
         View result = inflater.inflate(R.layout.fragment_qr_confirm, container, false);
         manager = getParentFragmentManager();
         return result;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != CAMERA_REQUEST_CODE || resultCode != RESULT_OK) {
+            return;
+        }
+
+        // Get the image data from the intent
+        Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+        // Display the image in an ImageView
+        locationImage.setVisibility(View.VISIBLE);
+        // correct the positioning on the emulator -> devices?
+        // Device is fine
+        // locationImage.setRotation(270);
+        locationImage.setImageBitmap(photo);
+        // Convert the image to a byte array
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        photo.compress(Bitmap.CompressFormat.JPEG, CAMERA_REQUEST_CODE, baos);
+        byte[] imageData = baos.toByteArray();
+        picture = imageData;
     }
 }

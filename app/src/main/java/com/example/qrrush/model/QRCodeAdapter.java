@@ -6,13 +6,12 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.os.Bundle;
+import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
 import com.example.qrrush.view.ProfileFragment;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -70,8 +70,15 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         TextView locationView = view.findViewById(R.id.locationView);
         ImageView imageView = view.findViewById(R.id.imageView);
         TextView commentEditText = view.findViewById(R.id.commentEditText);
+        ImageView locationImage = view.findViewById(R.id.locationImageQRCode);
+        locationImage.setVisibility(View.GONE);
         commentEditText.setVisibility(View.GONE);
         nameView.setText(qrCode.getName());
+
+        if (qrCode.getLocationImage() != null) {
+            Picasso.get().load(Uri.parse(qrCode.getLocationImage())).into(locationImage);
+            locationImage.setVisibility(View.VISIBLE);
+        }
 
         Optional<Location> l = qrCode.getLocation();
 

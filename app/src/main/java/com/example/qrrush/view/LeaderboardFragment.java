@@ -252,7 +252,7 @@ public class LeaderboardFragment extends Fragment {
 
         // Replace with the actual method to get the user image
         if (user.hasProfilePicture()) {
-            Glide.with(getContext())
+            Glide.with(activity)
                     .load(user.getProfilePicture())
                     .dontAnimate()
                     .into(userImage);
