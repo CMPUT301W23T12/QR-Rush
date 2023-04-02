@@ -62,7 +62,7 @@
     <LinearLayout
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/off_black"
         android:elevation="1dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -72,6 +72,8 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/gatekeptbold"
+            android:textColor="@color/pale_cyan"
             android:text="Daily Quests"
             android:textAlignment="center" />
 
@@ -79,6 +81,8 @@
             android:id="@+id/quest1box"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:fontFamily="@font/gatekept"
+            android:textColor="@color/pale_cyan"
             android:layout_weight="1"
             android:clickable="false"
             android:text="Quest 1 description" />
@@ -87,6 +91,8 @@
             android:id="@+id/quest2box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/gatekept"
+            android:textColor="@color/pale_cyan"
             android:clickable="false"
             android:text="Quest 2 description" />
 
@@ -94,6 +100,8 @@
             android:id="@+id/quest3box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/gatekept"
+            android:textColor="@color/pale_cyan"
             android:clickable="false"
             android:text="Quest 3 description" />
 

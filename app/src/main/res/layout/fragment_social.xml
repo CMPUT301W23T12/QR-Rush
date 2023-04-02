@@ -12,18 +12,19 @@
 
     <EditText
         android:id="@+id/searchPlayer"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="60dp"
+        android:layout_marginStart="50dp"
         android:ems="10"
         android:fontFamily="@font/gatekept"
         android:hint="Search a player..."
         android:inputType="textPersonName"
         android:textColor="@color/bright_cyan"
         android:textColorHint="@color/light_cyan"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
-
 
     <TextView
         android:id="@+id/refresh_player_list_text"
@@ -43,8 +44,8 @@
         android:fontFamily="@font/gatekeptsemibold"
         android:text="No players found!"
         android:textAlignment="center"
-        android:textColor="#FF0000"
-        android:textColorHint="#3c6f83"
+        android:textColor="@color/bright_red"
+        android:textColorHint="@color/bright_blue"
         android:textSize="20dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/searchPlayerList"
@@ -60,6 +61,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/gatekept"
         android:textColor="@color/bright_blue"
+        android:divider="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
