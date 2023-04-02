@@ -146,7 +146,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Image Location"
+        android:text="Add Picture of Location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/geolocation_checkbox" />
@@ -160,5 +160,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/foundLocation"
         tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/uploadingText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#252525"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:text="Uploading Image..."
+        android:textAlignment="gravity"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

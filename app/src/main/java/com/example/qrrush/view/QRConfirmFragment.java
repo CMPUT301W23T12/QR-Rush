@@ -53,9 +53,11 @@ public class QRConfirmFragment extends DialogFragment {
     TextView scoreView;
     TextView rarityView;
     TextView locationView;
+    TextView uploadingText;
     CheckBox geolocationToggle;
     FragmentManager manager;
     Runnable onDismiss;
+    byte[] picture = null;
 
     Button foundLocationButton;
     ImageView locationImage;
@@ -94,6 +96,8 @@ public class QRConfirmFragment extends DialogFragment {
         geolocationToggle = view.findViewById(R.id.geolocation_checkbox);
         foundLocationButton = view.findViewById(R.id.foundLocation);
         locationImage = view.findViewById(R.id.locationImage);
+        uploadingText = view.findViewById(R.id.uploadingText);
+        uploadingText.setVisibility(View.GONE);
 
         qrCode = new QRCode(this.code.getRawBytes());
 
@@ -132,8 +136,40 @@ public class QRConfirmFragment extends DialogFragment {
                     }
                 }
 
-                user.addQRCode(qrCode);
-                dismiss();
+                if (picture != null) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference imagesRef = storage.getReference()
+                            .child("qrcodeimage/" + user.getUserName() + ".jpg");
+
+                    // Upload the image data to Firebase Storage
+                    UploadTask uploadTask = imagesRef.putBytes(picture);
+
+                    // display the uploading... message after clicking confirm
+                    setCancelable(false);
+                    uploadingText.setVisibility(View.VISIBLE);
+
+                    // Register observers to listen for when the upload is done or if it fails
+                    uploadTask.addOnSuccessListener(taskSnapshot -> {
+                        // Image upload successful
+                        // Now we need to send it to firebase wrapper
+                        imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            this.qrCode.setLocationImage(uri.toString());
+                            user.addQRCode(qrCode);
+                            dismiss();
+                        });
+
+                    }).addOnFailureListener(err -> {
+                        // Image upload failed
+                        Toast.makeText(
+                                getContext(),
+                                "Image upload failed: " + err.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+                    });
+                } else {
+                    user.addQRCode(qrCode);
+                    dismiss();
+                }
             });
         });
 
@@ -193,36 +229,10 @@ public class QRConfirmFragment extends DialogFragment {
         // Device is fine
         // locationImage.setRotation(270);
         locationImage.setImageBitmap(photo);
-        // Save it to Firebase
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Get a reference to the Firebase Storage location to store the image
-        StorageReference imagesRef = storage.getReference().child("qrcodeimage/" + user.getUserName() + ".jpg");
         // Convert the image to a byte array
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         photo.compress(Bitmap.CompressFormat.JPEG, CAMERA_REQUEST_CODE, baos);
         byte[] imageData = baos.toByteArray();
-
-        // Upload the image data to Firebase Storage
-        UploadTask uploadTask = imagesRef.putBytes(imageData);
-
-        confirmButton.setClickable(false);
-        // Register observers to listen for when the upload is done or if it fails
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            // Image upload successful
-            // Now we need to send it to firebase wrapper
-            imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                this.qrCode.setLocationImage(uri.toString());
-                confirmButton.setClickable(true);
-            });
-
-        }).addOnFailureListener(err -> {
-            // Image upload failed
-            Toast.makeText(
-                    getContext(),
-                    "Image upload failed: " + err.getMessage(),
-                    Toast.LENGTH_LONG
-            ).show();
-        });
-
+        picture = imageData;
     }
 }
