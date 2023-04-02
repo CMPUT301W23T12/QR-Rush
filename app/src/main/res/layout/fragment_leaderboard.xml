@@ -17,21 +17,24 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/players"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="Players"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/players" />
 
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/scanned_search"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="Scanned QR Codes"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/qr_code_scan" />
+
     </LinearLayout>
 
 
@@ -60,6 +63,7 @@
         android:id="@+id/leaderboard_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:divider="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,6 +73,7 @@
         android:id="@+id/leaderboard_loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/white_wash"
         android:text="Loading..."
         android:textSize="30sp"
         android:visibility="gone"
