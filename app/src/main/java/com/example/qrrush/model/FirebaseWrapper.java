@@ -254,7 +254,7 @@ public class FirebaseWrapper {
                                 l.setLatitude(g.getLatitude());
                                 l.setLongitude(g.getLongitude());
                                 code.setLocation(l);
-                                Log.e("Bruh", "QR Code has location");
+                                Log.e("FirebaseWrapper", "QR Code has location");
                             }
 
                             user.addQRCodeWithoutFirebase(code);
