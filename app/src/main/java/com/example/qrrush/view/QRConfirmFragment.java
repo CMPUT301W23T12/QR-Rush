@@ -36,6 +36,7 @@ import com.google.mlkit.vision.barcode.common.Barcode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * this class is responsible for
@@ -199,7 +200,12 @@ public class QRConfirmFragment extends DialogFragment {
             locationView.setText("Location: getting location...");
             Geo.getCurrentLocation(l -> {
                 qrCode.setLocation(l);
-                locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
+                locationView.setText(String.format(
+                        Locale.ENGLISH,
+                        "%.6f, %.6f",
+                        l.getLongitude(),
+                        l.getLatitude()
+                ));
             });
         });
     }

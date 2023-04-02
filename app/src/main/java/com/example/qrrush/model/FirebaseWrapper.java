@@ -210,7 +210,8 @@ public class FirebaseWrapper {
 
                             new ArrayList<>(),
                             ds.getLong("money").intValue(),
-                            ds.getString("profile_picture"));
+                            ds.getString("profile_picture")
+                    );
 
                     Map<String, Object> data = ds.getData();
                     for (int i = 0; i < 3; i += 1) {
@@ -245,7 +246,7 @@ public class FirebaseWrapper {
                     ArrayList<String> pictures = (ArrayList<String>) ds.get("qrcodespictures");
                     for (String hash : hashes) {
                         Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
-                            GeoPoint g = (GeoPoint) ds.get("location");
+                            GeoPoint g = qrCodeDoc.getGeoPoint("location");
                             Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
                             QRCode code = new QRCode(hash, timestamp);
                             if (g != null) {
@@ -253,6 +254,7 @@ public class FirebaseWrapper {
                                 l.setLatitude(g.getLatitude());
                                 l.setLongitude(g.getLongitude());
                                 code.setLocation(l);
+                                Log.e("Bruh", "QR Code has location");
                             }
 
                             user.addQRCodeWithoutFirebase(code);
