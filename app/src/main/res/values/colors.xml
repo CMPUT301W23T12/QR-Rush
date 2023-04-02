@@ -14,4 +14,7 @@
     <color name="bright_blue">#5C88B7</color>
     <color name="pale_cyan">#A8F6F8</color>
     <color name="light_cyan">#D7FFFE</color>
+    <color name="light_purple">#CBC3E3</color>
+    <color name="off_black">#252525</color>
+    <color name="bright_red">#EC1010</color>
 </resources>

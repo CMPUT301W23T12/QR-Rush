@@ -73,15 +73,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameView" />
 
-        <!--        <Button-->
-        <!--            android:id="@+id/deleteButton"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="35dp"-->
-        <!--            android:text="Delete"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/locationView" />-->
-
         <TextView
             android:id="@+id/locationView"
             android:layout_width="wrap_content"
@@ -95,15 +86,6 @@
             android:textColorHint="@color/pale_cyan"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/pointView" />
-
-        <!--        <Button-->
-        <!--            android:id="@+id/commentButton"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="35dp"-->
-        <!--            android:text="Comment"-->
-        <!--            app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toEndOf="@+id/locationView" />-->
 
         <ImageButton
             android:id="@+id/deleteButton"
