@@ -11,6 +11,7 @@ import androidx.test.rule.ActivityTestRule;
 import com.example.qrrush.view.MainActivity;
 import com.robotium.solo.Solo;
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +63,13 @@ public class CameraTest {
     @Test
     public void testCameraFragment() {
         // Open the camera fragment by clicking the camera button
-        solo.clickOnButton("Camera");
+
+        try {
+            Thread.sleep(10000); // waits for 1 second
+       } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        solo.clickOnButton(R.id.camera_button);
 
         // Wait for the camera view to appear
         solo.waitForView(R.id.camera_view);
