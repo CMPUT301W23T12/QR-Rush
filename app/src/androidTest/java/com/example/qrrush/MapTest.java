@@ -6,10 +6,12 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 
+import androidx.test.espresso.IdlingResource;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.qrrush.view.MainActivity;
+import com.google.android.gms.maps.GoogleMap;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -61,7 +63,6 @@ public class MapTest {
     public void testMapIsDisplayed() throws Exception {
         // Wait for the map to be displayed
         assertNotNull(solo.waitForView(com.google.android.gms.maps.MapView.class, 0, 5000));
-
-
     }
 }
+

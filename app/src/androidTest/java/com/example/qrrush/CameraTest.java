@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -64,12 +65,8 @@ public class CameraTest {
     public void testCameraFragment() {
         // Open the camera fragment by clicking the camera button
 
-        try {
-            Thread.sleep(10000); // waits for 1 second
-       } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        solo.clickOnButton(R.id.camera_button);
+        View cameraButton = solo.getView(R.id.camera_button);
+        solo.clickOnView(cameraButton);
 
         // Wait for the camera view to appear
         solo.waitForView(R.id.camera_view);
