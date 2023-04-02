@@ -26,6 +26,7 @@ import com.example.qrrush.view.ProfileFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -92,7 +93,12 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
-            location = loc.getLongitude() + ", " + loc.getLatitude();
+            location = String.format(
+                    Locale.ENGLISH,
+                    "%.6f, %.6f",
+                    loc.getLongitude(),
+                    loc.getLatitude()
+            );
         }
         locationView.setText(location);
 
