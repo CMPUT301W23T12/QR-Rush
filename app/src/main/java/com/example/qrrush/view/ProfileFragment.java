@@ -333,7 +333,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                     positiveButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+                            EditText userNameEdit = addNewName.findViewById(R.id.edit_name);
                             userNameEdit.setHint(user.getUserName());
                             ProgressBar progressBar = addNewName.findViewById(R.id.progress_bar); // Add this line
 

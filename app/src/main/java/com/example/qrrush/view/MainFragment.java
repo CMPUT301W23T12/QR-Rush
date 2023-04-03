@@ -225,7 +225,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 GeoPoint geoPoint = document.getGeoPoint("location");
                 if (geoPoint == null) {
                     Log.e("Geo", "location was null");
-                    return;
+                    continue;
                 }
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
@@ -250,18 +250,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                         // We need to create a user object with that so we gotta
                                         // use getUserData
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                            // scannedByList.get(pos) returns the name
-                                            // -> STRING
-                                            // send the user object to the profile
-                                            // fragment
-                                            requireActivity()
-                                                    .getSupportFragmentManager()
-                                                    .beginTransaction()
-                                                    .replace(R.id.tabLayout,
-                                                            new ProfileFragment(
-                                                                    user.get(), false, requireActivity()))
-                                                    .commit();
-
+                                            // send the user object to the profile fragment
+                                            new ProfileDialogFragment(user.get()).show(
+                                                    requireActivity().getSupportFragmentManager(),
+                                                    ""
+                                            );
                                         });
                                     }
                                 });
