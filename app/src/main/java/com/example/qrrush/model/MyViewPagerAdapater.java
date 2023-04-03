@@ -17,7 +17,6 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
 
     User user;
 
-    MediaPlayer mediaPlayer;
     FragmentActivity activity;
 
     public MyViewPagerAdapater(@NonNull FragmentActivity fragmentActivity, User user) {
