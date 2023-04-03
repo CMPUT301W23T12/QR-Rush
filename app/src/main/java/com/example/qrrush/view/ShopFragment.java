@@ -18,6 +18,7 @@ import com.example.qrrush.model.Quest;
 import com.example.qrrush.model.QuestType;
 import com.example.qrrush.model.Rarity;
 import com.example.qrrush.model.User;
+import com.smb.glowbutton.GlowButton;
 
 import java.util.ArrayList;
 
@@ -84,13 +85,12 @@ public class ShopFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_shop, container, false);
 
         // Now you can call findViewById on the inflated view
-        Button commonButton = view.findViewById(R.id.common_button);
-        Button rareButton = view.findViewById(R.id.rare_button);
-        Button legendaryButton = view.findViewById(R.id.legendary_button);
-
+        GlowButton commonButton = view.findViewById(R.id.common_button);
+        GlowButton rareButton = view.findViewById(R.id.rare_button);
+        GlowButton legendaryButton = view.findViewById(R.id.legendary_button);
+//        invisButton.setVisibility(View.INVISIBLE);
         qrCode = view.findViewById(R.id.qr_code);
         scoreText = view.findViewById(R.id.score);
-        qrContentText = view.findViewById(R.id.qr_content);
         nameContentText = view.findViewById(R.id.name_content);
 
         // Add click listeners to buttons
@@ -105,11 +105,9 @@ public class ShopFragment extends Fragment {
                         Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
                 );
                 scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
+                nameContentText.setText(code.getName());
             }
         });
-
         rareButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Rare);
@@ -120,8 +118,7 @@ public class ShopFragment extends Fragment {
                         Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
                 );
                 scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
+                nameContentText.setText(code.getName());
             }
         });
 
@@ -135,8 +132,7 @@ public class ShopFragment extends Fragment {
                         Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
                 );
                 scoreText.setText("Score: " + code.getScore());
-                qrContentText.setText("QR content: " + code.getHash());
-                nameContentText.setText("Name: " + code.getName());
+                nameContentText.setText(code.getName());
             }
         });
 

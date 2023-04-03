@@ -295,7 +295,7 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
             alertDialogBuilder.setView(addNewName);
             alertDialogBuilder.setTitle("Input new name:");
             alertDialogBuilder.setPositiveButton("Confirm", null);
-            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+            EditText userNameEdit = addNewName.findViewById(R.id.edit_name);
             userNameEdit.setHint(user.getUserName());
 
             AlertDialog dialog = alertDialogBuilder.create();

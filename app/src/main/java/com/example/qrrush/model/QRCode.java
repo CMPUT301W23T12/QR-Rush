@@ -182,7 +182,9 @@ public class QRCode {
 
         return result;
     }
-
+    public int getColor(){
+        return Color.parseColor("#" + this.hash.substring(0, 6));
+    }
     /**
      * Returns the length of the longest run of consecutive zeroes in the hash hashValue.
      *
