@@ -60,7 +60,15 @@ public class User implements Serializable {
         this.questProgress.add(0);
         this.profilePicture = profilePicture;
     }
-
+    /**
+     * Creates a new user with the given username, rank, QR codes, and money.
+     * and QR Codes.
+     *
+     * @param userName    The username to initialize the user with.
+     * @param rank        The rank to initialize the user with.
+     * @param qrCodes     The QR codes to initialize the user with.
+     * @param money       The money initialize the user with.
+     */
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.rank = rank;
@@ -71,60 +79,102 @@ public class User implements Serializable {
         this.questProgress.add(0);
     }
 
+    /**
+     * Sets the activity.
+     *
+     * @param   a The activity to set for this class.
+     */
     public void setActivity(Activity a) {
         this.activity = a;
     }
 
+    /**
+     * Custom to String for this class.
+     *
+     * @return  A lower case String.
+     */
     @NonNull
     @Override
     public String toString() {
         return this.getUserName().toLowerCase();
     }
 
+    /**
+     * @return  The user name as a String.
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     * Sets the user name of this class.
+     * @param   userName The user name to set.
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
+    /**
+     * Gets the profile picture.
+     * @return  A string of the jpeg or png link to the profile picture.
+     */
     public String getProfilePicture() {
         return profilePicture;
     }
 
+    /**
+     * Checks if a user has a profile picture.
+     * @return  True or false (true if profile picture is present) else, false.
+     */
     public boolean hasProfilePicture() {
         return profilePicture != null && !profilePicture.isEmpty();
     }
 
+    /**
+     * Sets the users profile picture .
+     * @param   profilePicture A string of the jpeg or png link to the profile picture.
+     */
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    /**
+     * @return An int of this users rank.
+     */
     public int getRank() {
         return rank;
     }
 
+    /**
+     * Sets this users rank.
+     * @param   rank An int rank to be set.
+     */
     public void setRank(int rank) {
         this.rank = rank;
     }
 
+    /**
+     * Gets all the QR codes for this user.
+     * @return  An array list of all this users QR codes.
+     */
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
     }
 
+    /**
+     * Gets all the quests done by this user.
+     * @return  An array list of all the quests completed by this user.
+     */
     public ArrayList<Integer> getQuestProgress() {
         return questProgress;
     }
 
+    /**
+     * Sets the quest progress for this user.
+     *
+     * @param quest     The quest to be set.
+     * @param progress  The progress of the quest.
+     */
     public void setQuestProgress(int quest, int progress) {
         if (isQuestCompleted(quest)) {
             return;
@@ -144,6 +194,12 @@ public class User implements Serializable {
         }
     }
 
+    /**
+     * Sets the quest progress for this user (without firebase).
+     *
+     * @param quest     The quest to be set.
+     * @param progress  The progress of the quest.
+     */
     public void setQuestProgressWithoutFirebase(int quest, int progress) {
         if (isQuestCompleted(quest)) {
             return;
@@ -151,9 +207,6 @@ public class User implements Serializable {
         this.questProgress.set(quest, progress);
     }
 
-    public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {
-        questsRefreshed = t;
-    }
 
     public boolean isQuestCompleted(int quest) {
         Quest q = Quest.getCurrentQuests().get(quest);

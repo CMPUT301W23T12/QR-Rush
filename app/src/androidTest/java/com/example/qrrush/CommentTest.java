@@ -75,8 +75,6 @@ public class CommentTest {
         View view=ListView.getChildAt(0);
         ImageButton button=(ImageButton)view.findViewById(R.id.commentButton);
         solo.clickOnView(button);
-//
-//        solo.clickOnImageButton(1);
         solo.enterText(0, "nice");
         solo.clickOnText("OK");
         solo.sleep(3000);
@@ -87,65 +85,5 @@ public class CommentTest {
         Log.d("comment", confirmComment);
         assertEquals("Comment: nice", confirmComment);
     }
-//    @Test
-//    public void testEditName() {
-//        //edit name
-//        try {
-//            Thread.sleep(10000); // waits for 1 second
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        TabLayout tabLayout = (TabLayout) solo.getView(R.id.tabLayout);
-//        solo.clickOnView(tabLayout.getTabAt(0).view);
-//        TextView username1 = (TextView) solo.getView(R.id.nameView);
-//        String username = username1.getText().toString();
-//        Log.e("name",username);
-//        solo.waitForCondition(() -> solo.getView(R.id.settings_button) != null, 1000);
-//        solo.clickOnView(solo.getView(R.id.settings_button));
-//        solo.clickOnText("Edit Name");
-//
-//        // Enter "Bruh123" as the search term
-//        solo.enterText(0, "Bruh1234");
-//        solo.clickOnText("Confirm");
-//
-//        // Wait for the AlertDialog to close
-//        solo.waitForDialogToClose();
-//        TextView newName = (TextView) solo.getView(R.id.nameView);
-//        String name = newName.getText().toString();
-//        assertEquals("Bruh1234", name);
-//        solo.waitForCondition(() -> solo.getView(R.id.settings_button) != null, 1000);
-//
-//
-//
-//
-//
-//        solo.clickOnView(solo.getView(R.id.settings_button));
-//        solo.clickOnText("Edit Name");
-//        // Enter "Bruh123" as the search term
-//        solo.enterText(0, username);
-//        solo.clickOnText("Confirm");
-//        solo.waitForDialogToClose();
-//        TextView newName3 = (TextView) solo.getView(R.id.nameView);
-//        String name2 = newName3.getText().toString();
-//        assertEquals(username, name2);
-//        solo.waitForCondition(() -> solo.getView(R.id.settings_button) != null, 1000);
-//        //make it error
-//        solo.clickOnView(solo.getView(R.id.settings_button));
-//        solo.clickOnText("Edit Name");
-//        // Enter "Bruh123" as the search term
-//        solo.enterText(0, "4PF");
-//        solo.clickOnText("Confirm");
-//
-//        TextView newName2 = (TextView) solo.getView(R.id.errorText);
-//        solo.waitForView(R.id.errorText);
-//        try {
-//            Thread.sleep(5000); // waits for 1 second
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        assertTrue(newName2.getVisibility() == View.VISIBLE);
-//
-//    }
-
 }
 
