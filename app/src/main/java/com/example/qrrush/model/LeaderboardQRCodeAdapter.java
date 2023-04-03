@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * ArrayAdapter which displays QR Codes from the QRCode class.
+ * ArrayAdapter which displays QR Codes from the QRCode class for the leaderboard fragment.
  */
 public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
@@ -75,7 +75,7 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         nameView.setTextColor(qrCode.getColor());
 
         Optional<Location> l = qrCode.getLocation();
-
+        // gets location
         String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
@@ -92,11 +92,6 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         // Image will be fit into the size of the image view
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false);
         imageView.setImageBitmap(b);
-        // Bug Report: If the user deletes the QR code, or changes their name it should
-        // update the qrcodes collection on firebase
-        // and update the username/remove it. If someone scans a top QR code here and
-        // changes their name, it won't update and when u try to click on their profile
-        // it will crash the app.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
