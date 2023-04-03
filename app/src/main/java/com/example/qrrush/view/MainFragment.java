@@ -211,9 +211,10 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         loadingText.setVisibility(View.GONE);
 
         LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(deviceLocation));
         Log.e("permission", deviceLocation.toString());
+        mMap.addMarker(new MarkerOptions().position(deviceLocation));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
+
         // Fetch QRCode locations from Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
@@ -230,6 +231,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             mMap.clear(); // Clear previous markers from the map
             // Add the device location marker again after clearing the map
             mMap.addMarker(new MarkerOptions().position(deviceLocation));
+
 
             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                 GeoPoint geoPoint = document.getGeoPoint("location");

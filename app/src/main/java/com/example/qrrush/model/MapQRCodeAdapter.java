@@ -39,7 +39,6 @@ public class MapQRCodeAdapter extends ArrayAdapter<User> {
 
     public MapQRCodeAdapter(Context context, List<User> users) {
         super(context, 0, users);
-        Log.e("Debug", users.toString());
     }
 
     @NonNull
