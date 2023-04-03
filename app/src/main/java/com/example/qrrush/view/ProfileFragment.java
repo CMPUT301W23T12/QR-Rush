@@ -335,6 +335,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                         public void onClick(View v) {
                             EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
                             userNameEdit.setHint(user.getUserName());
+                            ProgressBar progressBar = addNewName.findViewById(R.id.progress_bar); // Add this line
+
                             TextView errorText = addNewName.findViewById(R.id.errorText);
                             TextView errorText1 = addNewName.findViewById(R.id.errorText1);
                             String newUserName = userNameEdit.getText().toString();
@@ -419,7 +421,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                                 });
                             });
                         }
-                    }).show();
+                    });
+                    alertDialog.show();
                 }
             });
             alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
