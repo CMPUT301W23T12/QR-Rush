@@ -3,6 +3,7 @@ package com.example.qrrush.view;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,7 @@ public class SocialFragment extends Fragment {
         FirebaseWrapper.getAllUsers(users -> {
             refreshPlayerText.setVisibility(View.GONE);
             noPlayerFound.setVisibility(View.GONE);
+            Log.e("abeeee", users.toString());
             userList = users;
             searchResultsAdapter.setData(users);
             searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
