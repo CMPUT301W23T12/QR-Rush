@@ -66,7 +66,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     /**
      * Grabs the User object from the main activity
      *
-     * @param user
+     * @param  user The User object
      */
     public MainFragment(User user) {
         this.user = user;
@@ -107,6 +107,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
         refreshStats(requireView());
     }
+    /**
+     * Refreshes the user stats (total score and quest completion status)
+     *
+     * @param v The View object
+     */
 
     private void refreshStats(View v) {
         // sets users total score on the main page
@@ -182,7 +187,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             }
         };
     }
-
+    /**
+     * Checks if the app has the required location permission, and requests it if necessary.
+     * If the permission is granted, enables showing the user's current location on the map and
+     * registers a location update listener.
+     */
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -196,6 +205,13 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                     1);
         }
     }
+    /**
+     * Handles the QR code markers on the map. Fetches QR code locations from Firebase and adds
+     * them as markers on the map. Also sets up a marker click listener to show an alert dialog with
+     * QR code information when a marker is clicked.
+     *
+     * @param location The current device location.
+     */
 
     private void handleQrCodeMarkers(Location location) {
         loadingText.setVisibility(View.GONE);
