@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -50,6 +50,7 @@ public class LeaderboardFragment extends Fragment {
     ListView leaderboardView;
     FragmentActivity activity;
 
+    Boolean isTop1 = false;
 
     /**
      * Creates a LeaderboardFragment for the given user.
@@ -86,8 +87,8 @@ public class LeaderboardFragment extends Fragment {
         loadingText.setVisibility(View.VISIBLE);
         leaderboardView.setVisibility(View.GONE);
 
-        Button playersTabButton = view.findViewById(R.id.button4);
-        Button qrCodesTabButton = view.findViewById(R.id.button5);
+        ImageButton playersTabButton = view.findViewById(R.id.players);
+        ImageButton qrCodesTabButton = view.findViewById(R.id.scanned_search);
         TextView rank = view.findViewById(R.id.rankTextView); // add TextView for rank
         ListView leaderList = view.findViewById(R.id.leaderboard_listview);
         View topThreeUser = view.findViewById(R.id.top_users_container);
@@ -143,10 +144,14 @@ public class LeaderboardFragment extends Fragment {
                         }
                     }
                 });
+
+        playersTabButton.setColorFilter(getResources().getColor(R.color.bright_cyan));
         playersTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 topThreeUser.setVisibility(View.VISIBLE);
+                playersTabButton.setColorFilter(getResources().getColor(R.color.bright_cyan));
+                qrCodesTabButton.setColorFilter(getResources().getColor(R.color.bright_blue));
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 ArrayList<User> users = new ArrayList<User>();
                 db.collection("profiles")
@@ -212,10 +217,13 @@ public class LeaderboardFragment extends Fragment {
                 });
             }
         });
+        qrCodesTabButton.setColorFilter(getResources().getColor(R.color.bright_blue));
         qrCodesTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 topThreeUser.setVisibility(View.GONE);
+                playersTabButton.setColorFilter(getResources().getColor(R.color.bright_blue));
+                qrCodesTabButton.setColorFilter(getResources().getColor(R.color.bright_cyan));
                 FirebaseWrapper.getAllQRCodes(qrCodes -> {
                     ScoreComparator s = new ScoreComparator();
 
@@ -233,14 +241,18 @@ public class LeaderboardFragment extends Fragment {
         switch (rank) {
             case 1:
                 view = v.findViewById(R.id.top_user1);
+                isTop1 = true;
                 break;
             case 2:
                 view = v.findViewById(R.id.top_user2);
+                isTop1 = false;
                 break;
             case 3:
                 view = v.findViewById(R.id.top_user3);
+                isTop1 = false;
                 break;
             default:
+                isTop1 = false;
                 view = null;
         }
 
@@ -273,7 +285,9 @@ public class LeaderboardFragment extends Fragment {
         }
         userName.setText(user.getUserName());
         userScore.setText(String.valueOf(user.getTotalScore()));
-        rankTextView.setText(String.valueOf(rank)); // set the rank TextView
+        if (!isTop1) {
+            rankTextView.setText(String.valueOf(rank)); // set the rank TextView
+        }
 
         view.setOnClickListener(theView -> {
             FirebaseWrapper.getUserData(user.getUserName(), user1 -> {
@@ -282,8 +296,5 @@ public class LeaderboardFragment extends Fragment {
             });
         });
     }
-    //TODO: when a user in the top 3 is clicked on, open their profile
-
-
 }
 

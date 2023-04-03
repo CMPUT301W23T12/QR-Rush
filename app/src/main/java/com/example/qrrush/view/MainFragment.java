@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +44,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The MainFragment class represents the main fragment(home page) of the QR Rush
@@ -55,11 +55,8 @@ import java.util.ArrayList;
  */
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
-
-    private MediaPlayer mediaPlayer;
     private ImageButton cameraButton;
     private GoogleMap mMap;
-
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -225,17 +222,21 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             // Add the device location marker again after clearing the map
             mMap.addMarker(new MarkerOptions().position(deviceLocation));
 
-            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                GeoPoint geoPoint = document.getGeoPoint("location");
+            List<DocumentSnapshot> documents = querySnapshot.getDocuments();
+            for (int i = 0; i < querySnapshot.getDocuments().size(); i += 1) {
+                GeoPoint geoPoint = documents.get(i).getGeoPoint("location");
                 if (geoPoint == null) {
                     Log.e("Geo", "location was null");
-                    return;
+                    continue;
                 }
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(documents.get(i).getId()));
 
                 // Add marker click listener to show alert dialog
+                final int finalI = i;
                 mMap.setOnMarkerClickListener(marker -> {
+                    DocumentSnapshot document = querySnapshot.getDocuments().get(finalI);
+                    Log.e("Bruh", document.getId());
                     // Create and show alert dialog
                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -243,6 +244,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
                         if (scannedByList.isEmpty()) {
                             builder.setMessage("No other user has scanned this QR code yet.");
+                            builder.setPositiveButton("OK", null);
+                            builder.show();
                             return;
                         }
                         builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
@@ -254,18 +257,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                         // We need to create a user object with that so we gotta
                                         // use getUserData
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                            // scannedByList.get(pos) returns the name
-                                            // -> STRING
-                                            // send the user object to the profile
-                                            // fragment
-                                            requireActivity()
-                                                    .getSupportFragmentManager()
-                                                    .beginTransaction()
-                                                    .replace(R.id.tabLayout,
-                                                            new ProfileFragment(
-                                                                    user.get(), false))
-                                                    .commit();
-
+                                            // send the user object to the profile fragment
+                                            new ProfileDialogFragment(user.get()).show(
+                                                    requireActivity().getSupportFragmentManager(),
+                                                    ""
+                                            );
                                         });
                                     }
                                 });

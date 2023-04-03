@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -36,6 +35,7 @@ import com.google.mlkit.vision.barcode.common.Barcode;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * this class is responsible for
@@ -58,11 +58,8 @@ public class QRConfirmFragment extends DialogFragment {
     FragmentManager manager;
     Runnable onDismiss;
     byte[] picture = null;
-
-    Button foundLocationButton;
+    ImageButton foundLocationButton;
     ImageView locationImage;
-    private StorageReference mStorageRef;
-    private ActivityResultLauncher<Intent> cameraLauncher;
     private static final int CAMERA_REQUEST_CODE = 100;
 
     public QRConfirmFragment(User user, Barcode b, Runnable onDismiss) {
@@ -199,7 +196,12 @@ public class QRConfirmFragment extends DialogFragment {
             locationView.setText("Location: getting location...");
             Geo.getCurrentLocation(l -> {
                 qrCode.setLocation(l);
-                locationView.setText("Location: " + l.getLongitude() + ", " + l.getLatitude());
+                locationView.setText(String.format(
+                        Locale.ENGLISH,
+                        "%.6f, %.6f",
+                        l.getLongitude(),
+                        l.getLatitude()
+                ));
             });
         });
     }

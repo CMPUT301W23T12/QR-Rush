@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchPlayerAdapter extends ArrayAdapter<User> {
-
     private FragmentActivity context;
     private int resource;
     private List<User> mUsers;
@@ -90,9 +89,11 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         // Set the user data to the appropriate UI components
         TextView searchedName = view.findViewById(R.id.nameViewSocial);
         TextView searchedScore = view.findViewById(R.id.playerScoreView);
+        TextView searchedRank = view.findViewById(R.id.rankTextView);
         ImageView searchedPlayerImageView = view.findViewById(R.id.searchedPlayerImageView);
         searchedName.setText(user.getUserName());
-        searchedScore.setText("Score: " + String.valueOf(user.getTotalScore()));
+        searchedScore.setText(String.valueOf(user.getTotalScore()));
+        searchedRank.setText(String.valueOf(user.getRank()));
 
         if (user.hasProfilePicture()) {
             Glide.with(getContext())

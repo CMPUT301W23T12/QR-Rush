@@ -15,11 +15,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.SearchPlayerAdapter;
 import com.example.qrrush.model.User;
+import com.example.qrrush.model.UserAdapter;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
@@ -62,13 +72,46 @@ public class SocialFragment extends Fragment {
         super.onResume();
         refreshPlayerText.setVisibility(View.VISIBLE);
         noPlayerFound.setVisibility(View.GONE);
-        FirebaseWrapper.getAllUsers(users -> {
-            refreshPlayerText.setVisibility(View.GONE);
-            noPlayerFound.setVisibility(View.GONE);
-            userList = users;
-            searchResultsAdapter.setData(users);
-            searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
-        });
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        ArrayList<User> users = new ArrayList<User>();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            return;
+                        }
+
+                        users.clear();
+                        for (QueryDocumentSnapshot document : value) {
+
+                            User u = new User(document.getId(),
+                                    "",
+                                    0,
+                                    new ArrayList<>(),
+                                    0, document.getString("profile_picture"));
+                            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                            for (String hash : hashes) {
+                                u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                            }
+
+                            users.add(u);
+                        }
+                        Collections.sort(users, new RankComparator());
+                        for (int i = 0; i < users.size(); ++i) {
+                            users.get(i).setRank(users.indexOf(users.get(i)) + 1);
+                        }
+                        userList = users;
+                        searchResultsAdapter.setData(users);
+                        searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
+                    }
+                });
+        refreshPlayerText.setVisibility(View.GONE);
+        noPlayerFound.setVisibility(View.GONE);
+        userList = users;
+        searchResultsAdapter.setData(users);
+        searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
     }
 
     /**
@@ -98,7 +141,6 @@ public class SocialFragment extends Fragment {
                             }
                         });
             }
-
             @Override
             public void afterTextChanged(Editable s) {
             }

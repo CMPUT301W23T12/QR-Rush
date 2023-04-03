@@ -22,10 +22,6 @@ public class QRCode {
     private final String hash;
     private Optional<Location> location;
     private String locationImage;
-
-    /**
-     * TODO Set the date so that when the QR code is scanned its date is set here
-     */
     Timestamp timestamp;
 
     /**
@@ -96,25 +92,14 @@ public class QRCode {
         }
         byte[] data = sb.toString().getBytes(StandardCharsets.US_ASCII);
 
-        for (int i = 0; i < numZeroes; i += 1) {
+        for (int i = data.length - 1; i > data.length - 1 - numZeroes; i -= 1) {
             data[i] = '0';
         }
 
-        QRCode result = null;
-
-        // If the score isn't high enough, keep adding more fs to the hash, since that's the
-        // highest digit.
-        for (int i = numZeroes; i < data.length; i += 1) {
-            result = new QRCode(new String(data, StandardCharsets.US_ASCII), new Timestamp(new Date()));
-
-            if (result.getRarity() == r) {
-                break;
-            }
-
-            data[i] = 'f';
-        }
-
-        return result;
+        return new QRCode(
+                new String(data, StandardCharsets.US_ASCII),
+                new Timestamp(new Date())
+        );
     }
 
     /**
@@ -181,6 +166,10 @@ public class QRCode {
         }
 
         return result;
+    }
+
+    public int getColor() {
+        return Color.parseColor("#" + this.hash.substring(0, 6));
     }
 
     /**

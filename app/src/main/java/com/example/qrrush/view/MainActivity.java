@@ -3,21 +3,17 @@ package com.example.qrrush.view;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
-import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
 import com.example.qrrush.model.MyViewPagerAdapater;
@@ -25,14 +21,6 @@ import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * The main activity class for the QR Rush app.
@@ -42,20 +30,11 @@ import java.util.Collections;
  * be using via constructor
  */
 public class MainActivity extends AppCompatActivity {
-    View mainView;
     User user;
-
     ViewPager2 viewPager2;
-
     TabLayout tabLayout;
-
     MyViewPagerAdapater myViewPagerAdapater;
-
-    private MediaPlayer mediaPlayer;
-
     TextView loadingText;
-
-    private FirebaseFirestore firestore;
 
     static final String[] PERMISSIONS = {
             Manifest.permission.CAMERA,
@@ -94,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
 
@@ -120,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
-        // Get Fire store instance
-        firestore = FirebaseFirestore.getInstance();
-
         setContentView(R.layout.activity_main);
 
         loadingText = findViewById(R.id.loading_text);
@@ -135,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
             user.setActivity(this);
-            loadingText.setVisibility(View.GONE);
 
             // TabLayout//Viewpager2 allows swiping and icons to be
             // highlighted at the bottom
@@ -177,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
             viewPager2.setCurrentItem(2);
+            loadingText.setVisibility(View.GONE);
 
         });
     }
@@ -186,11 +162,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wait_for_permission);
 
-        // TODO: If they say no, explain what the permissions are for and explain that
-        // they are
-        // needed for the app to work?
-
-        // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
             Log.e("Permission", "!hasPermissions line 166");

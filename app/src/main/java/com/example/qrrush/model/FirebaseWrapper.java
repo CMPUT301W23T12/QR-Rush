@@ -187,10 +187,10 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
+    public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        db.collection("profiles").document(username)
+        return db.collection("profiles").document(username)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
                     if (!t.isSuccessful()) {
@@ -207,10 +207,10 @@ public class FirebaseWrapper {
                             username,
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
-
                             new ArrayList<>(),
                             ds.getLong("money").intValue(),
-                            ds.getString("profile_picture"));
+                            ds.getString("profile_picture")
+                    );
 
                     Map<String, Object> data = ds.getData();
                     for (int i = 0; i < 3; i += 1) {
@@ -245,7 +245,7 @@ public class FirebaseWrapper {
                     ArrayList<String> pictures = (ArrayList<String>) ds.get("qrcodespictures");
                     for (String hash : hashes) {
                         Task<DocumentSnapshot> task = FirebaseWrapper.getData("qrcodes", hash, qrCodeDoc -> {
-                            GeoPoint g = (GeoPoint) ds.get("location");
+                            GeoPoint g = qrCodeDoc.getGeoPoint("location");
                             Timestamp timestamp = (Timestamp) qrCodeDoc.get("date");
                             QRCode code = new QRCode(hash, timestamp);
                             if (g != null) {
@@ -253,6 +253,7 @@ public class FirebaseWrapper {
                                 l.setLatitude(g.getLatitude());
                                 l.setLongitude(g.getLongitude());
                                 code.setLocation(l);
+                                Log.e("FirebaseWrapper", "QR Code has location");
                             }
 
                             user.addQRCodeWithoutFirebase(code);
@@ -273,20 +274,11 @@ public class FirebaseWrapper {
                 });
     }
 
-    /**
-     * Retrieves the data for a QR code with the given hash from the Firestore
-     * database.
-     *
-     * @param hash The hash string of the QR code for which to retrieve data.
-     * @return A Task object representing the asynchronous Firestore database
-     * operation.
-     * The resulting DocumentSnapshot can be obtained from the task's
-     * getResult() method.
-     */
-    public static Task<DocumentSnapshot> getQRCodeData(String hash, Consumer<QRCode> qrCodeConsumer) {
+    public static void getAllScannedQRCodeData(String hash,
+                                               Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        return db.collection("qrcodes").document(hash)
+        db.collection("qrcodes").document(hash)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
                     if (!t.isSuccessful()) {
@@ -300,8 +292,10 @@ public class FirebaseWrapper {
                         return;
                     }
 
-                    QRCode code = new QRCode(hash, ds.getTimestamp("date"));
-                    qrCodeConsumer.accept(code);
+                    // Retrieve the array of users who have scanned the QR code
+                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
+
+                    scannedByListConsumer.accept(scannedByList);
                 });
     }
 
@@ -467,33 +461,6 @@ public class FirebaseWrapper {
                 })
                 .addOnFailureListener(exception -> {
                     Log.d("FirebaseWrapper", "Error deleting the document.");
-                });
-    }
-
-    /**
-     * This method will delete a given username under the "profiles" collection,
-     * this method should
-     * not be used unless you are 100% certain you wish to delete that user, this
-     * method was
-     * implemented for the case where edit name was used.
-     *
-     * @param username The username of the profile to remove.
-     */
-    public static void removeUserProfile(String username) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("profiles").document(username)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("FirebaseWrapper", "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("FirebaseWrapper", "Error deleting the document.");
-                    }
                 });
     }
 }
