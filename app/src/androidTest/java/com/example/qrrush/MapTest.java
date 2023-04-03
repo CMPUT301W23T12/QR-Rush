@@ -64,5 +64,9 @@ public class MapTest {
         // Wait for the map to be displayed
         assertNotNull(solo.waitForView(com.google.android.gms.maps.MapView.class, 0, 5000));
     }
+    @Test
+    public void testQuest(){
+        assertNotNull(solo.searchText("Daily Quests"));
+    }
 }
 
