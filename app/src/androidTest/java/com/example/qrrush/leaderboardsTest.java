@@ -98,7 +98,7 @@ public class leaderboardsTest {
         assertNotEquals(3, user2Rank);
     }
     @Test
-    public void testClickOnUser1DisplaysProfile() {
+    public void testClickOnUser() {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
