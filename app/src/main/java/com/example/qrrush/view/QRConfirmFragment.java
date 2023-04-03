@@ -60,7 +60,7 @@ public class QRConfirmFragment extends DialogFragment {
     Runnable onDismiss;
     byte[] picture = null;
 
-    Button foundLocationButton;
+    ImageButton foundLocationButton;
     ImageView locationImage;
     private StorageReference mStorageRef;
     private ActivityResultLauncher<Intent> cameraLauncher;

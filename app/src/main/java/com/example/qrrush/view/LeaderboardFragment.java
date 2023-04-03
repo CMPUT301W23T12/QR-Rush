@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -50,7 +52,6 @@ public class LeaderboardFragment extends Fragment {
     TextView loadingText;
     ListView leaderboardView;
     FragmentActivity activity;
-
 
     /**
      * Creates a LeaderboardFragment for the given user.

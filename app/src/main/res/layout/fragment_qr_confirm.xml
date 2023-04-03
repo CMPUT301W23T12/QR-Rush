@@ -9,22 +9,6 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <!--        <Button-->
-    <!--            android:id="@+id/retake_button"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="retake"-->
-    <!--            app:layout_constraintStart_toStartOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--        <Button-->
-    <!--            android:id="@+id/qr_confirm_button"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Confirm"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
     <ImageView
         android:id="@+id/qr_code_image"
         android:layout_width="200dp"
@@ -141,15 +125,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qr_code_image" />
 
-    <Button
-        android:id="@+id/foundLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Add Picture of Location"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/geolocation_checkbox" />
 
     <ImageView
         android:id="@+id/locationImage"
@@ -165,17 +140,31 @@
         android:id="@+id/uploadingText"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="#252525"
+        android:background="@color/off_black"
         android:elevation="10dp"
         android:gravity="center"
         android:text="Uploading Image..."
         android:textAlignment="gravity"
-        android:textColor="@color/white"
+        android:textColor="@color/white_wash"
         android:textSize="30dp"
         android:visibility="gone"
+        android:fontFamily="@font/gatekeptsemibold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/foundLocation"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/add_picture"
+        app:layout_constraintTop_toBottomOf="@+id/qrCode_location"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteX="175dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
