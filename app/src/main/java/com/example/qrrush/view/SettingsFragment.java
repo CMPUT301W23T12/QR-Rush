@@ -15,6 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.qrrush.R;
+/**
+ * The SettingsFragment class is a DialogFragment that displays the settings for the MediaPlayer object.
+ * It contains controls for play/pause, volume, and other settings.
+ */
 
 public class SettingsFragment extends DialogFragment {
     View view;
@@ -22,7 +26,11 @@ public class SettingsFragment extends DialogFragment {
     MediaPlayer mediaPlayer;
     SeekBar volumeBar;
     AudioManager audioManager;
-
+    /**
+     * Constructs a new SettingsFragment object with a reference to the MediaPlayer object.
+     *
+     * @param mediaPlayer The MediaPlayer object to be controlled by the settings.
+     */
     public SettingsFragment(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
     }

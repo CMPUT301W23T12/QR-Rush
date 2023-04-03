@@ -34,7 +34,11 @@ public class ShopFragment extends Fragment {
     private TextView nameContentText;
     private TextView coinsText;
     User user;
-
+    /**
+     * Constructs a new instance of the ShopFragment with a specified user.
+     *
+     * @param user the user object to associate with the fragment
+     */
     public ShopFragment(User user) {
         this.user = user;
     }
@@ -43,7 +47,13 @@ public class ShopFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    /**
 
+     *Calculates and returns the price of a QR code based on its rarity.
+     *
+     * @param rarity The rarity of the QR code.
+     * @return The price of the QR code.
+     */
     private int rarityPrice(Rarity rarity) {
         int price;
 
@@ -56,6 +66,15 @@ public class ShopFragment extends Fragment {
         }
         return price;
     }
+    /**
+     * Attempts to purchase the given QRCode by subtracting its rarity price from the user's money.
+     * If the user has sufficient funds, the QRCode is added to the user's collection and a toast
+     * message is displayed. Additionally, if the user has an active "BuyCodeOfRarity" quest that
+     * matches the rarity of the purchased QRCode, the quest progress is increased by 1.
+     * If the user does not have enough funds, a "Insufficient funds" toast message is displayed.
+     *
+     * @param code the QRCode to be purchased.
+     */
 
     private void tryPurchaseQRCode(QRCode code) {
         int price = rarityPrice(code.getRarity());

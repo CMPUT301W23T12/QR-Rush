@@ -158,7 +158,13 @@ public class ProfileFragment extends Fragment implements Serializable {
         super.onResume();
         qrCodeAdapter.notifyDataSetChanged();
     }
-
+    /**
+     * Retrieves all the user profiles from the Firebase database, extracts the QR codes of each profile,
+     * sorts the profiles based on their total score and sets the rank of the current user.
+     *
+     * @param user The User object whose rank needs to be set
+     * @param rankView The TextView object to display the user's rank
+     */
     public void getAllCollection(User user, TextView rankView) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("profiles")

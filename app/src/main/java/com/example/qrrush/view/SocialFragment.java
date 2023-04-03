@@ -46,7 +46,14 @@ public class SocialFragment extends Fragment {
     private SearchPlayerAdapter searchResultsAdapter;
     TextView refreshPlayerText;
     ArrayList<User> userList;
-
+    /**
+     * Called when the fragment is resumed.
+     *
+     * Sets the visibility of the refresh player text and no player found text to visible.
+     * Calls FirebaseWrapper.getAllUsers to get a list of all users, and sets the user list to the retrieved list.
+     * Calls the setData method of the searchResultsAdapter to set the data in the adapter to the retrieved user list.
+     * Filters the search results by the text in the searchPlayerEditField.
+     */
     public SocialFragment(User user) {
         this.user = user;
     }
