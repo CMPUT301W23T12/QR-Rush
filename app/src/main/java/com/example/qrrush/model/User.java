@@ -177,9 +177,10 @@ public class User implements Serializable {
     public int getTotalScore() {
         int result = 0;
         for (QRCode code : this.qrCodes) {
-            result += code.getScore();
+            if (code != null) {
+                result += code.getScore();
+            }
         }
-
         return result;
     }
 

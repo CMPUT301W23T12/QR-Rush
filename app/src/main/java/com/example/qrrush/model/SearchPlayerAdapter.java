@@ -92,8 +92,8 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         TextView searchedRank = view.findViewById(R.id.rankTextView);
         ImageView searchedPlayerImageView = view.findViewById(R.id.searchedPlayerImageView);
         searchedName.setText(user.getUserName());
-        searchedScore.setText(String.valueOf(user.getTotalScore()));
-        searchedRank.setText(String.valueOf(user.getRank()));
+        searchedScore.setText("Score: " + user.getTotalScore());
+        searchedRank.setVisibility(View.GONE);
 
         if (user.hasProfilePicture()) {
             Glide.with(getContext())
@@ -119,8 +119,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         view.setOnClickListener(v -> {
             new ProfileDialogFragment(user).show(
                     context.getSupportFragmentManager().beginTransaction(),
-                    user.getUserName()
-            );
+                    user.getUserName());
         });
 
         return view;

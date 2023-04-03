@@ -3,6 +3,7 @@ package com.example.qrrush.view;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
- * other player's profiles. It retrieves the user's search input and fetches the corresponding profile
+ * This class is a fragment of the MainActivity, it's responsible for creating a
+ * UI interface for users to search
+ * other player's profiles. It retrieves the user's search input and fetches the
+ * corresponding profile
  */
 public class SocialFragment extends Fragment {
     User user;
@@ -55,13 +58,14 @@ public class SocialFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_social, container, false);
 
         // Get the reference to the ListView and create the adapter
         searchResultsList = view.findViewById(R.id.searchPlayerList);
-        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content, new ArrayList<User>());
+        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content,
+                new ArrayList<User>());
         searchResultsList.setAdapter(searchResultsAdapter);
         refreshPlayerText = view.findViewById(R.id.refresh_player_list_text);
         return view;
@@ -72,50 +76,19 @@ public class SocialFragment extends Fragment {
         super.onResume();
         refreshPlayerText.setVisibility(View.VISIBLE);
         noPlayerFound.setVisibility(View.GONE);
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        ArrayList<User> users = new ArrayList<User>();
-        db.collection("profiles")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (error != null) {
-                            return;
-                        }
-
-                        users.clear();
-                        for (QueryDocumentSnapshot document : value) {
-
-                            User u = new User(document.getId(),
-                                    "",
-                                    0,
-                                    new ArrayList<>(),
-                                    0, document.getString("profile_picture"));
-                            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
-                            for (String hash : hashes) {
-                                u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
-                            }
-
-                            users.add(u);
-                        }
-                        Collections.sort(users, new RankComparator());
-                        for (int i = 0; i < users.size(); ++i) {
-                            users.get(i).setRank(users.indexOf(users.get(i)) + 1);
-                        }
-                        userList = users;
-                        searchResultsAdapter.setData(users);
-                        searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
-                    }
-                });
-        refreshPlayerText.setVisibility(View.GONE);
-        noPlayerFound.setVisibility(View.GONE);
-        userList = users;
-        searchResultsAdapter.setData(users);
-        searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
+        FirebaseWrapper.getAllUsers(users -> {
+            refreshPlayerText.setVisibility(View.GONE);
+            noPlayerFound.setVisibility(View.GONE);
+            Log.e("abeeee", users.toString());
+            userList = users;
+            searchResultsAdapter.setData(users);
+            searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
+        });
     }
 
     /**
-     * This method is called once the View is created, it handles the search button click events
+     * This method is called once the View is created, it handles the search button
+     * click events
      * and retrieves the searched player's data from Firebase.
      *
      * @param view               the created view that contains the UI components.
@@ -141,6 +114,7 @@ public class SocialFragment extends Fragment {
                             }
                         });
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }

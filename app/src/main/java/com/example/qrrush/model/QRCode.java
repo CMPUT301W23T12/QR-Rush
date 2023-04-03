@@ -3,9 +3,17 @@ package com.example.qrrush.model;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -330,4 +338,6 @@ public class QRCode {
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
+
+
 }
