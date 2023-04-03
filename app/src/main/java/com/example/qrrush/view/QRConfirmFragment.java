@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -59,11 +58,8 @@ public class QRConfirmFragment extends DialogFragment {
     FragmentManager manager;
     Runnable onDismiss;
     byte[] picture = null;
-
     Button foundLocationButton;
     ImageView locationImage;
-    private StorageReference mStorageRef;
-    private ActivityResultLauncher<Intent> cameraLauncher;
     private static final int CAMERA_REQUEST_CODE = 100;
 
     public QRConfirmFragment(User user, Barcode b, Runnable onDismiss) {

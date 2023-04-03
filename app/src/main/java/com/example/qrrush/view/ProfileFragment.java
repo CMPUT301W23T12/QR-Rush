@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -73,23 +74,21 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
-
     ImageView profilePicture;
     Boolean editable;
-
     MediaPlayer mediaPlayer;
-
-    private ImageButton settingsButton;
+    FragmentActivity activity;
 
     /**
      * Grabs User object from the main activity
      *
      * @param user The user who's profile should be displayed.
      */
-    public ProfileFragment(User user, Boolean editable) {
+    public ProfileFragment(User user, Boolean editable, FragmentActivity activity) {
         // Required empty public constructor
         this.user = user;
         this.editable = editable;
+        this.activity = activity;
     }
 
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
@@ -103,7 +102,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                     Bitmap bitmap = null;
                     try {
                         bitmap = BitmapFactory
-                                .decodeStream(requireActivity().getContentResolver().openInputStream(uri));
+                                .decodeStream(activity.getContentResolver().openInputStream(uri));
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                         byte[] data = baos.toByteArray();
@@ -222,7 +221,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         getAllCollection(user, rankView);
 
         // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user, this.editable);
+        qrCodeAdapter = new QRCodeAdapter(activity, user.getQRCodes(), user, this.editable);
         ListView qrCodeList = view.findViewById(R.id.listy);
         qrCodeList.setAdapter(qrCodeAdapter);
 
@@ -248,7 +247,7 @@ public class ProfileFragment extends Fragment implements Serializable {
             TextDrawable drawable = TextDrawable.builder()
                     .beginConfig()
                     .textColor(Color.WHITE)
-                    .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                    .useFont(ResourcesCompat.getFont(activity, R.font.gatekept))
                     .toUpperCase()
                     .width(200)
                     .height(200)
@@ -313,14 +312,14 @@ public class ProfileFragment extends Fragment implements Serializable {
         }
         editNameButton.setOnClickListener(v -> {
             View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
             alertDialogBuilder.setView(Settings);
             alertDialogBuilder.setTitle("Settings");
             alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
                     alertDialogBuilder.setView(addNewName);
                     alertDialogBuilder.setTitle("Input new name:");
                     alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
@@ -337,7 +336,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                             } else if (newUserName.length() > 10) {
                                 errorText1.setVisibility(View.VISIBLE);
                                 errorText.setVisibility(View.GONE);
-
                                 return;
                             }
 
@@ -351,6 +349,31 @@ public class ProfileFragment extends Fragment implements Serializable {
 
                                 // Username is unique, continue with edit the process
                                 FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+                                    String oldUsername = user.getUserName();
+                                    // Edit the scanned by... text for every QR code you scanned
+                                    for (QRCode q : user.getQRCodes()) {
+                                        FirebaseWrapper.getData("qrcodes", q.getHash(), qrCodeDoc -> {
+                                            if (!qrCodeDoc.exists()) {
+                                                Log.e("Edit Name", "error");
+                                                return;
+                                            }
+
+                                            Map<String, Object> data = qrCodeDoc.getData();
+                                            ArrayList<String> scannedByList = (ArrayList<String>) data.get("scannedby");
+                                            scannedByList.remove(oldUsername);
+                                            scannedByList.add(newUserName);
+                                            data.replace("scannedby", scannedByList);
+                                            FirebaseFirestore.getInstance().collection("qrcodes")
+                                                    .document(q.getHash())
+                                                    .set(data)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("FirebaseWrapper", "Document updated with ID: " + q.getHash());
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e("FirebaseWrapper", "Error updating document", e);
+                                                    });
+                                        });
+                                    }
                                     Map<String, Object> updatedProfile = documentSnapshot.getData();
 
                                     // Add name + UUID and phone number to FB
@@ -358,14 +381,13 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     FirebaseWrapper.deleteDocument("profiles", user.getUserName());
 
                                     user.setUserName(newUserName);
-                                    UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
+                                    UserUtil.setUsername(activity.getApplicationContext(), newUserName);
 
                                     nameView.setText(user.getUserName());
                                     dialog.dismiss();
-                                    ColorGenerator newgenerator = ColorGenerator.MATERIAL;
 
                                     if (user.hasProfilePicture()) {
-                                        Glide.with(getContext())
+                                        Glide.with(activity)
                                                 .load(user.getProfilePicture())
                                                 .dontAnimate()
                                                 .into(profilePicture);
@@ -376,7 +398,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                         TextDrawable drawable = TextDrawable.builder()
                                                 .beginConfig()
                                                 .textColor(Color.WHITE)
-                                                .useFont(ResourcesCompat.getFont(requireActivity(), R.font.gatekept))
+                                                .useFont(ResourcesCompat.getFont(activity, R.font.gatekept))
                                                 .toUpperCase()
                                                 .width(200)
                                                 .height(200)
