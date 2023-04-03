@@ -44,7 +44,6 @@ public class ShopFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-
     private int rarityPrice(Rarity rarity) {
         int price;
 
@@ -57,7 +56,6 @@ public class ShopFragment extends Fragment {
         }
         return price;
     }
-
 
     private void tryPurchaseQRCode(QRCode code) {
         int price = rarityPrice(code.getRarity());

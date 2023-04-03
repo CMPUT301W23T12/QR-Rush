@@ -17,7 +17,6 @@ public class RankComparator implements Comparator<User> {
      */
     @Override
     public int compare(User user1, User user2) {
-        // TODO: might need getTotalScoreMember? from commit 8247a50ca8798436a8998516145c14a9037ae9a6
         return Integer.compare(user2.getTotalScore(), user1.getTotalScore());
     }
 }

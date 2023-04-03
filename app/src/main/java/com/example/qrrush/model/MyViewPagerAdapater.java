@@ -1,7 +1,5 @@
 package com.example.qrrush.model;
 
-import android.media.MediaPlayer;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -14,10 +12,7 @@ import com.example.qrrush.view.ShopFragment;
 import com.example.qrrush.view.SocialFragment;
 
 public class MyViewPagerAdapater extends FragmentStateAdapter {
-
     User user;
-
-    MediaPlayer mediaPlayer;
     FragmentActivity activity;
 
     public MyViewPagerAdapater(@NonNull FragmentActivity fragmentActivity, User user) {
@@ -31,7 +26,7 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new ProfileFragment(user, true);
+                return new ProfileFragment(user, true, activity);
             case 1:
                 return new ShopFragment(user);
             case 2:
