@@ -44,6 +44,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The MainFragment class represents the main fragment(home page) of the QR Rush
@@ -221,17 +222,21 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             // Add the device location marker again after clearing the map
             mMap.addMarker(new MarkerOptions().position(deviceLocation));
 
-            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                GeoPoint geoPoint = document.getGeoPoint("location");
+            List<DocumentSnapshot> documents = querySnapshot.getDocuments();
+            for (int i = 0; i < querySnapshot.getDocuments().size(); i += 1) {
+                GeoPoint geoPoint = documents.get(i).getGeoPoint("location");
                 if (geoPoint == null) {
                     Log.e("Geo", "location was null");
                     continue;
                 }
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
+                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(documents.get(i).getId()));
 
                 // Add marker click listener to show alert dialog
+                final int finalI = i;
                 mMap.setOnMarkerClickListener(marker -> {
+                    DocumentSnapshot document = querySnapshot.getDocuments().get(finalI);
+                    Log.e("Bruh", document.getId());
                     // Create and show alert dialog
                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -239,6 +244,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
                         if (scannedByList.isEmpty()) {
                             builder.setMessage("No other user has scanned this QR code yet.");
+                            builder.setPositiveButton("OK", null);
+                            builder.show();
                             return;
                         }
                         builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
