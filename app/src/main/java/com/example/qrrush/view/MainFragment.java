@@ -66,7 +66,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     /**
      * Grabs the User object from the main activity
      *
-     * @param user
+     * @param  user The User object
      */
     public MainFragment(User user) {
         this.user = user;
@@ -107,6 +107,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
         refreshStats(requireView());
     }
+    /**
+     * Refreshes the user stats (total score and quest completion status)
+     *
+     * @param v The View object
+     */
 
     private void refreshStats(View v) {
         // sets users total score on the main page

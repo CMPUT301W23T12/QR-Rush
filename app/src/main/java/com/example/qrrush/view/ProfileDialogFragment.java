@@ -79,13 +79,22 @@ public class ProfileDialogFragment extends DialogFragment implements Serializabl
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
-
+    /**
+     * onResume is a lifecycle method called by the system when the activity is resumed.
+     * Updates the adapter with new data to display the QR codes.
+     */
     @Override
     public void onResume() {
         super.onResume();
         qrCodeAdapter.notifyDataSetChanged();
     }
-
+    /**
+     * Retrieves all the user profiles from the Firebase database, extracts the QR codes of each profile,
+     * sorts the profiles based on their total score and sets the rank of the current user.
+     *
+     * @param user The User object whose rank needs to be set
+     * @param rankView The TextView object to display the user's rank
+     */
     public void getAllCollection(User user, TextView rankView) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("profiles")
