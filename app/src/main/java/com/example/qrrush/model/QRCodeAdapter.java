@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * ArrayAdapter which displays QR Codes from the QRCode class.
@@ -59,63 +60,66 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         this.editable = editable;
         this.context = context;
     }
-    public void getlocation(Optional<Location> location, TextView locationView) {
-            if (!location.isPresent()){
-                return;
-            }
 
-            Location l = location.get();
-            double latitude = l.getLatitude(); // Example latitude
-            double longitude = l.getLongitude(); // Example longitude
-            String apiKey = "AIzaSyABteFQy07SDCCQb_1FDyYtYF-ez6rbhKA"; // Replace with your API key
+    private void getlocation(Optional<Location> location, Consumer<String> locationCallback) {
+        if (!location.isPresent()) {
+            return;
+        }
 
-            try {
-                // Send a request to the Reverse Geocoding API
-                String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                        latitude + "," + longitude + "&key=" + apiKey;
-                URL obj = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                con.setRequestMethod("GET");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Location l = location.get();
+                double latitude = l.getLatitude(); // Example latitude
+                double longitude = l.getLongitude(); // Example longitude
+                String apiKey = "AIzaSyABteFQy07SDCCQb_1FDyYtYF-ez6rbhKA"; // Replace with your API key
 
-                // Get the response
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
+                try {
+                    // Send a request to the Reverse Geocoding API
+                    String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                            latitude + "," + longitude + "&key=" + apiKey;
+                    URL obj = new URL(url);
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("GET");
 
-                // Parse the JSON response and get the city and province
-                JSONObject jsonObj = new JSONObject(response.toString());
-                JSONArray resultsArr = jsonObj.getJSONArray("results");
-                JSONObject firstResult = resultsArr.getJSONObject(0);
-                JSONArray addressComponentsArr = firstResult.getJSONArray("address_components");
-                String city = "";
-                String province = "";
-                for (int i = 0; i < addressComponentsArr.length(); i++) {
-                    JSONObject component = addressComponentsArr.getJSONObject(i);
-                    JSONArray typesArr = component.getJSONArray("types");
-                    for (int j = 0; j < typesArr.length(); j++) {
-                        String type = typesArr.getString(j);
-                        if (type.equals("locality")) {
-                            city = component.getString("long_name");
-                        }
-                        if (type.equals("administrative_area_level_1")) {
-                            province = component.getString("short_name");
+                    // Get the response
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    // Parse the JSON response and get the city and province
+                    JSONObject jsonObj = new JSONObject(response.toString());
+                    JSONArray resultsArr = jsonObj.getJSONArray("results");
+                    JSONObject firstResult = resultsArr.getJSONObject(0);
+                    JSONArray addressComponentsArr = firstResult.getJSONArray("address_components");
+                    String city = "";
+                    String province = "";
+                    for (int i = 0; i < addressComponentsArr.length(); i++) {
+                        JSONObject component = addressComponentsArr.getJSONObject(i);
+                        JSONArray typesArr = component.getJSONArray("types");
+                        for (int j = 0; j < typesArr.length(); j++) {
+                            String type = typesArr.getString(j);
+                            if (type.equals("locality")) {
+                                city = component.getString("long_name");
+                            }
+                            if (type.equals("administrative_area_level_1")) {
+                                province = component.getString("short_name");
+                            }
                         }
                     }
-                }
-                // Print the city and province
-                Log.e("City", city);
-                Log.e("City", province);
-                locationView.setVisibility(View.VISIBLE);
-                locationView.setText(city + ", " + province);
 
-            } catch (Exception e) {
-                Log.e("City",e.toString());
+                    locationCallback.accept(String.format(Locale.ENGLISH, "%s, %s", city, province));
+                } catch (Exception e) {
+                    Log.e("City", e.toString());
+                }
             }
+        }).start();
+
     }
 
     @NonNull
@@ -138,13 +142,12 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         nameView.setText(qrCode.getName());
         nameView.setTextColor(qrCode.getColor());
         pointView.setTextColor(qrCode.getColor());
-        getlocation(qrCode.getLocation(), locationView);
 
         if (qrCode.getLocationImage() != null) {
             Picasso.get().load(Uri.parse(qrCode.getLocationImage())).into(locationImage);
             locationImage.setVisibility(View.VISIBLE);
         }
-        if (!qrCode.getLocation().isPresent()){
+        if (!qrCode.getLocation().isPresent()) {
             locationView.setVisibility(View.INVISIBLE);
         }
 
@@ -168,6 +171,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             );
         }
         locationView.setText(location);
+        getlocation(qrCode.getLocation(), locationString -> {
+            locationView.setVisibility(View.VISIBLE);
+            locationView.setText(locationString);
+        });
 
         pointView.setText("Score: " + qrCode.getScore());
 
