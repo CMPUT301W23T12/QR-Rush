@@ -61,6 +61,7 @@ public class QRCode {
 
     /**
      * Makes a qr code given a hash and time stamp.
+     *
      * @param hash hash of the QR code.
      * @param timestamp timestamp of when it was made.
      */
@@ -72,6 +73,7 @@ public class QRCode {
 
     /**
      * Sets the location image of this QR code
+     *
      * @param url png or jpeg url of the image
      */
     public void setLocationImage(String url) {
@@ -80,6 +82,7 @@ public class QRCode {
 
     /**
      * Retrieves the location Image of the this QR code.
+     *
      * @return A string of the png or jpeg link
      */
     public String getLocationImage() {
@@ -191,6 +194,7 @@ public class QRCode {
 
     /**
      * Gets the color of this QR code.
+     *
      * @return A integer of the color code
      */
     public int getColor() {

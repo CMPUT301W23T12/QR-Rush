@@ -48,6 +48,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
     /**
      * Get the counts of the filtered searched users
+     *
      * @return int of the count
      */
     @Override
@@ -57,6 +58,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
     /**
      * Filters the users
+     *
      * @return A instance of filter with the filtered preferences.
      */
     @NonNull
@@ -143,6 +145,7 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
 
     /**
      * Sets up the data for the filtered user arrays.
+     *
      * @param users users to be sorted.
      */
     public void setData(List<User> users) {

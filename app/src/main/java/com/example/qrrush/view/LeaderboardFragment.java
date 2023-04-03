@@ -235,7 +235,13 @@ public class LeaderboardFragment extends Fragment {
             }
         });
     }
-
+    /**
+     * Updates the top user view with the given user and rank.
+     *
+     * @param v The parent view that contains the top user views.
+     * @param user The user to be displayed in the top user view.
+     * @param rank The rank of the top user (1, 2, or 3).
+     */
     private void updateTopUserView(View v, User user, int rank) {
         View view;
         switch (rank) {

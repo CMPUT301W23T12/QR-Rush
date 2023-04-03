@@ -241,8 +241,7 @@ public class User implements Serializable {
      * Removes a QR Code from the user's account, both locally and in Firebase.
      *
      * @param code The QR code to remove from the user's account.
-     * @throws InvalidParameterException The QR code given was not already in the
-     *                                   user's account.
+     * @throws InvalidParameterException The QR code given was not already in the user's account.
      */
     public void removeQRCode(QRCode code) {
         if (!this.qrCodes.contains(code)) {

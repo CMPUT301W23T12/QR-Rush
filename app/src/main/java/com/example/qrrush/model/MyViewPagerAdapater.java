@@ -46,6 +46,7 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
 
     /**
      * will always return 5
+     *
      * @return int 5
      */
     @Override

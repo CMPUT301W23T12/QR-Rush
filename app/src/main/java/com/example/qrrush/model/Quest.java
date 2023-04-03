@@ -14,6 +14,7 @@ public class Quest {
 
     /**
      * Quest constructor
+     *
      * @param type Quest type.
      * @param n if the quest type has a number its defined as n.
      * @param rarity if the quest type has a rarity its defined as rarity.
@@ -26,6 +27,7 @@ public class Quest {
 
     /**
      * Gets a list of the current users quests.
+     *
      * @return and ArrayList<Quest> of the quests.
      */
     public static ArrayList<Quest> getCurrentQuests() {
@@ -101,6 +103,7 @@ public class Quest {
 
     /**
      * Gets a description of a quest
+     *
      * @return A string of the description.
      */
     public String getDescription() {
