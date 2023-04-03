@@ -19,10 +19,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import com.example.qrrush.R;
-import com.example.qrrush.view.ProfileFragment;
+import com.example.qrrush.view.ProfileDialogFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -196,10 +195,10 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                     FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
                                         // scannedByList.get(pos) returns the name -> STRING
                                         // send the user object to the profile fragment
-                                        ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
-                                                .replace(R.id.tabLayout, new ProfileFragment(user.get(), false, (FragmentActivity) context))
-                                                .commit();
-
+                                        new ProfileDialogFragment(user.get()).show(
+                                                ((AppCompatActivity) context).getSupportFragmentManager(),
+                                                ""
+                                        );
                                     });
 
                                 }
