@@ -55,6 +55,7 @@ import com.google.firebase.firestore.GeoPoint;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The MainFragment class represents the main fragment(home page) of the QR Rush
@@ -139,7 +140,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         return view;
@@ -202,7 +203,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         } else {
             // Request location permission
             ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
                     1);
         }
     }
@@ -232,20 +233,22 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             // Add the device location marker again after clearing the map
             mMap.addMarker(new MarkerOptions().position(deviceLocation));
 
-
-            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                GeoPoint geoPoint = document.getGeoPoint("location");
+            List<DocumentSnapshot> documents = querySnapshot.getDocuments();
+            for (int i = 0; i < querySnapshot.getDocuments().size(); i += 1) {
+                GeoPoint geoPoint = documents.get(i).getGeoPoint("location");
                 if (geoPoint == null) {
                     Log.e("Geo", "location was null");
                     continue;
                 }
 
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
-                // clickable marker
-                mMap.setOnMarkerClickListener(marker -> {
-                    Log.e("Bruh", document.getId());
+                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(documents.get(i).getId()));
 
+                // Add marker click listener to show alert dialog
+                final int finalI = i;
+                mMap.setOnMarkerClickListener(marker -> {
+                    DocumentSnapshot document = querySnapshot.getDocuments().get(finalI);
+                    Log.e("Bruh", document.getId());
                     // Create and show alert dialog
                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogStyle);
@@ -264,8 +267,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                         hashText.setText(qrCode.getName());
 
                         hash_image.setImageBitmap(
-                                Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false)
-                        );
+                                Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false));
 
                         Log.e("Testing", scannedByList.toString());
 
@@ -280,11 +282,10 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             usersList.setOnItemClickListener((parent, view, position, id) -> {
                                 // Use getUserData to create a user object
 
-                                    // Send the user object to the profile fragment
-                                    new ProfileDialogFragment(user).show(
-                                            requireActivity().getSupportFragmentManager(),
-                                            ""
-                                    );
+                                // Send the user object to the profile fragment
+                                new ProfileDialogFragment(user).show(
+                                        requireActivity().getSupportFragmentManager(),
+                                        "");
                             });
                         }
 
@@ -296,15 +297,12 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             }
                         });
 
-
                         // Create the AlertDialog
                         AlertDialog alertDialog = builder.create();
                         // Set the tag for customPositiveButton
                         customPositiveButton.setTag(alertDialog);
                         // Show the custom alert dialog
                         alertDialog.show();
-
-
 
                     });
                     return true; // Return true to indicate that we've handled the marker click event

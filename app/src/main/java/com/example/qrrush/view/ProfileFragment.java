@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -322,24 +323,35 @@ public class ProfileFragment extends Fragment implements Serializable {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
                     alertDialogBuilder.setView(addNewName);
                     alertDialogBuilder.setTitle("Input new name:");
-                    alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+
+                    final AlertDialog alertDialog = alertDialogBuilder.create(); // Create the alertDialog without adding buttons
+
+                    // Find the positive button in the layout
+                    Button positiveButton = addNewName.findViewById(R.id.positive_button);
+
+                    // Set the custom OnClickListener for the positive button
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(View v) {
                             EditText userNameEdit = addNewName.findViewById(R.id.edit_name);
                             userNameEdit.setHint(user.getUserName());
+                            ProgressBar progressBar = addNewName.findViewById(R.id.progress_bar); // Add this line
+
                             TextView errorText = addNewName.findViewById(R.id.errorText);
                             TextView errorText1 = addNewName.findViewById(R.id.errorText1);
                             String newUserName = userNameEdit.getText().toString();
                             if (newUserName.isEmpty()) {
-                                dialog.dismiss();
+                                alertDialog.dismiss();
                                 return;
                             } else if (newUserName.length() > 10) {
                                 errorText1.setVisibility(View.VISIBLE);
                                 errorText.setVisibility(View.GONE);
                                 return;
                             }
-
+                            progressBar.setVisibility(View.VISIBLE); // Show the progress bar
                             FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+                                progressBar.setVisibility(View.GONE); // Hide the progress bar when the response is received
+
                                 if (userResult.isPresent()) {
                                     // Username is taken, prompt user to pick a new name
                                     errorText.setVisibility(View.VISIBLE);
@@ -384,7 +396,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     UserUtil.setUsername(activity.getApplicationContext(), newUserName);
 
                                     nameView.setText(user.getUserName());
-                                    dialog.dismiss();
+                                    alertDialog.dismiss();
 
                                     if (user.hasProfilePicture()) {
                                         Glide.with(activity)
@@ -409,7 +421,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                                 });
                             });
                         }
-                    }).show();
+                    });
+                    alertDialog.show();
                 }
             });
             alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
