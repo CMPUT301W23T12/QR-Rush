@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.qrrush.R;
 import com.example.qrrush.view.ProfileFragment;
@@ -119,7 +120,7 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
                                             ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
+                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false, (FragmentActivity) context)).commit();
 
                                         });
 

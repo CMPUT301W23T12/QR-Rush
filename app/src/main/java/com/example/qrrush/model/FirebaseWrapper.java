@@ -187,10 +187,10 @@ public class FirebaseWrapper {
      *
      * @param username The username to retrieve the data for.
      */
-    public static void getUserData(String username, Consumer<Optional<User>> userConsumer) {
+    public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
-        db.collection("profiles").document(username)
+        return db.collection("profiles").document(username)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
                     if (!t.isSuccessful()) {
@@ -272,6 +272,31 @@ public class FirebaseWrapper {
                     }
 
                     userConsumer.accept(Optional.of(user));
+                });
+    }
+
+    public static void getAllScannedQRCodeData(String hash,
+                                               Consumer<List<String>> scannedByListConsumer) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get the user document for the given username
+        db.collection("qrcodes").document(hash)
+                .get()
+                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
+                    if (!t.isSuccessful()) {
+                        Log.e("getQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    DocumentSnapshot ds = t.getResult();
+                    if (!ds.exists()) {
+                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
+                        return;
+                    }
+
+                    // Retrieve the array of users who have scanned the QR code
+                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
+
+                    scannedByListConsumer.accept(scannedByList);
                 });
     }
 

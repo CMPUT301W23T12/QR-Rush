@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         FirebaseWrapper.getUserData(username, firebaseUser -> {
             user = firebaseUser.get();
             user.setActivity(this);
-            loadingText.setVisibility(View.GONE);
 
             // TabLayout//Viewpager2 allows swiping and icons to be
             // highlighted at the bottom
@@ -153,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
             viewPager2.setCurrentItem(2);
+            loadingText.setVisibility(View.GONE);
 
         });
     }

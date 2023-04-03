@@ -259,7 +259,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                                                     .beginTransaction()
                                                     .replace(R.id.tabLayout,
                                                             new ProfileFragment(
-                                                                    user.get(), false))
+                                                                    user.get(), false, requireActivity()))
                                                     .commit();
 
                                         });
