@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -22,7 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
-import com.example.qrrush.view.ProfileFragment;
+import com.example.qrrush.view.ProfileDialogFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -35,11 +34,8 @@ import java.util.Optional;
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
-
     Boolean editable;
-
     Context context;
-
 
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.
@@ -182,39 +178,35 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             }
         });
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Display other users who have scanned the same QR code as an AlertDialog
-                FirebaseWrapper.getScannedQRCodeData(qrCode.getHash(), user.getUserName(), (scannedByList) -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Scanned by...");
-                    if (scannedByList.isEmpty()) {
-                        builder.setMessage("No other user has scanned this QR code yet.");
-                    } else {
-                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int pos) {
-                                        // position is tracked by "pos" so now we pass the clickable profile
-                                        // We need to create a user object with that so we gotta use getUserData
-                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                            // scannedByList.get(pos) returns the name -> STRING
-                                            // send the user object to the profile fragment
-                                            ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false))
-                                                    .commit();
+        view.setOnClickListener(v -> {
+            // Display other users who have scanned the same QR code as an AlertDialog
+            FirebaseWrapper.getScannedQRCodeData(qrCode.getHash(), user.getUserName(), (scannedByList) -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Scanned by...");
+                if (scannedByList.isEmpty()) {
+                    builder.setMessage("No other user has scanned this QR code yet.");
+                } else {
+                    builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int pos) {
+                                    // position is tracked by "pos" so now we pass the clickable profile
+                                    // We need to create a user object with that so we gotta use getUserData
+                                    FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+                                        // scannedByList.get(pos) returns the name -> STRING
+                                        // send the user object to the profile fragment
+                                        new ProfileDialogFragment(user.get()).show(
+                                                ((AppCompatActivity) context).getSupportFragmentManager(),
+                                                ""
+                                        );
+                                    });
 
-                                        });
-
-                                    }
-                                });
-                    }
-                    builder.setPositiveButton("OK", null);
-                    builder.show();
-                });
-
-            }
+                                }
+                            });
+                }
+                builder.setPositiveButton("OK", null);
+                builder.show();
+            });
         });
 
         return view;

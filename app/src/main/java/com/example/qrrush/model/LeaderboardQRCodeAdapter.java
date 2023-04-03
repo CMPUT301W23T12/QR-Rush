@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.qrrush.R;
-import com.example.qrrush.view.ProfileFragment;
+import com.example.qrrush.view.ProfileDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -31,8 +31,6 @@ import java.util.Optional;
  */
 public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
-    User user;
-
     Context context;
 
     /**
@@ -120,9 +118,10 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
-                                            ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
-                                                    .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
-
+                                            new ProfileDialogFragment(user.get()).show(
+                                                    ((AppCompatActivity) context).getSupportFragmentManager(),
+                                                    ""
+                                            );
                                         });
 
 
