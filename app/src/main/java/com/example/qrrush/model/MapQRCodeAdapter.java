@@ -1,6 +1,5 @@
 package com.example.qrrush.model;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +11,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.RankComparator;
+import com.example.qrrush.view.ProfileDialogFragment;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,13 +33,12 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-
-
-
 public class MapQRCodeAdapter extends ArrayAdapter<User> {
+    FragmentActivity activity;
 
-    public MapQRCodeAdapter(Context context, List<User> users) {
+    public MapQRCodeAdapter(FragmentActivity context, List<User> users) {
         super(context, 0, users);
+        this.activity = context;
     }
 
     @NonNull
@@ -84,6 +84,14 @@ public class MapQRCodeAdapter extends ArrayAdapter<User> {
 
         }
 
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Send the user object to the profile fragment
+                new ProfileDialogFragment(user).show(activity.getSupportFragmentManager(), "");
+            }
+        });
+
         return convertView;
     }
 
@@ -124,8 +132,6 @@ public class MapQRCodeAdapter extends ArrayAdapter<User> {
                     }
                 });
     }
-
-
 
 
 }

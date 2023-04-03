@@ -2,19 +2,14 @@ package com.example.qrrush.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,8 +47,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,7 +133,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         return view;
@@ -203,7 +196,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         } else {
             // Request location permission
             ActivityCompat.requestPermissions(requireActivity(),
-                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
     }
@@ -275,18 +268,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                             builder.setMessage("No other user has scanned this QR code yet.");
                         } else {
                             // Set the adapter for the ListView
-                            MapQRCodeAdapter adapter = new MapQRCodeAdapter(getContext(), scannedByList);
+                            MapQRCodeAdapter adapter = new MapQRCodeAdapter(requireActivity(), scannedByList);
                             usersList.setAdapter(adapter);
-
-                            // Set the click listener for the ListView items
-                            usersList.setOnItemClickListener((parent, view, position, id) -> {
-                                // Use getUserData to create a user object
-
-                                // Send the user object to the profile fragment
-                                new ProfileDialogFragment(user).show(
-                                        requireActivity().getSupportFragmentManager(),
-                                        "");
-                            });
                         }
 
                         // Set the click listener for the custom positive button
