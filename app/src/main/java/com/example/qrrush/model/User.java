@@ -163,6 +163,7 @@ public class User implements Serializable {
 
     /**
      * Gets all the quests done by this user.
+     *
      * @return  An array list of all the quests completed by this user.
      */
     public ArrayList<Integer> getQuestProgress() {
@@ -208,6 +209,11 @@ public class User implements Serializable {
     }
 
 
+    /**
+     * Checks if a quest is done.
+     * @param   quest The quest to be checked
+     * @return  True if the quest is done, false otherwise.
+     */
     public boolean isQuestCompleted(int quest) {
         Quest q = Quest.getCurrentQuests().get(quest);
         int progress = questProgress.get(quest);
@@ -256,6 +262,11 @@ public class User implements Serializable {
 
     }
 
+    /**
+     * Sets a QR code comment with out the use of firebase.
+     * @param code  The QR code to be commented.
+     * @param text  The text to set it to.
+     */
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
 
@@ -333,10 +344,20 @@ public class User implements Serializable {
         });
     }
 
+    /**
+     * Gets this users money.
+     *
+     * @return  An int of this users money.
+     */
     public int getMoney() {
         return money;
     }
 
+    /**
+     * Set this users money
+     *
+     * @param money The money to set for this user.
+     */
     public void setMoney(int money) {
         this.money = money;
         Map<String, Object> updatedMoney = new HashMap<>();
@@ -365,6 +386,11 @@ public class User implements Serializable {
         return Optional.of(commentMap.get(code));
     }
 
+    /**
+     * Adds a QR code to this user without firebase.
+     *
+     * @param code The QR code to be added.
+     */
     public void addQRCodeWithoutFirebase(QRCode code) {
         this.qrCodes.add(code);
     }
