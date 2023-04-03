@@ -396,7 +396,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                                     UserUtil.setUsername(activity.getApplicationContext(), newUserName);
 
                                     nameView.setText(user.getUserName());
-                                    dialog.dismiss();
+                                    alertDialog.dismiss();
 
                                     if (user.hasProfilePicture()) {
                                         Glide.with(activity)
