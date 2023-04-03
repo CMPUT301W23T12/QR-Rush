@@ -391,7 +391,7 @@ public class QRCode {
                 Log.e("City", province);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("City",e.toString());
             }
 
         }
