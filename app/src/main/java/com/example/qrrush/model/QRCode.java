@@ -92,25 +92,14 @@ public class QRCode {
         }
         byte[] data = sb.toString().getBytes(StandardCharsets.US_ASCII);
 
-        for (int i = 0; i < numZeroes; i += 1) {
+        for (int i = data.length - 1; i > data.length - 1 - numZeroes; i -= 1) {
             data[i] = '0';
         }
 
-        QRCode result = null;
-
-        // If the score isn't high enough, keep adding more fs to the hash, since that's the
-        // highest digit.
-        for (int i = numZeroes; i < data.length; i += 1) {
-            result = new QRCode(new String(data, StandardCharsets.US_ASCII), new Timestamp(new Date()));
-
-            if (result.getRarity() == r) {
-                break;
-            }
-
-            data[i] = 'f';
-        }
-
-        return result;
+        return new QRCode(
+                new String(data, StandardCharsets.US_ASCII),
+                new Timestamp(new Date())
+        );
     }
 
     /**
@@ -178,9 +167,11 @@ public class QRCode {
 
         return result;
     }
-    public int getColor(){
+
+    public int getColor() {
         return Color.parseColor("#" + this.hash.substring(0, 6));
     }
+
     /**
      * Returns the length of the longest run of consecutive zeroes in the hash hashValue.
      *

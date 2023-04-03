@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +91,6 @@ public class ShopFragment extends Fragment {
         nameContentText = view.findViewById(R.id.name_content);
 
         // Add click listeners to buttons
-        // TODO: add these scores to the current User.
         commonButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Common);
