@@ -1,8 +1,15 @@
 package com.example.qrrush.view;
 
+import android.content.DialogInterface;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,48 +18,128 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.bumptech.glide.Glide;
 import com.example.qrrush.R;
 import com.example.qrrush.controller.DateComparator;
 import com.example.qrrush.controller.NameComparator;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.controller.ScoreComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.QRCodeAdapter;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The fragment which displays the users profile.
- * This class is responsible for creating and setting up the users info for display,
+ * This class is responsible for creating and setting up the users info for
+ * display,
  * sorting the users QR codes by date, score and name,
  * letting the user edit there username by interacting with firebase
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
+    ImageView profilePicture;
+    Boolean editable;
+    MediaPlayer mediaPlayer;
+    FragmentActivity activity;
 
     /**
      * Grabs User object from the main activity
      *
      * @param user The user who's profile should be displayed.
      */
-    public ProfileFragment(User user) {
+    public ProfileFragment(User user, Boolean editable, FragmentActivity activity) {
         // Required empty public constructor
         this.user = user;
+        this.editable = editable;
+        this.activity = activity;
     }
+
+
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
+            new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.e("PhotoPicker", "Selected URI: " + uri);
+                    HashMap<String, Object> FBprofilePicture = new HashMap<>();
+                    profilePicture.setImageURI(uri);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = BitmapFactory
+                                .decodeStream(activity.getContentResolver().openInputStream(uri));
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReference()
+                                .child("images/" + user.getUserName() + ".jpg");
+                        UploadTask uploadTask = storageRef.putBytes(data);
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get the download URL of the uploaded image
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        FBprofilePicture.put("profile_picture", downloadUrl);
+                                        FirebaseWrapper.updateData("profiles", user.getUserName(), FBprofilePicture);
+                                        user.setProfilePicture(downloadUrl);
+                                    }
+                                });
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                return;
+                            }
+                        });
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e("PhotoPicker", "No media selected");
+                }
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,14 +148,59 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        qrCodeAdapter.notifyDataSetChanged();
+    }
+
+    public void getAllCollection(User user, TextView rankView) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("profiles")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            ArrayList<User> users = new ArrayList<User>();
+                            users.clear();
+                            for (QueryDocumentSnapshot document : value) {
+                                Log.d("FirebaseWrapper", document.getId() + " => " + document.getData());
+                                User u = new User(document.getId(),
+                                        "",
+                                        0,
+                                        new ArrayList<>(),
+                                        0,
+                                        "");
+                                ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
+                                for (String hash : hashes) {
+                                    u.addQRCodeWithoutFirebase(new QRCode(hash, new Timestamp(0, 0)));
+                                }
+
+                                users.add(u);
+                            }
+                            Collections.sort(users, new RankComparator());
+                            for (int i = 0; i < users.size(); ++i) {
+                                if (user.getUserName().matches(users.get(i).getUserName())) {
+                                    user.setRank(((users.indexOf(users.get(i))) + 1));
+                                    rankView.setText(String.valueOf(user.getRank()));
+                                }
+                            }
+                        } else {
+                            Log.d("FirebaseWrapper", "Error getting documents: ", error.fillInStackTrace());
+                        }
+                    }
+                });
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         TextView nameView = view.findViewById(R.id.nameView);
         TextView rankView = view.findViewById(R.id.rankView);
         TextView scoreView = view.findViewById(R.id.scoreView);
@@ -76,19 +208,68 @@ public class ProfileFragment extends Fragment {
         TextView rankText = view.findViewById(R.id.rankText);
         TextView QRText = view.findViewById(R.id.qrCodesText);
         TextView scoreText = view.findViewById(R.id.scoreText);
+        TextView moneyView = view.findViewById(R.id.moneyView);
+        profilePicture = view.findViewById(R.id.profileView);
         Button sortingButton = view.findViewById(R.id.sortingButton);
         nameView.setText(user.getUserName());
         rankView.setText(String.valueOf(user.getRank()));
         QRScanned.setText(String.valueOf(user.getQRCodes().size()));
         scoreView.setText(String.valueOf(user.getTotalScore()));
+        moneyView.setText(String.valueOf(user.getMoney()));
         rankText.setText("RANK");
-        QRText.setText("QRCODES FOUND");
+        QRText.setText("QRCODES");
         scoreText.setText("SCORE");
+        rankView.setText("Loading...");
+
+        getAllCollection(user, rankView);
+
+        // Passes User object from main activity to the QR code adapter
+        qrCodeAdapter = new QRCodeAdapter(activity, user.getQRCodes(), user, this.editable);
+        ListView qrCodeList = view.findViewById(R.id.listy);
+        qrCodeList.setAdapter(qrCodeAdapter);
+
+        profilePicture.setClickable(true);
+        profilePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
+
+        if (user.hasProfilePicture()) {
+            Glide.with(getContext())
+                    .load(user.getProfilePicture())
+                    .dontAnimate()
+                    .into(profilePicture);
+        } else {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            int color = generator.getColor(user.getUserName());
+            profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(ResourcesCompat.getFont(activity, R.font.gatekept))
+                    .toUpperCase()
+                    .width(200)
+                    .height(200)
+                    .endConfig()
+                    .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+            profilePicture.setImageDrawable(drawable);
+        }
 
         // On launch sorting is set by date (sortingTracker = 1)
-        //      by points (sortingTracker = 2)
-        //      by score (sortingTracker = 0)
+        // by points (sortingTracker = 2)
+        // by score (sortingTracker = 0)
         sortingTracker = 1;
+
+        sortingButton.setText("By Date");
+        DateComparator dateComparator = new DateComparator();
+        Collections.sort(user.getQRCodes(), dateComparator);
+        // Sorts by newest to oldest (newest codes being at the top)
+        Collections.reverse(user.getQRCodes());
+        qrCodeAdapter.notifyDataSetChanged();
 
         // Sorting button sorts arraylist of QR codes using custom comparators
         // Adapter gets updated each time the list gets sorted
@@ -96,7 +277,6 @@ public class ProfileFragment extends Fragment {
             if (sortingTracker == 0) {
                 sortingButton.setText("By Date");
                 sortingTracker += 1;
-                DateComparator dateComparator = new DateComparator();
                 Collections.sort(user.getQRCodes(), dateComparator);
                 // Sorts by newest to oldest (newest codes being at the top)
                 Collections.reverse(user.getQRCodes());
@@ -116,10 +296,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        // Passes User object from main activity to the QR code adapter
-        qrCodeAdapter = new QRCodeAdapter(requireActivity(), user.getQRCodes(), user);
-        ListView qrCodeList = view.findViewById(R.id.listy);
-        qrCodeList.setAdapter(qrCodeAdapter);
         qrCodeAdapter.notifyDataSetChanged();
 
         // Update the UI whenever the arrayAdapter gets a change.
@@ -127,79 +303,160 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                rankView.setText(String.valueOf(user.getRank()));
                 QRScanned.setText(String.valueOf(user.getQRCodes().size()));
                 scoreView.setText(String.valueOf(user.getTotalScore()));
+                moneyView.setText(String.valueOf(user.getMoney()));
             }
         });
 
-        // Get the button view from the layout
-        ImageButton editNameButton = view.findViewById(R.id.edit_name);
-
+        ImageButton editNameButton = view.findViewById(R.id.settings_button);
+        if (!editable) {
+            editNameButton.setVisibility(View.GONE);
+        }
         editNameButton.setOnClickListener(v -> {
-            View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireActivity());
-            alertDialogBuilder.setView(addNewName);
-            alertDialogBuilder.setTitle("Input new name:");
-            alertDialogBuilder.setPositiveButton("Confirm", null);
-            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
-            userNameEdit.setHint(user.getUserName());
+            // View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.MyDialogStyle);
 
-            AlertDialog dialog = alertDialogBuilder.create();
-            dialog.setOnShowListener(dialogInterface -> {
-                TextView errorText = addNewName.findViewById(R.id.errorText);
-                TextView errorText1 = addNewName.findViewById(R.id.errorText1);
-                //add a positive button on the alertdialog that tells user to confirm their input
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(newView -> {
-                    // store the new name input of the user
+            // alertDialogBuilder.setView(Settings);
+            TextView customTitle = new TextView(activity);
+            customTitle.setText("Settings");
+            customTitle.setTextSize(30); // Set the desired text size
+            customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+            customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+            int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on density
+            customTitle.setPadding(padding, padding, padding, padding);
+            alertDialogBuilder.setCustomTitle(customTitle);
+            LayoutInflater inflater = requireActivity().getLayoutInflater();
+            View customView = inflater.inflate(R.layout.setting_overlay, null);
+            alertDialogBuilder.setView(customView);
+            alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.MyDialogStyle);
+                    alertDialogBuilder.setView(addNewName);
+                    TextView customTitle = new TextView(activity);
+                    customTitle.setText("Input new name");
+                    customTitle.setTextSize(30); // Set the desired text size
+                    customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+                    customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+                    int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on
+                                                                                           // density
+                    customTitle.setPadding(padding, padding, padding, padding);
+                    alertDialogBuilder.setCustomTitle(customTitle);
 
-                    String newUserName = userNameEdit.getText().toString();
-                    if (newUserName.isEmpty()) {
-                        dialog.dismiss();
-                        return;
-                    }
+                    final AlertDialog alertDialog = alertDialogBuilder.create(); // Create the alertDialog without
+                                                                                 // adding buttons
 
-                    FirebaseWrapper.checkUsernameAvailability(newUserName, (Task<QuerySnapshot> task) -> {
-                        if (!task.isSuccessful()) {
-                            // Error occurred while querying database
-                            Log.e("EditName", "ERROR QUERYING DATABASE WHILE SEARCHING PROFILES COLLECTION");
-                            return;
-                        }
+                    // Find the positive button in the layout
+                    Button positiveButton = addNewName.findViewById(R.id.positive_button);
 
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot.size() > 0) {
-                            // Username is taken, prompt user to pick a new name
-                            errorText.setVisibility(View.VISIBLE);
-                            return;
-                        }
+                    // Set the custom OnClickListener for the positive button
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EditText userNameEdit = addNewName.findViewById(R.id.edit_name);
+                            userNameEdit.setHint(user.getUserName());
+                            ProgressBar progressBar = addNewName.findViewById(R.id.progress_bar); // Add this line
 
-                        // Username is unique, continue with edit the process
-                        FirebaseWrapper.getUserData(user.getUserName(), (Task<DocumentSnapshot> task1) -> {
-                            if (!task1.isSuccessful()) {
-                                Log.e("EditName", "Error editing user");
+                            TextView errorText = addNewName.findViewById(R.id.errorText);
+                            TextView errorText1 = addNewName.findViewById(R.id.errorText1);
+                            String newUserName = userNameEdit.getText().toString();
+                            if (newUserName.isEmpty()) {
+                                alertDialog.dismiss();
+                                return;
+                            } else if (newUserName.length() > 10) {
+                                errorText1.setVisibility(View.VISIBLE);
+                                errorText.setVisibility(View.GONE);
                                 return;
                             }
+                            progressBar.setVisibility(View.VISIBLE); // Show the progress bar
+                            FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
+                                progressBar.setVisibility(View.GONE); // Hide the progress bar when the response is
+                                                                      // received
 
-                            // Username is unique, continue with registration process
-                            DocumentSnapshot document = task1.getResult();
-                            Map<String, Object> updatedProfile = document.getData();
+                                if (userResult.isPresent()) {
+                                    // Username is taken, prompt user to pick a new name
+                                    errorText.setVisibility(View.VISIBLE);
+                                    errorText1.setVisibility(View.GONE);
+                                    return;
+                                }
 
-                            // Add name + UUID and phone number to FB
-                            FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
-                            FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+                                // Username is unique, continue with edit the process
+                                FirebaseWrapper.getData("profiles", user.getUserName(), documentSnapshot -> {
+                                    String oldUsername = user.getUserName();
+                                    // Edit the scanned by... text for every QR code you scanned
+                                    for (QRCode q : user.getQRCodes()) {
+                                        FirebaseWrapper.getData("qrcodes", q.getHash(), qrCodeDoc -> {
+                                            if (!qrCodeDoc.exists()) {
+                                                Log.e("Edit Name", "error");
+                                                return;
+                                            }
 
-                            user.setUserName(newUserName);
-                            UserUtil.setUsername(requireActivity().getApplicationContext(), newUserName);
+                                            Map<String, Object> data = qrCodeDoc.getData();
+                                            ArrayList<String> scannedByList = (ArrayList<String>) data.get("scannedby");
+                                            scannedByList.remove(oldUsername);
+                                            scannedByList.add(newUserName);
+                                            data.replace("scannedby", scannedByList);
+                                            FirebaseFirestore.getInstance().collection("qrcodes")
+                                                    .document(q.getHash())
+                                                    .set(data)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("FirebaseWrapper",
+                                                                "Document updated with ID: " + q.getHash());
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e("FirebaseWrapper", "Error updating document", e);
+                                                    });
+                                        });
+                                    }
+                                    Map<String, Object> updatedProfile = documentSnapshot.getData();
 
-                            nameView.setText(user.getUserName());
-                            dialog.dismiss();
-                        });
+                                    // Add name + UUID and phone number to FB
+                                    FirebaseWrapper.addData("profiles", newUserName, updatedProfile);
+                                    FirebaseWrapper.deleteDocument("profiles", user.getUserName());
+
+                                    user.setUserName(newUserName);
+                                    UserUtil.setUsername(activity.getApplicationContext(), newUserName);
+
+                                    nameView.setText(user.getUserName());
+                                    alertDialog.dismiss();
+
+                                    if (user.hasProfilePicture()) {
+                                        Glide.with(activity)
+                                                .load(user.getProfilePicture())
+                                                .dontAnimate()
+                                                .into(profilePicture);
+                                    } else {
+                                        ColorGenerator generator = ColorGenerator.MATERIAL;
+                                        int color = generator.getColor(user.getUserName());
+                                        profilePicture.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                                        TextDrawable drawable = TextDrawable.builder()
+                                                .beginConfig()
+                                                .textColor(Color.WHITE)
+                                                .useFont(ResourcesCompat.getFont(activity, R.font.gatekept))
+                                                .toUpperCase()
+                                                .width(200)
+                                                .height(200)
+                                                .endConfig()
+                                                .buildRound(String.valueOf(user.getUserName().charAt(0)), color);
+                                        profilePicture.setImageDrawable(drawable);
+                                    }
+                                });
+                            });
+                        }
                     });
-                });
+                    alertDialog.show();
+                }
             });
-            dialog.show();
+            alertDialogBuilder.setNegativeButton("Music", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
+                    settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
+                }
+            }).show();
         });
     }
-}
 
+}

@@ -4,12 +4,14 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.qrrush.view.MainActivity;
 import com.robotium.solo.Solo;
+
 
 import org.junit.After;
 import org.junit.Before;
@@ -62,7 +64,9 @@ public class CameraTest {
     @Test
     public void testCameraFragment() {
         // Open the camera fragment by clicking the camera button
-        solo.clickOnButton("Camera");
+
+        View cameraButton = solo.getView(R.id.camera_button);
+        solo.clickOnView(cameraButton);
 
         // Wait for the camera view to appear
         solo.waitForView(R.id.camera_view);

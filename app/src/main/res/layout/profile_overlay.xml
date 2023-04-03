@@ -2,16 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:background="@drawable/rounded_dialog_background"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <EditText
-        android:id="@+id/input_new_name"
+        android:id="@+id/edit_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName" />
-
+        android:hint="username"
+        android:inputType="textPersonName"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"/>
 
     <TextView
         android:id="@+id/errorText"
@@ -25,7 +28,22 @@
         android:id="@+id/errorText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please enter a new name!"
+        android:text="Username must be less then 10 or less characters!"
         android:textColor="#EC1010"
+        android:visibility="gone" />
+
+    <!-- Add the "Confirm" button with the id 'positive_button' -->
+    <Button
+        android:id="@+id/positive_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="Confirm"
+        android:textColor="@android:color/white"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:visibility="gone" />
 </LinearLayout>

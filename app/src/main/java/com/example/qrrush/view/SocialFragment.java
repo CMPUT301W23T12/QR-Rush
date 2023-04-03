@@ -1,13 +1,14 @@
 package com.example.qrrush.view;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,18 +16,36 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.SearchPlayerAdapter;
 import com.example.qrrush.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.qrrush.model.UserAdapter;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
- * other player's profiles. It retrieves the user's search input and fetches the corresponding profile
+ * This class is a fragment of the MainActivity, it's responsible for creating a
+ * UI interface for users to search
+ * other player's profiles. It retrieves the user's search input and fetches the
+ * corresponding profile
  */
 public class SocialFragment extends Fragment {
     User user;
+    TextView noPlayerFound;
+    EditText searchPlayerEditField;
+    private ListView searchResultsList;
+    private SearchPlayerAdapter searchResultsAdapter;
+    TextView refreshPlayerText;
+    ArrayList<User> userList;
 
     public SocialFragment(User user) {
         this.user = user;
@@ -39,13 +58,37 @@ public class SocialFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_social, container, false);
+        View view = inflater.inflate(R.layout.fragment_social, container, false);
+
+        // Get the reference to the ListView and create the adapter
+        searchResultsList = view.findViewById(R.id.searchPlayerList);
+        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content,
+                new ArrayList<User>());
+        searchResultsList.setAdapter(searchResultsAdapter);
+        refreshPlayerText = view.findViewById(R.id.refresh_player_list_text);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshPlayerText.setVisibility(View.VISIBLE);
+        noPlayerFound.setVisibility(View.GONE);
+        FirebaseWrapper.getAllUsers(users -> {
+            refreshPlayerText.setVisibility(View.GONE);
+            noPlayerFound.setVisibility(View.GONE);
+            Log.e("abeeee", users.toString());
+            userList = users;
+            searchResultsAdapter.setData(users);
+            searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
+        });
     }
 
     /**
-     * This method is called once the View is created, it handles the search button click events
+     * This method is called once the View is created, it handles the search button
+     * click events
      * and retrieves the searched player's data from Firebase.
      *
      * @param view               the created view that contains the UI components.
@@ -54,59 +97,27 @@ public class SocialFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-        ImageButton searchButton = (ImageButton) view.findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        noPlayerFound = getView().findViewById(R.id.noPlayerFound);
+        searchPlayerEditField = view.findViewById(R.id.searchPlayer);
+        searchPlayerEditField.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                // we extract the search input box and reference our profile card
-                EditText searchPlayerEditField = view.findViewById(R.id.searchPlayer);
-                TextView noPlayerFound = view.findViewById(R.id.noPlayerFound);
-                ImageView PlayerImg = view.findViewById(R.id.profileView);
-                TextView searchedName = view.findViewById(R.id.nameViewSocial);
-                TextView searchedRank = view.findViewById(R.id.rankView);
-                String searchPlayer = searchPlayerEditField.getText().toString();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-                if (searchPlayer.matches("")) {
-                    // UX Experience: If search is empty and you press search, it will display "No player found!"
-                    noPlayerFound.setVisibility(View.VISIBLE);
-                    searchedName.setVisibility(View.GONE);
-                    PlayerImg.setVisibility(View.GONE);
-                    searchedRank.setVisibility(View.GONE);
-                    return;
-                }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                noPlayerFound.setVisibility(View.GONE);
+                searchResultsAdapter.getFilter().filter(s.toString().toLowerCase(),
+                        numberOfResults -> {
+                            if (numberOfResults == 0) {
+                                noPlayerFound.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
 
-                FirebaseWrapper.getUserData(searchPlayer, new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e("SearchingPlayer", "Error fetching usernames in firebase");
-                            return;
-                        }
-
-                        DocumentSnapshot document = task.getResult();
-                        if (!document.exists()) {
-                            // Player is not found, display the "No player found!"
-                            noPlayerFound.setVisibility(View.VISIBLE);
-                            searchedName.setVisibility(View.GONE);
-                            PlayerImg.setVisibility(View.GONE);
-                            searchedRank.setVisibility(View.GONE);
-                            return;
-                        }
-
-                        // Player Search is found, Display the Profile
-                        noPlayerFound.setVisibility(View.GONE);
-                        searchedName.setText(searchPlayer);
-                        searchedRank.setText(String.format("%d", document.getLong("rank").intValue()));
-                        searchedName.setVisibility(View.VISIBLE);
-                        searchedRank.setVisibility(View.VISIBLE);
-                        PlayerImg.setVisibility(View.VISIBLE);
-                    }
-                });
-
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
-
     }
 }

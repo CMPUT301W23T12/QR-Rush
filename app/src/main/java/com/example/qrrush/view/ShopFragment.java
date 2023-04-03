@@ -5,16 +5,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.Quest;
+import com.example.qrrush.model.QuestType;
 import com.example.qrrush.model.Rarity;
 import com.example.qrrush.model.User;
+import com.smb.glowbutton.GlowButton;
+
+import java.util.ArrayList;
 
 /**
  * The fragment which displays the shop fragment
@@ -25,8 +30,9 @@ import com.example.qrrush.model.User;
 public class ShopFragment extends Fragment {
     private ImageView qrCode;
     private TextView scoreText;
-    private TextView qrContentText;
+
     private TextView nameContentText;
+    private TextView coinsText;
     User user;
 
     public ShopFragment(User user) {
@@ -38,6 +44,38 @@ public class ShopFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    private int rarityPrice(Rarity rarity) {
+        int price;
+
+        if (rarity == Rarity.Common) {
+            price = 1;
+        } else if (rarity == Rarity.Rare) {
+            price = 5;
+        } else {
+            price = 10;
+        }
+        return price;
+    }
+
+    private void tryPurchaseQRCode(QRCode code) {
+        int price = rarityPrice(code.getRarity());
+        if (user.getMoney() >= price) {
+            user.addQRCode(code);
+            user.setMoney(user.getMoney() - price);
+            Toast.makeText(getContext(), "QR code purchased!", Toast.LENGTH_SHORT).show();
+            ArrayList<Quest> quests = Quest.getCurrentQuests();
+            for (int i = 0; i < quests.size(); i += 1) {
+                Quest q = quests.get(i);
+                if (q.getType() == QuestType.BuyCodeOfRarity &&
+                        q.getRarity() == code.getRarity()) {
+                    user.setQuestProgress(i, 1);
+                }
+            }
+        } else {
+            Toast.makeText(getContext(), "Insufficient funds.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,51 +83,71 @@ public class ShopFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_shop, container, false);
 
         // Now you can call findViewById on the inflated view
-        Button commonButton = view.findViewById(R.id.common_button);
-        Button rareButton = view.findViewById(R.id.rare_button);
-        Button legendaryButton = view.findViewById(R.id.legendary_button);
-
+        GlowButton commonButton = view.findViewById(R.id.common_button);
+        GlowButton rareButton = view.findViewById(R.id.rare_button);
+        GlowButton legendaryButton = view.findViewById(R.id.legendary_button);
+        GlowButton QrCodeGlow = view.findViewById(R.id.button);
         qrCode = view.findViewById(R.id.qr_code);
         scoreText = view.findViewById(R.id.score);
-        qrContentText = view.findViewById(R.id.qr_content);
         nameContentText = view.findViewById(R.id.name_content);
-
+        coinsText = view.findViewById(R.id.currency);
+        QrCodeGlow.setVisibility(View.INVISIBLE);
         // Add click listeners to buttons
-        // TODO: add these scores to the current User.
         commonButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Common);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                nameContentText.setText(code.getName());
+                nameContentText.setTextColor(code.getColor());
+                coinsText.setText("Coins: " + 1);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
 
-            user.addQRCode(code);
+
+            }
         });
-
         rareButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Rare);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                nameContentText.setText(code.getName());
+                nameContentText.setTextColor(code.getColor());
+                coinsText.setText("Coins: " + 5);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
 
-            user.addQRCode(code);
+            }
         });
 
         legendaryButton.setOnClickListener(v -> {
+            int initialMoney = user.getMoney();
             QRCode code = QRCode.withRarity(Rarity.Legendary);
-            qrCode.setImageBitmap(
-                    Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
-            );
-            scoreText.setText("Score: " + code.getScore());
-            qrContentText.setText("QR content: " + code.getHash());
-            nameContentText.setText("Name: " + code.getName());
+            tryPurchaseQRCode(code);
+            int FinalMoney = user.getMoney();
+            if (initialMoney != FinalMoney) {
+                qrCode.setImageBitmap(
+                        Bitmap.createScaledBitmap(code.getImage(), 250, 250, false)
+                );
+                scoreText.setText("Score: " + code.getScore());
+                nameContentText.setText(code.getName());
+                nameContentText.setTextColor(code.getColor());
+                coinsText.setText("Coins: " + 10);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
 
-            user.addQRCode(code);
+            }
         });
 
         return view;

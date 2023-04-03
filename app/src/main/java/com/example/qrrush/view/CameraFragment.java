@@ -2,6 +2,7 @@ package com.example.qrrush.view;
 
 import static androidx.camera.core.ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,8 @@ import androidx.camera.view.CameraController;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.User;
@@ -34,19 +36,30 @@ import java.util.List;
  * The fragment which opens the camera, scanning for a QR code. Upon scanning one, we move to the
  * screen which shows the user what they've scanned.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends DialogFragment {
     PreviewView previewView;
     ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     CameraController cameraController;
     User user;
+    FragmentManager manager;
+    View container;
+    Boolean foundCode = false;
+    Runnable onDismiss;
 
     /**
      * Creates a CameraFragment for the given user.
      *
      * @param user The user to create the CameraFragment for.
      */
-    public CameraFragment(User user) {
+    public CameraFragment(User user, Runnable onDismiss) {
         this.user = user;
+        this.onDismiss = onDismiss;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        this.onDismiss.run();
     }
 
     @Override
@@ -74,9 +87,13 @@ public class CameraFragment extends Fragment {
                         return;
                     }
 
-                    for (Barcode b : results) {
-                        requireActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.main_view, new QRConfirmFragment(user, b)).commit();
+                    synchronized (foundCode) {
+                        if (!results.isEmpty() && !foundCode) {
+                            new QRConfirmFragment(user, results.get(0), this.onDismiss)
+                                    .show(manager, "Confirm QR code");
+                            dismiss();
+                            foundCode = true;
+                        }
                     }
                 }));
 
@@ -97,6 +114,8 @@ public class CameraFragment extends Fragment {
         cameraController = new LifecycleCameraController(requireContext());
         previewView = result.findViewById(R.id.camera_view);
         previewView.setController(cameraController);
+        this.container = result.findViewById(R.id.linearLayout);
+        manager = getParentFragmentManager();
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {

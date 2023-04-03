@@ -15,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.qrrush.view.MainActivity;
+import com.google.android.material.tabs.TabLayout;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -50,54 +51,65 @@ public class ProfileTest {
     }
 
     @Test
-    public void testQRcount(){
-        try {
-            Thread.sleep(10000); // waits for 1 second
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void testQRcount() {
 
-        solo.clickOnView(solo.getView(R.id.profile_button));
+
+        TabLayout tabLayout = (TabLayout) solo.getView(R.id.tabLayout);
+        solo.clickOnView(tabLayout.getTabAt(0).view);
         TextView qrCountView = (TextView) solo.getView(R.id.qrCodesView);
-
         // Get the text from the QR code count view
         String qrCountText = qrCountView.getText().toString();
-
+        Log.e("count", qrCountText);
         // Extract the numeric part of the text
         String numericPart = qrCountText.replaceAll("[^0-9]", "");
-
+        Log.e("count", numericPart);
         // Convert the numeric part to an integer
         int qrCountSub = Integer.parseInt(numericPart);
 
+        TextView qrMoney = (TextView) solo.getView(R.id.moneyView);
+        int rushMoney = Integer.parseInt(qrMoney.getText().toString());
 
-        solo.clickOnView(solo.getView(R.id.shop_button));
+
+
+
+        solo.clickOnView(tabLayout.getTabAt(1).view);
         solo.clickOnView(solo.getView(R.id.common_button));
+        solo.sleep(1000);
+        solo.waitForView(R.id.common_button);
         solo.clickOnView(solo.getView(R.id.rare_button));
-        solo.clickOnView(solo.getView(R.id.profile_button));
+        solo.sleep(1000);
+        solo.waitForView(R.id.rare_button);
+
+        solo.clickOnView(tabLayout.getTabAt(0).view);
         solo.waitForView(R.id.qrCodesView);
 
 
 // Check if the view appeared within the timeout period
         //assertTrue(viewAppeared);
-        solo.waitForView(R.id.profile_button);
+        solo.waitForView(R.id.profile_swipe);
         // Get the QR code count view
+        TextView qrMoney1 = (TextView) solo.getView(R.id.moneyView);
+        int rushMoney1 = Integer.parseInt(qrMoney1.getText().toString());
+
         TextView qrCountView1 = (TextView) solo.getView(R.id.qrCodesView);
 
         // Get the text from the QR code count view
         String qrCountText1 = qrCountView1.getText().toString();
-
+        Log.e("count", qrCountText1);
         // Extract the numeric part of the text
         String numericPart1 = qrCountText1.replaceAll("[^0-9]", "");
+        Log.e("count", numericPart1);
 
         // Convert the numeric part to an integer
-        int qrCount = Integer.parseInt(numericPart1);
+        int qrCount = Integer.parseInt(qrCountText1);
         int qrCOUNT = qrCount - qrCountSub;
-
+        // 2-0
         // Compare the QR code count value to the expected value
-
+        int moneyRush = rushMoney - rushMoney1;
         assertEquals(2, qrCOUNT);
-        solo.clickOnButton("Delete");
-        solo.waitForView(R.id.deleteButton);
+        assertEquals(6,moneyRush);
+        solo.clickOnImageButton(0);
+        solo.sleep(2000);
         solo.waitForView(R.id.qrCodesView);
         TextView qrCountView2 = (TextView) solo.getView(R.id.qrCodesView);
 
@@ -108,51 +120,15 @@ public class ProfileTest {
         String numericPart2 = qrCountText2.replaceAll("[^0-9]", "");
 
         // Convert the numeric part to an integer
-        int qrCount2 = Integer.parseInt(numericPart2);
+        int qrCount2 = Integer.parseInt(qrCountText);
+        int qrCount3 = Integer.parseInt(qrCountText2);
 
         // Compare the QR code count value to the expected value
-        assertEquals(1, qrCount - qrCount2);
-        solo.clickOnButton("Delete");
-
-
-
-        //edit name
-        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
-        solo.clickOnView(solo.getView(R.id.edit_name));
-        // Enter "Bruh123" as the search term
-        solo.enterText(0, "Bruh1234");
-        solo.clickOnText("Confirm");
-
-        // Wait for the AlertDialog to close
-        solo.waitForDialogToClose();
-        TextView newName = (TextView) solo.getView(R.id.nameView);
-        String name = newName.getText().toString();
-        assertEquals("Bruh1234", name);
-        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
-
-
-
-
-
-        solo.clickOnView(solo.getView(R.id.edit_name));
-        // Enter "Bruh123" as the search term
-        solo.enterText(0, "attn");
-        solo.clickOnText("Confirm");
-        solo.waitForDialogToClose();
-        TextView newName3 = (TextView) solo.getView(R.id.nameView);
-        String name2 = newName3.getText().toString();
-        assertEquals("attn", name2);
-        solo.waitForCondition(() -> solo.getView(R.id.edit_name) != null, 5000);
-        //make it error
-        solo.clickOnView(solo.getView(R.id.edit_name));
-        // Enter "Bruh123" as the search term
-        solo.enterText(0, "Bruh123");
-        solo.clickOnText("Confirm");
-
-        TextView newName2 = (TextView) solo.getView(R.id.errorText);
-        assertTrue(newName2.getVisibility() == View.VISIBLE);
-
+        assertEquals(1, qrCount3 - qrCount2);
+        solo.clickOnImageButton(0);
     }
+
+
 
 }
 

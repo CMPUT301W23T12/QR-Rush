@@ -3,59 +3,52 @@ package com.example.qrrush.view;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.Manifest;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
-import com.example.qrrush.model.QRCode;
+import com.example.qrrush.model.MyViewPagerAdapater;
 import com.example.qrrush.model.User;
 import com.example.qrrush.model.UserUtil;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 
 /**
  * The main activity class for the QR Rush app.
- * This activity serves as the entry point to the app and handles the main UI and user interactions.
- * This class also sets up the main User object that that other fragments will be using via constructor
+ * This activity serves as the entry point to the app and handles the main UI
+ * and user interactions.
+ * This class also sets up the main User object that that other fragments will
+ * be using via constructor
  */
 public class MainActivity extends AppCompatActivity {
-    View mainView;
-    ImageButton profileButton;
-    ImageButton shopButton;
-    ImageButton mainButton;
-    ImageButton socialButton;
-    ImageButton leaderboardButton;
     User user;
-
-    private FirebaseFirestore firestore;
+    ViewPager2 viewPager2;
+    TabLayout tabLayout;
+    MyViewPagerAdapater myViewPagerAdapater;
+    TextView loadingText;
 
     static final String[] PERMISSIONS = {
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.INTERNET,
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
     };
 
     /**
-     * Checks if the necessary permissions for the app have been granted by the user.
+     * Checks if the necessary permissions for the app have been granted by the
+     * user.
      *
      * @return true if all permissions have been granted, false otherwise
      */
@@ -71,14 +64,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when the user responds to the permission request dialog.
-     * Checks if the necessary permissions have been granted and initializes the app if so.
+     * Checks if the necessary permissions have been granted and initializes the app
+     * if so.
      *
      * @param requestCode  The code that was used to make the permission request
      * @param permissions  The requested permissions
      * @param grantResults The grant results for the corresponding permissions
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // TODO: Check if each permission is actually granted. Do we have to do this?
 
@@ -104,110 +99,62 @@ public class MainActivity extends AppCompatActivity {
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
-        // Get Fire store instance
-        firestore = FirebaseFirestore.getInstance();
-
         setContentView(R.layout.activity_main);
+
+        loadingText = findViewById(R.id.loading_text);
 
         // Retrieve data from Firebase:
         Log.d("TAG", UserUtil.getUsername(MainActivity.this));
         String username = UserUtil.getUsername(getApplicationContext());
 
         // Get everything from firebase
-        // TODO: show a loading animation while we get everything from firebase, then load the UI
-        //       once its done.
-        FirebaseWrapper.getUserData(username, (Task<DocumentSnapshot> task) -> {
-            if (!task.isSuccessful()) {
-                Log.d("Firebase User", "Error creating user");
-                return;
-            }
+        FirebaseWrapper.getUserData(username, firebaseUser -> {
+            user = firebaseUser.get();
+            user.setActivity(this);
 
-            DocumentSnapshot document = task.getResult();
-            if (!document.exists()) {
-                Log.e("Firebase User", "Document doesn't exist!");
-                return;
-            }
+            // TabLayout//Viewpager2 allows swiping and icons to be
+            // highlighted at the bottom
+            tabLayout = findViewById(R.id.tabLayout);
+            viewPager2 = findViewById(R.id.view_pager);
+            myViewPagerAdapater = new MyViewPagerAdapater(this, user);
+            viewPager2.setAdapter(myViewPagerAdapater);
 
-            user = new User(
-                    username,
-                    document.getString("phone-number"),
-                    document.getLong("rank").intValue(),
-                    document.getLong("score").intValue(),
-                    new ArrayList<>()
-            );
+            tabLayout.getTabAt(0).setIcon(R.drawable.profile);
+            tabLayout.getTabAt(1).setIcon(R.drawable.shop);
+            tabLayout.getTabAt(2).setIcon(R.drawable.main);
+            tabLayout.getTabAt(3).setIcon(R.drawable.social);
+            tabLayout.getTabAt(4).setIcon(R.drawable.leaderboard);
 
-            ArrayList<String> hashes = (ArrayList<String>) document.get("qrcodes");
-            ArrayList<String> comments = (ArrayList<String>) document.get("qrcodescomments");
-            for (String hash : hashes) {
-                Task<DocumentSnapshot> t = FirebaseWrapper.getQRCodeData(hash, (Task<DocumentSnapshot> task1) -> {
-                    if (!task1.isSuccessful()) {
-                        Log.d("Firebase User", "Error creating user");
-                        return;
-                    }
-
-                    DocumentSnapshot document1 = task1.getResult();
-                    if (!document1.exists()) {
-                        Log.e("Firebase User", "Document doesn't exist!");
-                        return;
-                    }
-
-                    GeoPoint g = (GeoPoint) document.get("location");
-                    Timestamp timestamp = (Timestamp) document1.get("date");
-                    QRCode code = new QRCode(hash, timestamp);
-                    if (g != null) {
-                        Location l = new Location("");
-                        l.setLatitude(g.getLatitude());
-                        l.setLongitude(g.getLongitude());
-                        code.setLocation(l);
-                    }
-
-                    user.addQRCodeWithoutFirebase(code);
-                    if (comments.size() > 0 && comments.size() >= hashes.size()) {
-                        user.setCommentWithoutUsingFirebase(code, comments.get(hashes.indexOf(hash)));
-                    }
-                });
-
-                while (!t.isComplete()) {
-                    // Empty loop is on purpose. We need to wait for these to finish.
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager2.setCurrentItem(tab.getPosition());
+                    viewPager2.setUserInputEnabled(tab.getPosition() != 2);
                 }
-            }
 
-            mainView = findViewById(R.id.main_view);
-            profileButton = (ImageButton) findViewById(R.id.profile_button);
-            shopButton = (ImageButton) findViewById(R.id.shop_button);
-            socialButton = (ImageButton) findViewById(R.id.social_button);
-            mainButton = (ImageButton) findViewById(R.id.main_button);
-            leaderboardButton = (ImageButton) findViewById(R.id.leaderboard_button);
-            // User object passes into each fragment constructor
-            profileButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new ProfileFragment(user)).commit();
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
             });
 
-            shopButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new ShopFragment(user)).commit();
+            viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    tabLayout.getTabAt(position).select();
+                }
             });
 
-            socialButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new SocialFragment(user)).commit();
-            });
+            viewPager2.setCurrentItem(2);
+            loadingText.setVisibility(View.GONE);
 
-            mainButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new MainFragment(user)).commit();
-            });
-
-            leaderboardButton.setOnClickListener((v) -> {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.main_view, new LeaderboardFragment(user)).commit();
-            });
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_view, new MainFragment(user)).commit();
         });
-
     }
 
     @Override
@@ -215,16 +162,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wait_for_permission);
 
-        // TODO: If they say no, explain what the permissions are for and explain that they are
-        //  needed for the app to work?
-
-        // TODO: Maybe ask for location separately since its not necessary?
         if (!hasPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 101);
             Log.e("Permission", "!hasPermissions line 166");
             return;
         }
-
         main();
     }
 

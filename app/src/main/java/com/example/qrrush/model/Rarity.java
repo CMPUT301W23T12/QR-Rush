@@ -32,9 +32,6 @@ public enum Rarity {
      * Code.
      */
     public static int minConsecutiveZeroesFor(Rarity r) {
-        // common scores: from 1 to 4 consecutive zeroes.
-        // rare scores: from 5 to 7 consecutive zeroes.
-        // legendary scores: 8 or more consecutive zeroes
         if (r == Common) {
             return 0;
         } else if (r == Rare) {
@@ -43,5 +40,4 @@ public enum Rarity {
 
         return 5;
     }
-
 }
