@@ -31,8 +31,6 @@ import java.util.Optional;
  */
 public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
-    User user;
-
     Context context;
 
     /**

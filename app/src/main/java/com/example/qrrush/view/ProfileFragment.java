@@ -73,13 +73,9 @@ public class ProfileFragment extends Fragment implements Serializable {
     User user;
     QRCodeAdapter qrCodeAdapter;
     int sortingTracker;
-
     ImageView profilePicture;
     Boolean editable;
-
     MediaPlayer mediaPlayer;
-
-    private ImageButton settingsButton;
 
     /**
      * Grabs User object from the main activity

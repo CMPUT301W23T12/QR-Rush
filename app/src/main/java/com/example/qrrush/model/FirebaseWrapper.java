@@ -275,38 +275,6 @@ public class FirebaseWrapper {
                 });
     }
 
-    /**
-     * Retrieves the data for a QR code with the given hash from the Firestore
-     * database.
-     *
-     * @param hash The hash string of the QR code for which to retrieve data.
-     * @return A Task object representing the asynchronous Firestore database
-     * operation.
-     * The resulting DocumentSnapshot can be obtained from the task's
-     * getResult() method.
-     */
-    public static Task<DocumentSnapshot> getQRCodeData(String hash, Consumer<QRCode> qrCodeConsumer) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
-        return db.collection("qrcodes").document(hash)
-                .get()
-                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
-                    if (!t.isSuccessful()) {
-                        Log.e("getQRCodeData", "task failed!");
-                        return;
-                    }
-
-                    DocumentSnapshot ds = t.getResult();
-                    if (!ds.exists()) {
-                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
-                        return;
-                    }
-
-                    QRCode code = new QRCode(hash, ds.getTimestamp("date"));
-                    qrCodeConsumer.accept(code);
-                });
-    }
-
     public static void getScannedQRCodeData(String hash, String username,
                                             Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -469,33 +437,6 @@ public class FirebaseWrapper {
                 })
                 .addOnFailureListener(exception -> {
                     Log.d("FirebaseWrapper", "Error deleting the document.");
-                });
-    }
-
-    /**
-     * This method will delete a given username under the "profiles" collection,
-     * this method should
-     * not be used unless you are 100% certain you wish to delete that user, this
-     * method was
-     * implemented for the case where edit name was used.
-     *
-     * @param username The username of the profile to remove.
-     */
-    public static void removeUserProfile(String username) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("profiles").document(username)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("FirebaseWrapper", "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("FirebaseWrapper", "Error deleting the document.");
-                    }
                 });
     }
 }

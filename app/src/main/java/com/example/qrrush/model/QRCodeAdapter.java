@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -35,12 +34,8 @@ import java.util.Optional;
 public class QRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
     User user;
-
     Boolean editable;
-
     Context context;
-
-    MediaPlayer mediaPlayer;
 
     /**
      * Creates a QRCodeAdapter given a list of QR Codes and a user.

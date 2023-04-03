@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,11 +54,8 @@ import java.util.ArrayList;
  */
 public class MainFragment extends Fragment implements OnMapReadyCallback {
     private User user;
-
-    private MediaPlayer mediaPlayer;
     private ImageButton cameraButton;
     private GoogleMap mMap;
-
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
