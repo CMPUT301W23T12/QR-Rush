@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchPlayerAdapter extends ArrayAdapter<User> {
-
     private FragmentActivity context;
     private int resource;
     private List<User> mUsers;
