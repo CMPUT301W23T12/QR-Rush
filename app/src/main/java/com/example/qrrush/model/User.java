@@ -379,8 +379,7 @@ public class User implements Serializable {
      * comment.
      *
      * @param code The QR code to get the comment for.
-     * @throws InvalidParameterException The QRCode given is not on the current
-     *                                   user's account.
+     * @throws InvalidParameterException The QRCode given is not on the current user's account.
      */
     public Optional<String> getCommentFor(QRCode code) {
         if (!this.getQRCodes().contains(code)) {
