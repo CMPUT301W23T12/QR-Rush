@@ -4,17 +4,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+/**
+ * Daily quests class to display and track users progress of quests.
+ */
 public class Quest {
     QuestType type;
     int n;
     Rarity rarity;
 
+    /**
+     * Quest constructor
+     *
+     * @param type Quest type.
+     * @param n if the quest type has a number its defined as n.
+     * @param rarity if the quest type has a rarity its defined as rarity.
+     */
     private Quest(QuestType type, int n, Rarity rarity) {
         this.type = type;
         this.n = n;
         this.rarity = rarity;
     }
 
+    /**
+     * Gets a list of the current users quests.
+     *
+     * @return and ArrayList<Quest> of the quests.
+     */
     public static ArrayList<Quest> getCurrentQuests() {
         ArrayList<Quest> result = new ArrayList<>(3);
 
@@ -39,18 +54,33 @@ public class Quest {
         return result;
     }
 
+    /**
+     * @return type of quest.
+     */
     public QuestType getType() {
         return type;
     }
 
+    /**
+     * @return Type of rarity.
+     */
     public Rarity getRarity() {
         return rarity;
     }
 
+    /**
+     * @return n.
+     */
     public int getN() {
         return n;
     }
 
+    /**
+     *
+     * @param type Type of quest.
+     * @param seed Random number to use.
+     * @return A quest.
+     */
     private static Quest ofType(QuestType type, int seed) {
         Rarity[] rarities = {
                 Rarity.Common,
@@ -71,6 +101,11 @@ public class Quest {
         return new Quest(QuestType.ScanNCodes, seed % 3, null);
     }
 
+    /**
+     * Gets a description of a quest
+     *
+     * @return A string of the description.
+     */
     public String getDescription() {
         switch (type) {
             case ScanNCodes:

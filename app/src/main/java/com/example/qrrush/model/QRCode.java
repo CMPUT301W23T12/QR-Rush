@@ -59,16 +59,32 @@ public class QRCode {
         this.location = Optional.of(location);
     }
 
+    /**
+     * Makes a qr code given a hash and time stamp.
+     *
+     * @param hash hash of the QR code.
+     * @param timestamp timestamp of when it was made.
+     */
     public QRCode(String hash, Timestamp timestamp) {
         this.timestamp = timestamp;
         this.location = Optional.empty();
         this.hash = hash;
     }
 
+    /**
+     * Sets the location image of this QR code
+     *
+     * @param url png or jpeg url of the image
+     */
     public void setLocationImage(String url) {
         this.locationImage = url;
     }
 
+    /**
+     * Retrieves the location Image of the this QR code.
+     *
+     * @return A string of the png or jpeg link
+     */
     public String getLocationImage() {
         return this.locationImage;
     }
@@ -176,6 +192,11 @@ public class QRCode {
         return result;
     }
 
+    /**
+     * Gets the color of this QR code.
+     *
+     * @return A integer of the color code
+     */
     public int getColor() {
         return Color.parseColor("#" + this.hash.substring(0, 6));
     }
@@ -303,7 +324,7 @@ public class QRCode {
     }
 
     /**
-     * Returns the QR Code's score, which is caluclated from its hash.
+     * Returns the QR Code's score, which is calculated from its hash.
      */
     public int getScore() {
         // This is the algorithm for now:

@@ -60,7 +60,15 @@ public class User implements Serializable {
         this.questProgress.add(0);
         this.profilePicture = profilePicture;
     }
-
+    /**
+     * Creates a new user with the given username, rank, QR codes, and money.
+     * and QR Codes.
+     *
+     * @param userName    The username to initialize the user with.
+     * @param rank        The rank to initialize the user with.
+     * @param qrCodes     The QR codes to initialize the user with.
+     * @param money       The money initialize the user with.
+     */
     public User(String userName, int rank, ArrayList<QRCode> qrCodes, int money) {
         this.userName = userName;
         this.rank = rank;
@@ -71,60 +79,109 @@ public class User implements Serializable {
         this.questProgress.add(0);
     }
 
+    /**
+     * Sets the activity.
+     *
+     * @param   a The activity to set for this class.
+     */
     public void setActivity(Activity a) {
         this.activity = a;
     }
 
+    /**
+     * Custom to String for this class.
+     *
+     * @return  A lower case String.
+     */
     @NonNull
     @Override
     public String toString() {
         return this.getUserName().toLowerCase();
     }
 
+    /**
+     * @return  The user name as a String.
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     * Sets the user name of this class.
+     *
+     * @param   userName The user name to set.
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
+    /**
+     * Gets the profile picture.
+     *
+     * @return  A string of the jpeg or png link to the profile picture.
+     */
     public String getProfilePicture() {
         return profilePicture;
     }
 
+    /**
+     * Checks if a user has a profile picture.
+     *
+     * @return  True or false (true if profile picture is present) else, false.
+     */
     public boolean hasProfilePicture() {
         return profilePicture != null && !profilePicture.isEmpty();
     }
 
+    /**
+     * Sets the users profile picture .
+     *
+     * @param   profilePicture A string of the jpeg or png link to the profile picture.
+     */
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
+    /**
+     * @return An int of this users rank.
+     */
     public int getRank() {
         return rank;
     }
 
+    /**
+     * Sets this users rank.
+     *
+     * @param   rank An int rank to be set.
+     */
     public void setRank(int rank) {
         this.rank = rank;
     }
 
+    /**
+     * Gets all the QR codes for this user.
+     *
+     * @return  An array list of all this users QR codes.
+     */
     public ArrayList<QRCode> getQRCodes() {
         return qrCodes;
     }
 
+    /**
+     * Gets all the quests done by this user.
+     *
+     * @return  An array list of all the quests completed by this user.
+     */
     public ArrayList<Integer> getQuestProgress() {
         return questProgress;
     }
 
+    /**
+     * Sets the quest progress for this user.
+     *
+     * @param quest     The quest to be set.
+     * @param progress  The progress of the quest.
+     */
     public void setQuestProgress(int quest, int progress) {
         if (isQuestCompleted(quest)) {
             return;
@@ -144,6 +201,12 @@ public class User implements Serializable {
         }
     }
 
+    /**
+     * Sets the quest progress for this user (without firebase).
+     *
+     * @param quest     The quest to be set.
+     * @param progress  The progress of the quest.
+     */
     public void setQuestProgressWithoutFirebase(int quest, int progress) {
         if (isQuestCompleted(quest)) {
             return;
@@ -151,10 +214,13 @@ public class User implements Serializable {
         this.questProgress.set(quest, progress);
     }
 
-    public void setQuestsDateRefreshedWithoutFirebase(Timestamp t) {
-        questsRefreshed = t;
-    }
 
+    /**
+     * Checks if a quest is done.
+     *
+     * @param   quest The quest to be checked
+     * @return  True if the quest is done, false otherwise.
+     */
     public boolean isQuestCompleted(int quest) {
         Quest q = Quest.getCurrentQuests().get(quest);
         int progress = questProgress.get(quest);
@@ -188,8 +254,7 @@ public class User implements Serializable {
      * Removes a QR Code from the user's account, both locally and in Firebase.
      *
      * @param code The QR code to remove from the user's account.
-     * @throws InvalidParameterException The QR code given was not already in the
-     *                                   user's account.
+     * @throws InvalidParameterException The QR code given was not already in the user's account.
      */
     public void removeQRCode(QRCode code) {
         if (!this.qrCodes.contains(code)) {
@@ -204,6 +269,12 @@ public class User implements Serializable {
 
     }
 
+    /**
+     * Sets a QR code comment with out the use of firebase.
+     *
+     * @param code  The QR code to be commented.
+     * @param text  The text to set it to.
+     */
     public void setCommentWithoutUsingFirebase(QRCode code, String text) {
         if (text == null) {
 
@@ -281,10 +352,20 @@ public class User implements Serializable {
         });
     }
 
+    /**
+     * Gets this users money.
+     *
+     * @return  An int of this users money.
+     */
     public int getMoney() {
         return money;
     }
 
+    /**
+     * Set this users money
+     *
+     * @param money The money to set for this user.
+     */
     public void setMoney(int money) {
         this.money = money;
         Map<String, Object> updatedMoney = new HashMap<>();
@@ -298,8 +379,7 @@ public class User implements Serializable {
      * comment.
      *
      * @param code The QR code to get the comment for.
-     * @throws InvalidParameterException The QRCode given is not on the current
-     *                                   user's account.
+     * @throws InvalidParameterException The QRCode given is not on the current user's account.
      */
     public Optional<String> getCommentFor(QRCode code) {
         if (!this.getQRCodes().contains(code)) {
@@ -313,6 +393,11 @@ public class User implements Serializable {
         return Optional.of(commentMap.get(code));
     }
 
+    /**
+     * Adds a QR code to this user without firebase.
+     *
+     * @param code The QR code to be added.
+     */
     public void addQRCodeWithoutFirebase(QRCode code) {
         this.qrCodes.add(code);
     }

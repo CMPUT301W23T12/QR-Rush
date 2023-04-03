@@ -118,9 +118,9 @@ public class FirebaseWrapper {
      * This method deletes a specific qr code array from firebase given the hash of
      * the code
      *
-     * @param collectionName
-     * @param documentName
-     * @param hash
+     * @param collectionName The name of the collection in Firestore where the user profile document is located.
+     * @param documentName The ID of the user profile document.
+     * @param hash hash The hash value of the QR code to be deleted.
      */
     public static void deleteQrcode(String collectionName, String documentName, String hash) {
         FirebaseWrapper.getData("profiles", documentName, documentSnapshot -> {
@@ -163,6 +163,14 @@ public class FirebaseWrapper {
         });
     }
 
+    /**
+     * Retrieves data from a specified document in a specified collection from the Firestore database.
+     *
+     * @param collection collection The name of the collection in which the document is located.
+     * @param documentID he ID of the document to retrieve.
+     * @param callback The callback function to execute when the data is retrieved successfully.
+     * @return object representing the asynchronous operation. object that represents the retrieved data.
+     */
     public static Task<DocumentSnapshot> getData(String collection, String documentID,
                                                  Consumer<DocumentSnapshot> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -186,6 +194,8 @@ public class FirebaseWrapper {
      * store the data check the documentation for example code usage
      *
      * @param username The username to retrieve the data for.
+     * @param userConsumer optional user consumer param to store the data
+     * @return object representing the asynchronous operation. object that represents the retrieved data.
      */
     public static Task<DocumentSnapshot> getUserData(String username, Consumer<Optional<User>> userConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -274,31 +284,13 @@ public class FirebaseWrapper {
                 });
     }
 
-    public static void getAllScannedQRCodeData(String hash,
-                                               Consumer<List<String>> scannedByListConsumer) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
-        db.collection("qrcodes").document(hash)
-                .get()
-                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
-                    if (!t.isSuccessful()) {
-                        Log.e("getQRCodeData", "task failed!");
-                        return;
-                    }
-
-                    DocumentSnapshot ds = t.getResult();
-                    if (!ds.exists()) {
-                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
-                        return;
-                    }
-
-                    // Retrieve the array of users who have scanned the QR code
-                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
-
-                    scannedByListConsumer.accept(scannedByList);
-                });
-    }
-
+    /**
+     * Retrieves a list of usernames that have scanned a QR code with the specified hash from the Firestore database.
+     *
+     * @param hash The hash of the QR code to retrieve.
+     * @param username The username of the user whose name should be excluded from the returned list.
+     * @param scannedByListConsumer The callback function to execute when the list of scanned-by users is retrieved.
+     */
     public static void getScannedQRCodeData(String hash, String username,
                                             Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -327,6 +319,12 @@ public class FirebaseWrapper {
                 });
     }
 
+    /**
+     * Retrieves the list of users who have scanned the QR code associated with the given hash.
+     *
+     * @param hash The hash of the QR code whose scanned data needs to be retrieved.
+     * @param scannedByListConsumer A callback function that accepts the list of usernames who have scanned the QR code.
+     */
     public static void getScannedQRCodeDataLeader(String hash, Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Get the user document for the given username
@@ -352,7 +350,13 @@ public class FirebaseWrapper {
                     scannedByListConsumer.accept(scannedByList);
                 });
     }
-
+    /**
+     * Retrieves the list of users and their associated QR codes from the given Firestore query snapshots.
+     *
+     * @param profileSnapshot The Firestore query snapshot containing the user profile documents.
+     * @param qrCodeSnapshot The Firestore query snapshot containing the QR code documents.
+     * @param callback A callback function that accepts the list of User objects.
+     */
     private static void getUsers(QuerySnapshot profileSnapshot, QuerySnapshot qrCodeSnapshot,
                                  Consumer<ArrayList<User>> callback) {
         // Get all the QR codes into a list
@@ -403,8 +407,7 @@ public class FirebaseWrapper {
 
     /**
      * This method will get all QR codes from firebase, and provide an array of
-     * QRCode for the
-     * person who calls this.
+     * QRCode for the person who calls this.
      *
      * @param callback The callback which receives the list of users.
      */
@@ -442,8 +445,7 @@ public class FirebaseWrapper {
 
     /**
      * This method will get all users from firebase, and provide an array of User
-     * for the person
-     * who calls this.
+     * for the person who calls this.
      *
      * @param callback The callback which receives the list of users.
      */
