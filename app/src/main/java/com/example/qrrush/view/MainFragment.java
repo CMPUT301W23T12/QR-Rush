@@ -4,14 +4,21 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +30,8 @@ import androidx.fragment.app.Fragment;
 import com.example.qrrush.R;
 import com.example.qrrush.model.FirebaseWrapper;
 import com.example.qrrush.model.Geo;
+import com.example.qrrush.model.MapQRCodeAdapter;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.Quest;
 import com.example.qrrush.model.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +52,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -200,10 +211,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         loadingText.setVisibility(View.GONE);
 
         LatLng deviceLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        Log.e("permission", deviceLocation.toString());
         mMap.addMarker(new MarkerOptions().position(deviceLocation));
+        Log.e("permission", deviceLocation.toString());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(deviceLocation, 15f));
-
         // Fetch QRCode locations from Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("qrcodes").addSnapshotListener((querySnapshot, error) -> {
@@ -227,42 +237,77 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                     Log.e("Geo", "location was null");
                     continue;
                 }
+
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(document.getId()));
-
-                // Add marker click listener to show alert dialog
+                // clickable marker
                 mMap.setOnMarkerClickListener(marker -> {
+                    Log.e("Bruh", document.getId());
+
                     // Create and show alert dialog
                     FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setTitle("QR CODE\nHash:" + document.getId());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogStyle);
+                        LayoutInflater inflater = requireActivity().getLayoutInflater();
+                        View customView = inflater.inflate(R.layout.map_qrcode, null);
+                        builder.setView(customView);
+
+                        TextView hashText = customView.findViewById(R.id.hash_text);
+                        ListView usersList = customView.findViewById(R.id.users_list);
+                        ImageButton customPositiveButton = customView.findViewById(R.id.custom_positive_button);
+                        ImageView hash_image = customView.findViewById(R.id.hash_image);
+
+                        // create qrCode object
+                        QRCode qrCode = new QRCode(document.getId());
+                        // Set the hash text
+                        hashText.setText(qrCode.getName());
+
+                        hash_image.setImageBitmap(
+                                Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false)
+                        );
+
+                        Log.e("Testing", scannedByList.toString());
 
                         if (scannedByList.isEmpty()) {
                             builder.setMessage("No other user has scanned this QR code yet.");
-                            return;
+                        } else {
+                            // Set the adapter for the ListView
+                            MapQRCodeAdapter adapter = new MapQRCodeAdapter(getContext(), scannedByList);
+                            usersList.setAdapter(adapter);
+
+                            // Set the click listener for the ListView items
+                            usersList.setOnItemClickListener((parent, view, position, id) -> {
+                                // Use getUserData to create a user object
+
+                                    // Send the user object to the profile fragment
+                                    new ProfileDialogFragment(user).show(
+                                            requireActivity().getSupportFragmentManager(),
+                                            ""
+                                    );
+                            });
                         }
-                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int pos) {
-                                        // position is tracked by "pos" so now we pass the
-                                        // clickable profile
-                                        // We need to create a user object with that so we gotta
-                                        // use getUserData
-                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                            // send the user object to the profile fragment
-                                            new ProfileDialogFragment(user.get()).show(
-                                                    requireActivity().getSupportFragmentManager(),
-                                                    ""
-                                            );
-                                        });
-                                    }
-                                });
-                        builder.setPositiveButton("OK", null);
-                        builder.show();
+
+                        // Set the click listener for the custom positive button
+                        customPositiveButton.setOnClickListener(view -> {
+                            AlertDialog dialog = (AlertDialog) view.getTag();
+                            if (dialog != null) {
+                                dialog.dismiss();
+                            }
+                        });
+
+
+                        // Create the AlertDialog
+                        AlertDialog alertDialog = builder.create();
+                        // Set the tag for customPositiveButton
+                        customPositiveButton.setTag(alertDialog);
+                        // Show the custom alert dialog
+                        alertDialog.show();
+
+
+
                     });
                     return true; // Return true to indicate that we've handled the marker click event
                 });
+
             }
         });
     }

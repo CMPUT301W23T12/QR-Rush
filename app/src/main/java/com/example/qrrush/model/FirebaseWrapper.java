@@ -17,6 +17,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -299,10 +302,8 @@ public class FirebaseWrapper {
                 });
     }
 
-    public static void getScannedQRCodeData(String hash, String username,
-                                            Consumer<List<String>> scannedByListConsumer) {
+    public static void getScannedQRCodeData(String hash, String username, Consumer<List<User>> usersConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
         db.collection("qrcodes").document(hash)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
@@ -318,14 +319,33 @@ public class FirebaseWrapper {
                     }
 
                     // Retrieve the array of users who have scanned the QR code
-                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
-
+                    ArrayList<String> scannedByUsernameList = (ArrayList<String>) ds.get("scannedby");
+                    Log.e("Debug", scannedByUsernameList.toString());
                     // Filter out the given username
-                    scannedByList.remove(username);
+                    scannedByUsernameList.remove(username);
 
-                    scannedByListConsumer.accept(scannedByList);
+                    // Convert the usernames to User objects
+                    List<User> users = new ArrayList<>();
+                    Log.e("Adib", users.toString());
+
+                    if (scannedByUsernameList.isEmpty()) {
+                        usersConsumer.accept(users);
+                        return;
+                    }
+
+                    FirebaseWrapper.getAllUsers(allUsers -> {
+                        for (User u : allUsers){
+                            if (scannedByUsernameList.contains(u.getUserName())){
+                                Log.e("Debug", u.getUserName());
+                                users.add(u);
+                            }
+                        }
+                        usersConsumer.accept(users);
+                    });
+
                 });
     }
+
 
     public static void getScannedQRCodeDataLeader(String hash, Consumer<List<String>> scannedByListConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

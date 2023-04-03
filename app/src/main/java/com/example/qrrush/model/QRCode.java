@@ -57,6 +57,10 @@ public class QRCode {
         this.hash = hash;
     }
 
+    public QRCode(String hash) {
+        this.hash = hash;
+    }
+
     public void setLocationImage(String url) {
         this.locationImage = url;
     }
