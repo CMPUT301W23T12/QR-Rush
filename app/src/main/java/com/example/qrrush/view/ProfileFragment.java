@@ -91,6 +91,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.activity = activity;
     }
 
+
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
             new ActivityResultContracts.PickVisualMedia(), uri -> {
                 // Callback is invoked after the user selects a media item or closes the
