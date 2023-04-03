@@ -58,7 +58,7 @@ public class QRConfirmFragment extends DialogFragment {
     FragmentManager manager;
     Runnable onDismiss;
     byte[] picture = null;
-    Button foundLocationButton;
+    ImageButton foundLocationButton;
     ImageView locationImage;
     private static final int CAMERA_REQUEST_CODE = 100;
 

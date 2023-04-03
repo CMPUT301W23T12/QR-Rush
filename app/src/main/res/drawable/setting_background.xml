@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style name="setting_background" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="android:background">@color/myColor</item>
+</style>

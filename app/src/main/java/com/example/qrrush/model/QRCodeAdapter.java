@@ -97,7 +97,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         }
         locationView.setText(location);
 
-        pointView.setText("Score: " + qrCode.getScore());
+        pointView.setText("" + qrCode.getScore());
 
         ImageButton deleteButton = view.findViewById(R.id.deleteButton);
 
