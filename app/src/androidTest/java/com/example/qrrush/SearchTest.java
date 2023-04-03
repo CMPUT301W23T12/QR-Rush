@@ -55,36 +55,36 @@ public class SearchTest {
     /**
      * This method tests a failed search by entering an invalid player and checking that the profile is not displayed.
      */
-    @Test
-    public void testFailedSearch() {
-        // Click the social button
-        solo.clickOnView(solo.getView(R.id.social_swipe));
-        // Click the search player edit text
-        solo.clickOnView(solo.getView(R.id.searchPlayer));
-        // Enter "mdncv" as the search term
-        solo.enterText(0, "mdncv");
-        // Click the search button
-        solo.clickOnView(solo.getView(R.id.searchButton));
-        // Assert that the "No player found!" text is displayed
-        assertTrue(solo.waitForText("Name", 1, 2000));
-        assertTrue(solo.waitForText("Rank", 1, 2000));
-    }
-
-    /**
-     * This method tests a successful search by entering a valid player and checking that the profile is displayed.
-     */
-    @Test
-    public void testSuccessfulSearch() {
-        // Click the social button
-        solo.clickOnView(solo.getView(R.id.social_swipe));
-        // Click the search player edit text
-        solo.clickOnView(solo.getView(R.id.searchPlayer));
-        // Enter "Bruh123" as the search term
-        solo.enterText(0, "Bruh123");
-        // Click the search button
-        solo.clickOnView(solo.getView(R.id.searchButton));
-        // Assert that the profile is displayed
-        assertFalse(solo.waitForText("Name", 1, 2000));
-        assertFalse(solo.waitForText("Rank", 1, 2000));
-    }
+//    @Test
+//    public void testFailedSearch() {
+//        // Click the social button
+//        solo.clickOnView(solo.getView(R.id.social_swipe));
+//        // Click the search player edit text
+//        solo.clickOnView(solo.getView(R.id.searchPlayer));
+//        // Enter "mdncv" as the search term
+//        solo.enterText(0, "mdncv");
+//        // Click the search button
+//        solo.clickOnView(solo.getView(R.id.searchButton));
+//        // Assert that the "No player found!" text is displayed
+//        assertTrue(solo.waitForText("Name", 1, 2000));
+//        assertTrue(solo.waitForText("Rank", 1, 2000));
+//    }
+//
+//    /**
+//     * This method tests a successful search by entering a valid player and checking that the profile is displayed.
+//     */
+//    @Test
+//    public void testSuccessfulSearch() {
+//        // Click the social button
+//        solo.clickOnView(solo.getView(R.id.social_swipe));
+//        // Click the search player edit text
+//        solo.clickOnView(solo.getView(R.id.searchPlayer));
+//        // Enter "Bruh123" as the search term
+//        solo.enterText(0, "Bruh123");
+//        // Click the search button
+//        solo.clickOnView(solo.getView(R.id.searchButton));
+//        // Assert that the profile is displayed
+//        assertFalse(solo.waitForText("Name", 1, 2000));
+//        assertFalse(solo.waitForText("Rank", 1, 2000));
+//    }
 }

@@ -325,7 +325,7 @@ public class ProfileFragment extends Fragment implements Serializable {
                     alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            EditText userNameEdit = addNewName.findViewById(R.id.input_new_name);
+                            EditText userNameEdit = addNewName.findViewById(R.id.edit_name);
                             userNameEdit.setHint(user.getUserName());
                             TextView errorText = addNewName.findViewById(R.id.errorText);
                             TextView errorText1 = addNewName.findViewById(R.id.errorText1);
