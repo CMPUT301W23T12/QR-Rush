@@ -89,6 +89,4 @@ public class UserUtil {
         editor.putBoolean(HAS_USERNAME_KEY, hasUsername);
         editor.apply();
     }
-
-
 }
