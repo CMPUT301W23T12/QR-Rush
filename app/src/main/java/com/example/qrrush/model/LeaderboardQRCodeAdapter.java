@@ -51,7 +51,6 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     public LeaderboardQRCodeAdapter(Context context, ArrayList<QRCode> objects) {
         super(context, 0, objects);
         qrCodes = objects;
-
         this.context = context;
     }
 

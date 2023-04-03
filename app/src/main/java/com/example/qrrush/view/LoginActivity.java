@@ -33,6 +33,12 @@ public class LoginActivity extends AppCompatActivity {
     EditText phoneNumberInput;
     TextView errorText;
 
+    /**
+     * Checks if the phone numbers is in a valid format.
+     *
+     * @param phoneNumber   The phone number to check.
+     * @return  Returns true if the phone number is valid, else returns false.
+     */
     public static boolean isValidPhoneNumber(String phoneNumber) {
         // Regular expression to match valid phone number formats
         String regex = "^\\+?[1]?[- ]?\\(?[0-9]{3}\\)?[- ]?\\(?[0-9]{3}\\)?[- ]?[0-9]{3,4}$";

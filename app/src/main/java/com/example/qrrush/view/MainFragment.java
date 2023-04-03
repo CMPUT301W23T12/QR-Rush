@@ -157,6 +157,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    /**
+     * Updates the location of the user.
+     */
     private void setupLocationUpdates() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 

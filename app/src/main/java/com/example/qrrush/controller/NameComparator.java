@@ -13,6 +13,10 @@ public class NameComparator implements Comparator<QRCode> {
      * If both names are null or equal, 0 will be returned.
      * If the first name is null or less than the second, -1 will be returned.
      * If the second name is null or less than the first, 1 will be returned.
+     *
+     * @param QR1 the first QRCode to compare.
+     * @param QR2 the second QRCode to compare.
+     * @return an integer indicating their order based on their names.
      */
     @Override
     public int compare(QRCode QR1, QRCode QR2) {

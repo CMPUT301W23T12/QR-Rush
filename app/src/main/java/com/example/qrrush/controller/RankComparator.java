@@ -17,7 +17,7 @@ public class RankComparator implements Comparator<User> {
      *
      * @param user1 The first user to be compared.
      * @param user2 The second user to be compared.
-     * @return A negative integer, zero, or a positive integer as the first user's total score is less than, equal to, or greater than the second user's total score.
+     * @return an integer indicating their order based on their scores.
      */
     @Override
     public int compare(User user1, User user2) {
