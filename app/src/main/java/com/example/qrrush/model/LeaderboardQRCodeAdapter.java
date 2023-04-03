@@ -145,7 +145,7 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                     "%.6f, %.6f",
                     loc.getLongitude(),
                     loc.getLatitude());
-        }q
+        }
         locationView.setText(location);
         getlocation(qrCode.getLocation(), locationString -> {
             locationView.setVisibility(View.VISIBLE);
