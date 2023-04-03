@@ -30,6 +30,7 @@ import java.util.ArrayList;
 public class ShopFragment extends Fragment {
     private ImageView qrCode;
     private TextView scoreText;
+
     private TextView nameContentText;
     private TextView coinsText;
     User user;
@@ -85,11 +86,12 @@ public class ShopFragment extends Fragment {
         GlowButton commonButton = view.findViewById(R.id.common_button);
         GlowButton rareButton = view.findViewById(R.id.rare_button);
         GlowButton legendaryButton = view.findViewById(R.id.legendary_button);
+        GlowButton QrCodeGlow = view.findViewById(R.id.button);
         qrCode = view.findViewById(R.id.qr_code);
         scoreText = view.findViewById(R.id.score);
         nameContentText = view.findViewById(R.id.name_content);
         coinsText = view.findViewById(R.id.currency);
-
+        QrCodeGlow.setVisibility(View.INVISIBLE);
         // Add click listeners to buttons
         commonButton.setOnClickListener(v -> {
             int initialMoney = user.getMoney();
@@ -104,6 +106,10 @@ public class ShopFragment extends Fragment {
                 nameContentText.setText(code.getName());
                 nameContentText.setTextColor(code.getColor());
                 coinsText.setText("Coins: " + 1);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
+
+
             }
         });
         rareButton.setOnClickListener(v -> {
@@ -118,7 +124,9 @@ public class ShopFragment extends Fragment {
                 scoreText.setText("Score: " + code.getScore());
                 nameContentText.setText(code.getName());
                 nameContentText.setTextColor(code.getColor());
-                coinsText.setText(String.valueOf("Coins: " + 5));
+                coinsText.setText("Coins: " + 5);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
 
             }
         });
@@ -135,7 +143,9 @@ public class ShopFragment extends Fragment {
                 scoreText.setText("Score: " + code.getScore());
                 nameContentText.setText(code.getName());
                 nameContentText.setTextColor(code.getColor());
-                coinsText.setText(String.valueOf("Coins: " + 10));
+                coinsText.setText("Coins: " + 10);
+                QrCodeGlow.setVisibility(View.VISIBLE);
+                QrCodeGlow.setGlowColor(code.getColor());
 
             }
         });
