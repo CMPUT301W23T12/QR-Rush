@@ -3,8 +3,10 @@ package com.example.qrrush;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -62,7 +64,6 @@ public class SearchTest {
      */
     @Test
     public void testFailedSearch() {
-        // Click the social button
         TabLayout tabLayout = (TabLayout) solo.getView(R.id.tabLayout);
         solo.clickOnView(tabLayout.getTabAt(3).view);
         // Click the search player edit text
@@ -80,16 +81,20 @@ public class SearchTest {
     public void testSuccessfulSearch() {
         TabLayout tabLayout = (TabLayout) solo.getView(R.id.tabLayout);
         solo.clickOnView(tabLayout.getTabAt(3).view);
-        // Click the search player edit text
         solo.clickOnView(solo.getView(R.id.searchPlayer));
-        // Enter a valid user name (replace "ValidUserName" with an actual user name from your list)
         String validUserName = "ValidUser";
         solo.enterText(0, validUserName);
-        solo.sleep(2000); // Allow time for the search results to update
-        // Assert that the profile is displayed
+        solo.sleep(2000);
         ListView searchResultsList = (ListView) solo.getView(R.id.searchPlayerList);
         assertEquals(1, searchResultsList.getAdapter().getCount());
         TextView searchedUserNameTextView = (TextView) searchResultsList.getChildAt(0).findViewById(R.id.nameViewSocial);
         assertEquals(validUserName, searchedUserNameTextView.getText().toString());
+        solo.clickOnView(searchResultsList.getChildAt(0));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(solo.getView(R.id.profileView));
     }
 }

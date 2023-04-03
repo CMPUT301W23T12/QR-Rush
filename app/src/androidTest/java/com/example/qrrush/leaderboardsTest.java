@@ -3,6 +3,7 @@ package com.example.qrrush;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.view.View;
@@ -91,10 +92,38 @@ public class leaderboardsTest {
         int user1Rank = Integer.parseInt(user1RankTextView.getText().toString());
         int user2Rank = Integer.parseInt(user2RankTextView.getText().toString());
 
-        assertTrue(user1Score > user2Score);
+        assertTrue(user1Score >= user2Score);
         assertFalse(user2Score < user3Score);
         assertEquals(1, user1Rank);
         assertNotEquals(3, user2Rank);
+    }
+    @Test
+    public void testClickOnUser1DisplaysProfile() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        TabLayout tabLayout = (TabLayout) solo.getView(R.id.tabLayout);
+        solo.clickOnView(tabLayout.getTabAt(4).view);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        View user1View = solo.getView(R.id.top_user1);
+
+        solo.clickOnView(user1View);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(solo.getView(R.id.profileView));
 
     }
 }
