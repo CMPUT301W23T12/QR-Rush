@@ -263,7 +263,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         // by score (sortingTracker = 0)
         sortingTracker = 1;
 
-        sortingButton.setText("By Date (Newest First)");
+        sortingButton.setText("By Date");
         DateComparator dateComparator = new DateComparator();
         Collections.sort(user.getQRCodes(), dateComparator);
         // Sorts by newest to oldest (newest codes being at the top)
@@ -274,14 +274,14 @@ public class ProfileFragment extends Fragment implements Serializable {
         // Adapter gets updated each time the list gets sorted
         sortingButton.setOnClickListener(v -> {
             if (sortingTracker == 0) {
-                sortingButton.setText("By Date (Newest First)");
+                sortingButton.setText("By Date");
                 sortingTracker += 1;
                 Collections.sort(user.getQRCodes(), dateComparator);
                 // Sorts by newest to oldest (newest codes being at the top)
                 Collections.reverse(user.getQRCodes());
                 qrCodeAdapter.notifyDataSetChanged();
             } else if (sortingTracker == 1) {
-                sortingButton.setText("By Points (Highest First)");
+                sortingButton.setText("By Points");
                 sortingTracker += 1;
                 ScoreComparator scoreComparator = new ScoreComparator();
                 Collections.sort(user.getQRCodes(), scoreComparator);
