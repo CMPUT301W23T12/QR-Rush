@@ -16,44 +16,40 @@
             android:id="@+id/name_content"
             android:layout_width="match_parent"
             android:layout_height="30dp"
+            android:layout_marginTop="50dp"
             android:fontFamily="@font/gatekeptsemibold"
             android:gravity="center"
             android:textColor="@color/pale_cyan"
             android:textColorHint="@color/pale_cyan"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/score"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.681" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="30dp"
             android:fontFamily="@font/gatekeptsemibold"
             android:text="Score: 0"
             android:textColor="@color/pale_cyan"
             android:textColorHint="@color/pale_cyan"
             android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/qr_code"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_content" />
 
 
         <ImageView
             android:id="@+id/qr_code"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:layout_marginBottom="216dp"
+            android:layout_marginTop="30dp"
             android:src="@null"
-            app:layout_constraintBottom_toTopOf="@+id/rare_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/score" />
 
         <com.smb.glowbutton.GlowButton
             android:id="@+id/common_button"
@@ -74,9 +70,8 @@
             app:gb_textColor="@color/black"
             app:gb_textSize="16dp"
             app:gb_textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/rare_button"
             app:layout_constraintEnd_toStartOf="@+id/rare_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/rare_button" />
 
         <com.smb.glowbutton.GlowButton
             android:id="@+id/rare_button"
@@ -120,9 +115,8 @@
             app:gb_textColor="@color/black"
             app:gb_textSize="16dp"
             app:gb_textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/rare_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/rare_button" />
+            app:layout_constraintStart_toEndOf="@+id/rare_button"
+            app:layout_constraintTop_toTopOf="@+id/rare_button" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
