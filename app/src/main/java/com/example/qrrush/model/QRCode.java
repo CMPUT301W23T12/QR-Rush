@@ -342,6 +342,8 @@ public class QRCode {
 
     public Optional<String> getlocation() {
         if (location.isPresent()){
+            Log.e("City", "loction found");
+
             double latitude = location.get().getLatitude(); // Example latitude
             double longitude = location.get().getLongitude(); // Example longitude
             String apiKey = "AIzaSyABteFQy07SDCCQb_1FDyYtYF-ez6rbhKA"; // Replace with your API key
@@ -391,7 +393,9 @@ public class QRCode {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
+        Log.e("City", "loction not found");
         return null;
     }
 
