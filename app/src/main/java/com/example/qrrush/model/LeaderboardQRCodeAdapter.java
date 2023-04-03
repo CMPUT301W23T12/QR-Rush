@@ -116,7 +116,6 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
 
     }
 
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -151,8 +150,7 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                     Locale.ENGLISH,
                     "%.6f, %.6f",
                     loc.getLongitude(),
-                    loc.getLatitude()
-            );
+                    loc.getLatitude());
         }
         locationView.setText(location);
         getlocation(qrCode.getLocation(), locationString -> {
@@ -173,6 +171,11 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         ImageButton commentButton = view.findViewById(R.id.commentButton);
 
         commentButton.setVisibility(View.GONE);
+        // Bug Report: If the user deletes the QR code, or changes their name it should
+        // update the qrcodes collection on firebase
+        // and update the username/remove it. If someone scans a top QR code here and
+        // changes their name, it won't update and when u try to click on their profile
+        // it will crash the app.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,10 +183,12 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                 FirebaseWrapper.getScannedQRCodeDataLeader(qrCode.getHash(), (scannedByList) -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Scanned by...");
+
                     if (scannedByList.isEmpty()) {
                         builder.setMessage("No other user has scanned this QR code yet.");
                     } else {
                         builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int pos) {
@@ -194,10 +199,8 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                                             // send the user object to the profile fragment
                                             new ProfileDialogFragment(user.get()).show(
                                                     ((AppCompatActivity) context).getSupportFragmentManager(),
-                                                    ""
-                                            );
+                                                    "");
                                         });
-
 
                                     }
                                 });
