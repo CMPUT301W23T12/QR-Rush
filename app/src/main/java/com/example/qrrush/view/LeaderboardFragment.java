@@ -50,6 +50,7 @@ public class LeaderboardFragment extends Fragment {
     ListView leaderboardView;
     FragmentActivity activity;
 
+    Boolean isTop1 = false;
 
     /**
      * Creates a LeaderboardFragment for the given user.
@@ -240,14 +241,18 @@ public class LeaderboardFragment extends Fragment {
         switch (rank) {
             case 1:
                 view = v.findViewById(R.id.top_user1);
+                isTop1 = true;
                 break;
             case 2:
                 view = v.findViewById(R.id.top_user2);
+                isTop1 = false;
                 break;
             case 3:
                 view = v.findViewById(R.id.top_user3);
+                isTop1 = false;
                 break;
             default:
+                isTop1 = false;
                 view = null;
         }
 
@@ -280,7 +285,9 @@ public class LeaderboardFragment extends Fragment {
         }
         userName.setText(user.getUserName());
         userScore.setText(String.valueOf(user.getTotalScore()));
-        rankTextView.setText(String.valueOf(rank)); // set the rank TextView
+        if (!isTop1) {
+            rankTextView.setText(String.valueOf(rank)); // set the rank TextView
+        }
 
         view.setOnClickListener(theView -> {
             FirebaseWrapper.getUserData(user.getUserName(), user1 -> {
