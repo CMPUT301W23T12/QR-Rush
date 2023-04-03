@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,17 +24,9 @@ import com.example.qrrush.R;
 import com.example.qrrush.view.ProfileDialogFragment;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * ArrayAdapter which displays QR Codes from the QRCode class.
@@ -59,67 +50,6 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         this.user = user;
         this.editable = editable;
         this.context = context;
-    }
-
-    private void getlocation(Optional<Location> location, Consumer<String> locationCallback) {
-        if (!location.isPresent()) {
-            return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Location l = location.get();
-                double latitude = l.getLatitude(); // Example latitude
-                double longitude = l.getLongitude(); // Example longitude
-                String apiKey = "AIzaSyABteFQy07SDCCQb_1FDyYtYF-ez6rbhKA"; // Replace with your API key
-
-                try {
-                    // Send a request to the Reverse Geocoding API
-                    String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                            latitude + "," + longitude + "&key=" + apiKey;
-                    URL obj = new URL(url);
-                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                    con.setRequestMethod("GET");
-
-                    // Get the response
-                    BufferedReader in = new BufferedReader(
-                            new InputStreamReader(con.getInputStream()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-
-                    // Parse the JSON response and get the city and province
-                    JSONObject jsonObj = new JSONObject(response.toString());
-                    JSONArray resultsArr = jsonObj.getJSONArray("results");
-                    JSONObject firstResult = resultsArr.getJSONObject(0);
-                    JSONArray addressComponentsArr = firstResult.getJSONArray("address_components");
-                    String city = "";
-                    String province = "";
-                    for (int i = 0; i < addressComponentsArr.length(); i++) {
-                        JSONObject component = addressComponentsArr.getJSONObject(i);
-                        JSONArray typesArr = component.getJSONArray("types");
-                        for (int j = 0; j < typesArr.length(); j++) {
-                            String type = typesArr.getString(j);
-                            if (type.equals("locality")) {
-                                city = component.getString("long_name");
-                            }
-                            if (type.equals("administrative_area_level_1")) {
-                                province = component.getString("short_name");
-                            }
-                        }
-                    }
-
-                    locationCallback.accept(String.format(Locale.ENGLISH, "%s, %s", city, province));
-                } catch (Exception e) {
-                    Log.e("City", e.toString());
-                }
-            }
-        }).start();
-
     }
 
     @NonNull
@@ -159,21 +89,16 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             commentEditText.setVisibility(View.GONE);
             commentEditText.setText("");
         }
-        String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
-            location = String.format(
+            locationView.setVisibility(View.VISIBLE);
+            locationView.setText(String.format(
                     Locale.ENGLISH,
                     "%.6f, %.6f",
                     loc.getLongitude(),
                     loc.getLatitude()
-            );
+            ));
         }
-        locationView.setText(location);
-        getlocation(qrCode.getLocation(), locationString -> {
-            locationView.setVisibility(View.VISIBLE);
-            locationView.setText(locationString);
-        });
 
         pointView.setText("" + qrCode.getScore());
 
