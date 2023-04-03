@@ -108,6 +108,7 @@ public class User implements Serializable {
 
     /**
      * Sets the user name of this class.
+     *
      * @param   userName The user name to set.
      */
     public void setUserName(String userName) {
@@ -116,6 +117,7 @@ public class User implements Serializable {
 
     /**
      * Gets the profile picture.
+     *
      * @return  A string of the jpeg or png link to the profile picture.
      */
     public String getProfilePicture() {
@@ -124,6 +126,7 @@ public class User implements Serializable {
 
     /**
      * Checks if a user has a profile picture.
+     *
      * @return  True or false (true if profile picture is present) else, false.
      */
     public boolean hasProfilePicture() {
@@ -132,6 +135,7 @@ public class User implements Serializable {
 
     /**
      * Sets the users profile picture .
+     *
      * @param   profilePicture A string of the jpeg or png link to the profile picture.
      */
     public void setProfilePicture(String profilePicture) {
@@ -147,6 +151,7 @@ public class User implements Serializable {
 
     /**
      * Sets this users rank.
+     *
      * @param   rank An int rank to be set.
      */
     public void setRank(int rank) {
@@ -155,6 +160,7 @@ public class User implements Serializable {
 
     /**
      * Gets all the QR codes for this user.
+     *
      * @return  An array list of all this users QR codes.
      */
     public ArrayList<QRCode> getQRCodes() {
@@ -211,6 +217,7 @@ public class User implements Serializable {
 
     /**
      * Checks if a quest is done.
+     *
      * @param   quest The quest to be checked
      * @return  True if the quest is done, false otherwise.
      */
@@ -264,6 +271,7 @@ public class User implements Serializable {
 
     /**
      * Sets a QR code comment with out the use of firebase.
+     *
      * @param code  The QR code to be commented.
      * @param text  The text to set it to.
      */
