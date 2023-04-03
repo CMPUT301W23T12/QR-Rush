@@ -61,7 +61,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         this.context = context;
     }
 
-    public void getlocation(Optional<Location> location, Consumer<String> locationCallback) {
+    private void getlocation(Optional<Location> location, Consumer<String> locationCallback) {
         if (!location.isPresent()) {
             return;
         }
