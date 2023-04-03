@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,6 +102,9 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         ImageButton commentButton = view.findViewById(R.id.commentButton);
 
         commentButton.setVisibility(View.GONE);
+        // Bug Report: If the user deletes the QR code, or changes their name it should update the qrcodes collection on firebase
+        // and update the username/remove it. If someone scans a top QR code here and changes their name, it won't update and when u try to click on their profile
+        // it will crash the app.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,10 +112,12 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                 FirebaseWrapper.getScannedQRCodeDataLeader(qrCode.getHash(), (scannedByList) -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Scanned by...");
+
                     if (scannedByList.isEmpty()) {
                         builder.setMessage("No other user has scanned this QR code yet.");
                     } else {
                         builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int pos) {
@@ -120,6 +126,7 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
                                         FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
                                             // scannedByList.get(pos) returns the name -> STRING
                                             // send the user object to the profile fragment
+                                            Log.e("LeaderboardFragment", user.get().getUserName());
                                             ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction()
                                                     .replace(R.id.tabLayout, new ProfileFragment(user.get(), false)).commit();
 

@@ -207,7 +207,6 @@ public class FirebaseWrapper {
                             username,
                             ds.getString("phone-number"),
                             ds.getLong("rank").intValue(),
-
                             new ArrayList<>(),
                             ds.getLong("money").intValue(),
                             ds.getString("profile_picture")
