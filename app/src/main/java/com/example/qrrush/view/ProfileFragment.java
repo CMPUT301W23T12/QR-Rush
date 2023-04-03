@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -312,17 +313,35 @@ public class ProfileFragment extends Fragment implements Serializable {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {
-            View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-            alertDialogBuilder.setView(Settings);
-            alertDialogBuilder.setTitle("Settings");
+            //View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity,R.style.MyDialogStyle);
+
+            //alertDialogBuilder.setView(Settings);
+            TextView customTitle = new TextView(activity);
+            customTitle.setText("Settings");
+            customTitle.setTextSize(30); // Set the desired text size
+            customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+            customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+            int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on density
+            customTitle.setPadding(padding, padding, padding, padding);
+            alertDialogBuilder.setCustomTitle(customTitle);
+            LayoutInflater inflater = requireActivity().getLayoutInflater();
+            View customView = inflater.inflate(R.layout.setting_overlay, null);
+            alertDialogBuilder.setView(customView);
             alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.MyDialogStyle);
                     alertDialogBuilder.setView(addNewName);
-                    alertDialogBuilder.setTitle("Input new name:");
+                    TextView customTitle = new TextView(activity);
+                    customTitle.setText("Input new name");
+                    customTitle.setTextSize(30); // Set the desired text size
+                    customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+                    customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+                    int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on density
+                    customTitle.setPadding(padding, padding, padding, padding);
+                    alertDialogBuilder.setCustomTitle(customTitle);
 
                     final AlertDialog alertDialog = alertDialogBuilder.create(); // Create the alertDialog without adding buttons
 
