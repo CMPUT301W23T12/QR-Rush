@@ -17,6 +17,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -284,6 +287,7 @@ public class FirebaseWrapper {
                 });
     }
 
+
     /**
      * Retrieves a list of usernames that have scanned a QR code with the specified hash from the Firestore database.
      *
@@ -291,10 +295,8 @@ public class FirebaseWrapper {
      * @param username The username of the user whose name should be excluded from the returned list.
      * @param scannedByListConsumer The callback function to execute when the list of scanned-by users is retrieved.
      */
-    public static void getScannedQRCodeData(String hash, String username,
-                                            Consumer<List<String>> scannedByListConsumer) {
+    public static void getScannedQRCodeData(String hash, String username, Consumer<List<User>> usersConsumer) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
         db.collection("qrcodes").document(hash)
                 .get()
                 .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
@@ -310,46 +312,33 @@ public class FirebaseWrapper {
                     }
 
                     // Retrieve the array of users who have scanned the QR code
-                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
-
+                    ArrayList<String> scannedByUsernameList = (ArrayList<String>) ds.get("scannedby");
+                    Log.e("Debug", scannedByUsernameList.toString());
                     // Filter out the given username
-                    scannedByList.remove(username);
+                    scannedByUsernameList.remove(username);
 
-                    scannedByListConsumer.accept(scannedByList);
-                });
-    }
+                    // Convert the usernames to User objects
+                    List<User> users = new ArrayList<>();
+                    Log.e("Adib", users.toString());
 
-    /**
-     * Retrieves the list of users who have scanned the QR code associated with the given hash.
-     *
-     * @param hash The hash of the QR code whose scanned data needs to be retrieved.
-     * @param scannedByListConsumer A callback function that accepts the list of usernames who have scanned the QR code.
-     */
-    public static void getScannedQRCodeDataLeader(String hash, Consumer<List<String>> scannedByListConsumer) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Get the user document for the given username
-        db.collection("qrcodes").document(hash)
-                .get()
-                .addOnCompleteListener((Task<DocumentSnapshot> t) -> {
-                    if (!t.isSuccessful()) {
-                        Log.e("getQRCodeData", "task failed!");
+                    if (scannedByUsernameList.isEmpty()) {
+                        usersConsumer.accept(users);
                         return;
                     }
 
-                    DocumentSnapshot ds = t.getResult();
-                    if (!ds.exists()) {
-                        Log.e("getQRCodeData", "QR code with hash " + hash + " is not in the database!");
-                        return;
-                    }
+                    FirebaseWrapper.getAllUsers(allUsers -> {
+                        for (User u : allUsers){
+                            if (scannedByUsernameList.contains(u.getUserName())){
+                                Log.e("Debug", u.getUserName());
+                                users.add(u);
+                            }
+                        }
+                        usersConsumer.accept(users);
+                    });
 
-                    // Retrieve the array of users who have scanned the QR code
-                    ArrayList<String> scannedByList = (ArrayList<String>) ds.get("scannedby");
-
-                    // Filter out the given username
-
-                    scannedByListConsumer.accept(scannedByList);
                 });
     }
+
     /**
      * Retrieves the list of users and their associated QR codes from the given Firestore query snapshots.
      *
@@ -442,6 +431,33 @@ public class FirebaseWrapper {
                     Log.d("getAllQRCodes", "task failed!");
                 });
     }
+
+
+    public static void getMapQRCodeData(Consumer<List<DocumentSnapshot>> qrCodeDocumentsConsumer) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Get all documents from the "qrcodes" collection
+        db.collection("qrcodes")
+                .get()
+                .addOnCompleteListener((Task<QuerySnapshot> task) -> {
+                    if (!task.isSuccessful()) {
+                        Log.e("getAllQRCodeData", "task failed!");
+                        return;
+                    }
+
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot == null) {
+                        Log.e("getAllQRCodeData", "No documents found in the qrcodes collection!");
+                        return;
+                    }
+
+                    List<DocumentSnapshot> qrCodeDocuments = querySnapshot.getDocuments();
+
+                    // Pass the list of DocumentSnapshot objects to the provided consumer
+                    qrCodeDocumentsConsumer.accept(qrCodeDocuments);
+                });
+    }
+
+
 
     /**
      * This method will get all users from firebase, and provide an array of User

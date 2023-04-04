@@ -196,14 +196,14 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
                                 public void onClick(DialogInterface dialog, int pos) {
                                     // position is tracked by "pos" so now we pass the clickable profile
                                     // We need to create a user object with that so we gotta use getUserData
-                                    FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+                                    User user = scannedByList.get(pos);
                                         // scannedByList.get(pos) returns the name -> STRING
                                         // send the user object to the profile fragment
-                                        new ProfileDialogFragment(user.get()).show(
+                                        new ProfileDialogFragment(user).show(
                                                 ((AppCompatActivity) context).getSupportFragmentManager(),
                                                 ""
                                         );
-                                    });
+
 
                                 }
                             });

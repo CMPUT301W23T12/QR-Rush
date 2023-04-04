@@ -71,6 +71,10 @@ public class QRCode {
         this.hash = hash;
     }
 
+    public QRCode(String hash) {
+        this.hash = hash;
+    }
+
     /**
      * Sets the location image of this QR code
      *
