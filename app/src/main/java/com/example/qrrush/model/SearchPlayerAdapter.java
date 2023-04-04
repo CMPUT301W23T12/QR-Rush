@@ -23,12 +23,20 @@ import com.example.qrrush.view.ProfileDialogFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom adapter for the social tab that displays the searched users..
+ */
 public class SearchPlayerAdapter extends ArrayAdapter<User> {
     private FragmentActivity context;
     private int resource;
     private List<User> mUsers;
     private ArrayList<User> filteredUsers;
 
+    /**
+     * @param context The context object to pass to the super constructor.
+     * @param resource The resource number to passed to the super constructor.
+     * @param users The array list of users to be passed through.
+     */
     public SearchPlayerAdapter(FragmentActivity context, int resource, List<User> users) {
         super(context, resource, users);
         this.context = context;
@@ -38,11 +46,21 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         filteredUsers.addAll(this.mUsers);
     }
 
+    /**
+     * Get the counts of the filtered searched users
+     *
+     * @return int of the count
+     */
     @Override
     public int getCount() {
         return filteredUsers.size();
     }
 
+    /**
+     * Filters the users
+     *
+     * @return A instance of filter with the filtered preferences.
+     */
     @NonNull
     @Override
     public Filter getFilter() {
@@ -89,9 +107,11 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         // Set the user data to the appropriate UI components
         TextView searchedName = view.findViewById(R.id.nameViewSocial);
         TextView searchedScore = view.findViewById(R.id.playerScoreView);
+        TextView searchedRank = view.findViewById(R.id.rankTextView);
         ImageView searchedPlayerImageView = view.findViewById(R.id.searchedPlayerImageView);
         searchedName.setText(user.getUserName());
-        searchedScore.setText("Score: " + String.valueOf(user.getTotalScore()));
+        searchedScore.setText("Score: " + user.getTotalScore());
+        searchedRank.setVisibility(View.GONE);
 
         if (user.hasProfilePicture()) {
             Glide.with(getContext())
@@ -117,13 +137,17 @@ public class SearchPlayerAdapter extends ArrayAdapter<User> {
         view.setOnClickListener(v -> {
             new ProfileDialogFragment(user).show(
                     context.getSupportFragmentManager().beginTransaction(),
-                    user.getUserName()
-            );
+                    user.getUserName());
         });
 
         return view;
     }
 
+    /**
+     * Sets up the data for the filtered user arrays.
+     *
+     * @param users users to be sorted.
+     */
     public void setData(List<User> users) {
         mUsers.clear();
         mUsers.addAll(users);

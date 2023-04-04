@@ -13,6 +13,10 @@ public class DateComparator implements Comparator<QRCode> {
      * If both timestamps are null or equal, 0 will be returned.
      * If the first timestamp is null or less than the second, -1 will be returned.
      * If the second timestamp is null or less than the first, 1 will be returned.
+     *
+    *@param QR1 the first QRCode to compare.
+    *@param QR2 the second QRCode to compare.
+    *@return an integer indicating their order based on their dates.
      */
     @Override
     public int compare(QRCode QR1, QRCode QR2) {

@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,8 @@ public class ProfileFragment extends Fragment implements Serializable {
      * Grabs User object from the main activity
      *
      * @param user The user who's profile should be displayed.
+     * @param editable  If you can edit the page it should be true, else false.
+     * @param activity  the activity for this constructor.
      */
     public ProfileFragment(User user, Boolean editable, FragmentActivity activity) {
         // Required empty public constructor
@@ -92,6 +95,9 @@ public class ProfileFragment extends Fragment implements Serializable {
         this.activity = activity;
     }
 
+    /**
+     * Picks the image from the users camera roll and sets it and then stores it in firebase.
+     */
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia = registerForActivityResult(
             new ActivityResultContracts.PickVisualMedia(), uri -> {
                 // Callback is invoked after the user selects a media item or closes the
@@ -146,7 +152,7 @@ public class ProfileFragment extends Fragment implements Serializable {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
@@ -156,7 +162,13 @@ public class ProfileFragment extends Fragment implements Serializable {
         super.onResume();
         qrCodeAdapter.notifyDataSetChanged();
     }
-
+    /**
+     * Retrieves all the user profiles from the Firebase database, extracts the QR codes of each profile,
+     * sorts the profiles based on their total score and sets the rank of the current user.
+     *
+     * @param user The User object whose rank needs to be set
+     * @param rankView The TextView object to display the user's rank
+     */
     public void getAllCollection(User user, TextView rankView) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("profiles")
@@ -262,7 +274,7 @@ public class ProfileFragment extends Fragment implements Serializable {
         // by score (sortingTracker = 0)
         sortingTracker = 1;
 
-        sortingButton.setText("By Date (Newest First)");
+        sortingButton.setText("By Date");
         DateComparator dateComparator = new DateComparator();
         Collections.sort(user.getQRCodes(), dateComparator);
         // Sorts by newest to oldest (newest codes being at the top)
@@ -273,14 +285,14 @@ public class ProfileFragment extends Fragment implements Serializable {
         // Adapter gets updated each time the list gets sorted
         sortingButton.setOnClickListener(v -> {
             if (sortingTracker == 0) {
-                sortingButton.setText("By Date (Newest First)");
+                sortingButton.setText("By Date");
                 sortingTracker += 1;
                 Collections.sort(user.getQRCodes(), dateComparator);
                 // Sorts by newest to oldest (newest codes being at the top)
                 Collections.reverse(user.getQRCodes());
                 qrCodeAdapter.notifyDataSetChanged();
             } else if (sortingTracker == 1) {
-                sortingButton.setText("By Points (Highest First)");
+                sortingButton.setText("By Points");
                 sortingTracker += 1;
                 ScoreComparator scoreComparator = new ScoreComparator();
                 Collections.sort(user.getQRCodes(), scoreComparator);
@@ -312,19 +324,39 @@ public class ProfileFragment extends Fragment implements Serializable {
             editNameButton.setVisibility(View.GONE);
         }
         editNameButton.setOnClickListener(v -> {
-            View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-            alertDialogBuilder.setView(Settings);
-            alertDialogBuilder.setTitle("Settings");
+            // View Settings = getLayoutInflater().inflate(R.layout.setting_overlay, null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.MyDialogStyle);
+
+            // alertDialogBuilder.setView(Settings);
+            TextView customTitle = new TextView(activity);
+            customTitle.setText("Settings");
+            customTitle.setTextSize(30); // Set the desired text size
+            customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+            customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+            int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on density
+            customTitle.setPadding(padding, padding, padding, padding);
+            alertDialogBuilder.setCustomTitle(customTitle);
+            LayoutInflater inflater = requireActivity().getLayoutInflater();
+            View customView = inflater.inflate(R.layout.setting_overlay, null);
+            alertDialogBuilder.setView(customView);
             alertDialogBuilder.setPositiveButton("Edit Name", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     View addNewName = getLayoutInflater().inflate(R.layout.profile_overlay, null);
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity, R.style.MyDialogStyle);
                     alertDialogBuilder.setView(addNewName);
-                    alertDialogBuilder.setTitle("Input new name:");
+                    TextView customTitle = new TextView(activity);
+                    customTitle.setText("Input new name");
+                    customTitle.setTextSize(30); // Set the desired text size
+                    customTitle.setTextColor(Color.WHITE); // Set the desired text color (white)
+                    customTitle.setGravity(Gravity.CENTER); // Set gravity to center
+                    int padding = (int) (16 * getResources().getDisplayMetrics().density); // Calculate padding based on
+                                                                                           // density
+                    customTitle.setPadding(padding, padding, padding, padding);
+                    alertDialogBuilder.setCustomTitle(customTitle);
 
-                    final AlertDialog alertDialog = alertDialogBuilder.create(); // Create the alertDialog without adding buttons
+                    final AlertDialog alertDialog = alertDialogBuilder.create(); // Create the alertDialog without
+                                                                                 // adding buttons
 
                     // Find the positive button in the layout
                     Button positiveButton = addNewName.findViewById(R.id.positive_button);
@@ -350,7 +382,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                             }
                             progressBar.setVisibility(View.VISIBLE); // Show the progress bar
                             FirebaseWrapper.getUserData(newUserName, (Optional<User> userResult) -> {
-                                progressBar.setVisibility(View.GONE); // Hide the progress bar when the response is received
+                                progressBar.setVisibility(View.GONE); // Hide the progress bar when the response is
+                                                                      // received
 
                                 if (userResult.isPresent()) {
                                     // Username is taken, prompt user to pick a new name
@@ -379,7 +412,8 @@ public class ProfileFragment extends Fragment implements Serializable {
                                                     .document(q.getHash())
                                                     .set(data)
                                                     .addOnSuccessListener(aVoid -> {
-                                                        Log.d("FirebaseWrapper", "Document updated with ID: " + q.getHash());
+                                                        Log.d("FirebaseWrapper",
+                                                                "Document updated with ID: " + q.getHash());
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         Log.e("FirebaseWrapper", "Error updating document", e);
@@ -430,7 +464,6 @@ public class ProfileFragment extends Fragment implements Serializable {
                 public void onClick(DialogInterface dialog, int which) {
                     SettingsFragment settingsFragment = new SettingsFragment(mediaPlayer);
                     settingsFragment.show(getActivity().getSupportFragmentManager(), "Settings");
-
                 }
             }).show();
         });

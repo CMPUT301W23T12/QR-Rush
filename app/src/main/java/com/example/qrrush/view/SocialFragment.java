@@ -3,6 +3,7 @@ package com.example.qrrush.view;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +16,27 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.qrrush.R;
+import com.example.qrrush.controller.RankComparator;
 import com.example.qrrush.model.FirebaseWrapper;
+import com.example.qrrush.model.QRCode;
 import com.example.qrrush.model.SearchPlayerAdapter;
 import com.example.qrrush.model.User;
+import com.example.qrrush.model.UserAdapter;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * This class is a fragment of the MainActivity, it's responsible for creating a UI interface for users to search
- * other player's profiles. It retrieves the user's search input and fetches the corresponding profile
+ * This class is a fragment of the MainActivity, it's responsible for creating a
+ * UI interface for users to search
+ * other player's profiles. It retrieves the user's search input and fetches the
+ * corresponding profile
  */
 public class SocialFragment extends Fragment {
     User user;
@@ -33,7 +46,14 @@ public class SocialFragment extends Fragment {
     private SearchPlayerAdapter searchResultsAdapter;
     TextView refreshPlayerText;
     ArrayList<User> userList;
-
+    /**
+     * Called when the fragment is resumed.
+     *
+     * Sets the visibility of the refresh player text and no player found text to visible.
+     * Calls FirebaseWrapper.getAllUsers to get a list of all users, and sets the user list to the retrieved list.
+     * Calls the setData method of the searchResultsAdapter to set the data in the adapter to the retrieved user list.
+     * Filters the search results by the text in the searchPlayerEditField.
+     */
     public SocialFragment(User user) {
         this.user = user;
     }
@@ -45,13 +65,14 @@ public class SocialFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_social, container, false);
 
         // Get the reference to the ListView and create the adapter
         searchResultsList = view.findViewById(R.id.searchPlayerList);
-        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content, new ArrayList<User>());
+        searchResultsAdapter = new SearchPlayerAdapter(requireActivity(), R.layout.searchedplayers_content,
+                new ArrayList<User>());
         searchResultsList.setAdapter(searchResultsAdapter);
         refreshPlayerText = view.findViewById(R.id.refresh_player_list_text);
         return view;
@@ -65,6 +86,7 @@ public class SocialFragment extends Fragment {
         FirebaseWrapper.getAllUsers(users -> {
             refreshPlayerText.setVisibility(View.GONE);
             noPlayerFound.setVisibility(View.GONE);
+            Log.e("abeeee", users.toString());
             userList = users;
             searchResultsAdapter.setData(users);
             searchResultsAdapter.getFilter().filter(searchPlayerEditField.getText().toString());
@@ -72,7 +94,8 @@ public class SocialFragment extends Fragment {
     }
 
     /**
-     * This method is called once the View is created, it handles the search button click events
+     * This method is called once the View is created, it handles the search button
+     * click events
      * and retrieves the searched player's data from Firebase.
      *
      * @param view               the created view that contains the UI components.

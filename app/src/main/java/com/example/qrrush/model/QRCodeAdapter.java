@@ -43,6 +43,7 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
      * @param context The context object to pass to the super constructor.
      * @param objects The QR codes to display.
      * @param user    The user which is associated with the QR Codes.
+     * @param editable If this instance of the adapter can be edited
      */
     public QRCodeAdapter(Context context, ArrayList<QRCode> objects, User user, Boolean editable) {
         super(context, 0, objects);
@@ -70,10 +71,14 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
         locationImage.setVisibility(View.GONE);
         commentEditText.setVisibility(View.GONE);
         nameView.setText(qrCode.getName());
+        nameView.setTextColor(qrCode.getColor());
 
         if (qrCode.getLocationImage() != null) {
             Picasso.get().load(Uri.parse(qrCode.getLocationImage())).into(locationImage);
             locationImage.setVisibility(View.VISIBLE);
+        }
+        if (!qrCode.getLocation().isPresent()) {
+            locationView.setVisibility(View.INVISIBLE);
         }
 
         Optional<Location> l = qrCode.getLocation();
@@ -85,19 +90,18 @@ public class QRCodeAdapter extends ArrayAdapter<QRCode> {
             commentEditText.setVisibility(View.GONE);
             commentEditText.setText("");
         }
-        String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
-            location = String.format(
+            locationView.setVisibility(View.VISIBLE);
+            locationView.setText(String.format(
                     Locale.ENGLISH,
                     "%.6f, %.6f",
                     loc.getLongitude(),
                     loc.getLatitude()
-            );
+            ));
         }
-        locationView.setText(location);
 
-        pointView.setText("Score: " + qrCode.getScore());
+        pointView.setText("" + qrCode.getScore());
 
         ImageButton deleteButton = view.findViewById(R.id.deleteButton);
 

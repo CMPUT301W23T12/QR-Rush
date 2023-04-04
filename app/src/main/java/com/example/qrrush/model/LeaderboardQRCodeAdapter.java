@@ -23,12 +23,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.qrrush.R;
 import com.example.qrrush.view.ProfileDialogFragment;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
- * ArrayAdapter which displays QR Codes from the QRCode class.
+ * ArrayAdapter which displays QR Codes from the QRCode class for the leaderboard fragment.
  */
 public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     ArrayList<QRCode> qrCodes;
@@ -43,7 +51,6 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     public LeaderboardQRCodeAdapter(Context context, ArrayList<QRCode> objects) {
         super(context, 0, objects);
         qrCodes = objects;
-
         this.context = context;
     }
 
@@ -52,28 +59,22 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
         if (convertView == null) {
-            view = LayoutInflater.from(super.getContext()).inflate(R.layout.profile_content, parent, false);
+            view = LayoutInflater.from(super.getContext()).inflate(R.layout.leaderboardqrcodeadapter, parent, false);
         }
 
-        LinearLayout container = view.findViewById(R.id.qrCodeAdapterContainer);
-        container.setBackgroundColor(Color.parseColor("#cbc3e3"));
-
         QRCode qrCode = getItem(position);
-        TextView nameView = view.findViewById(R.id.nameViewQR);
+        TextView nameView = view.findViewById(R.id.nameViewQR1);
         nameView.setTextColor(Color.BLACK);
-        TextView pointView = view.findViewById(R.id.pointView);
+        TextView pointView = view.findViewById(R.id.pointView1);
         pointView.setTextColor(Color.BLACK);
-        TextView locationView = view.findViewById(R.id.locationView);
+        TextView locationView = view.findViewById(R.id.locationView1);
         locationView.setTextColor(Color.BLACK);
-        ImageView imageView = view.findViewById(R.id.imageView);
-        TextView commentEditText = view.findViewById(R.id.commentEditText);
-        ImageView locationImage = view.findViewById(R.id.locationImageQRCode);
-        locationImage.setVisibility(View.GONE);
-        commentEditText.setVisibility(View.GONE);
+        ImageView imageView = view.findViewById(R.id.imageView1);
         nameView.setText(qrCode.getName());
+        nameView.setTextColor(qrCode.getColor());
 
         Optional<Location> l = qrCode.getLocation();
-
+        // gets location
         String location = "no location available";
         if (l.isPresent()) {
             Location loc = l.get();
@@ -85,24 +86,11 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         }
         locationView.setText(location);
 
-        pointView.setText("Score: " + qrCode.getScore());
-
-        ImageButton deleteButton = view.findViewById(R.id.deleteButton);
-
-        deleteButton.setVisibility(View.GONE);
+        pointView.setText(String.valueOf(qrCode.getScore()));
 
         // Image will be fit into the size of the image view
         Bitmap b = Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false);
         imageView.setImageBitmap(b);
-
-        ImageButton commentButton = view.findViewById(R.id.commentButton);
-
-        commentButton.setVisibility(View.GONE);
-        // Bug Report: If the user deletes the QR code, or changes their name it should
-        // update the qrcodes collection on firebase
-        // and update the username/remove it. If someone scans a top QR code here and
-        // changes their name, it won't update and when u try to click on their profile
-        // it will crash the app.
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

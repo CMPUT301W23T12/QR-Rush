@@ -11,6 +11,9 @@ import com.example.qrrush.view.ProfileFragment;
 import com.example.qrrush.view.ShopFragment;
 import com.example.qrrush.view.SocialFragment;
 
+/**
+ * Class for swiping between fragments
+ */
 public class MyViewPagerAdapater extends FragmentStateAdapter {
     User user;
     FragmentActivity activity;
@@ -24,6 +27,7 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
+        // main logic for swiping between fragments
         switch (position) {
             case 0:
                 return new ProfileFragment(user, true, activity);
@@ -40,6 +44,11 @@ public class MyViewPagerAdapater extends FragmentStateAdapter {
         }
     }
 
+    /**
+     * will always return 5
+     *
+     * @return int 5
+     */
     @Override
     public int getItemCount() {
         return 5;

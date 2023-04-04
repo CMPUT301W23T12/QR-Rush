@@ -19,37 +19,54 @@
             android:layout_marginTop="50dp"
             android:fontFamily="@font/gatekeptsemibold"
             android:gravity="center"
-            android:textColor="@color/pale_cyan"
+            android:textColor="@color/bg_white"
             android:textColorHint="@color/pale_cyan"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <TextView
             android:id="@+id/score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="48dp"
             android:fontFamily="@font/gatekeptsemibold"
             android:text="Score: 0"
-            android:textColor="@color/pale_cyan"
+            android:textColor="@color/bg_white"
             android:textColorHint="@color/pale_cyan"
-            android:textSize="20sp"
+            android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.247"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name_content" />
+            app:layout_constraintTop_toBottomOf="@+id/qr_code" />
 
+        <TextView
+            android:id="@+id/currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:fontFamily="@font/gatekeptsemibold"
+            android:text="Coins: 0"
+            android:textColor="@color/bg_white"
+            android:textColorHint="@color/pale_cyan"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.749"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/qr_code" />
 
         <ImageView
             android:id="@+id/qr_code"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:layout_marginTop="30dp"
+            android:elevation="10dp"
             android:src="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/score" />
+            app:layout_constraintBottom_toBottomOf="@+id/button"
+            app:layout_constraintEnd_toEndOf="@+id/button"
+            app:layout_constraintStart_toStartOf="@+id/button"
+            app:layout_constraintTop_toTopOf="@+id/button" />
 
         <com.smb.glowbutton.GlowButton
             android:id="@+id/common_button"
@@ -119,6 +136,19 @@
             app:gb_textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/rare_button"
             app:layout_constraintTop_toTopOf="@+id/rare_button" />
+
+        <com.smb.glowbutton.GlowButton
+            android:id="@+id/button"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_marginTop="36dp"
+            android:text="Button"
+            app:gb_cornerRadius="5dp"
+            app:layout_constraintBottom_toTopOf="@+id/rare_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_content"
+            app:layout_constraintVertical_bias="0.0" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

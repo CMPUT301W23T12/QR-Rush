@@ -58,16 +58,27 @@ public class QRConfirmFragment extends DialogFragment {
     FragmentManager manager;
     Runnable onDismiss;
     byte[] picture = null;
-    Button foundLocationButton;
+    ImageButton foundLocationButton;
     ImageView locationImage;
     private static final int CAMERA_REQUEST_CODE = 100;
-
+    /**
+     * Constructs a new QRConfirmFragment with the specified User, Barcode, and onDismiss Runnable.
+     *
+     * @param user the User associated with the QR code confirmation
+     * @param b the Barcode to confirm
+     * @param onDismiss the Runnable to execute on dismiss of the fragment
+     */
     public QRConfirmFragment(User user, Barcode b, Runnable onDismiss) {
         this.user = user;
         this.code = b;
         this.onDismiss = onDismiss;
     }
-
+    /**
+     * Called by the system when the dialog is dismissed.
+     * Executes the Runnable object passed to the constructor.
+     *
+     * @param dialog The dialog that was dismissed
+     */
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
