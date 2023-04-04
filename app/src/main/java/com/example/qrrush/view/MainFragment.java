@@ -43,9 +43,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.FirestoreClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -254,39 +257,45 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 }
 
                 LatLng qrCodeLatLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(documents.get(i).getId()));
+                Marker marker = mMap.addMarker(new MarkerOptions().position(qrCodeLatLng).title(documents.get(i).getId()));
+                marker.setTag(documents.get(i).getId()); // Store the document ID as the marker's tag
+            }
 
-                // Add marker click listener to show alert dialog
-                final int finalI = i;
-                mMap.setOnMarkerClickListener(marker -> {
-                    DocumentSnapshot document = querySnapshot.getDocuments().get(finalI);
-                    Log.e("Bruh", document.getId());
-                    // Create and show alert dialog
-                    FirebaseWrapper.getScannedQRCodeData(document.getId(), user.getUserName(), (scannedByList) -> {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogStyle);
-                        LayoutInflater inflater = requireActivity().getLayoutInflater();
-                        View customView = inflater.inflate(R.layout.map_qrcode, null);
-                        builder.setView(customView);
+            // Add marker click listener to show alert dialog
+            mMap.setOnMarkerClickListener(marker -> {
+                String documentId = (String) marker.getTag();
+                if (documentId == null) {
+                    Log.e("MarkerClickListener", "Marker has no associated document ID");
+                    return true;
+                }
 
-                        TextView hashText = customView.findViewById(R.id.hash_text);
-                        ListView usersList = customView.findViewById(R.id.users_list);
-                        ImageButton customPositiveButton = customView.findViewById(R.id.custom_positive_button);
-                        ImageView hash_image = customView.findViewById(R.id.hash_image);
+                FirebaseWrapper.getScannedQRCodeData(documentId, user.getUserName(), (scannedByList) -> {
+                    // ... Show the alert dialog ...
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.MyDialogStyle);
+                    LayoutInflater inflater = requireActivity().getLayoutInflater();
+                    View customView = inflater.inflate(R.layout.map_qrcode, null);
+                    builder.setView(customView);
 
-                        // create qrCode object
-                        QRCode qrCode = new QRCode(document.getId());
-                        // Set the hash text
-                        hashText.setText(qrCode.getName());
+                    TextView hashText = customView.findViewById(R.id.hash_text);
+                    ListView usersList = customView.findViewById(R.id.users_list);
+                    ImageButton customPositiveButton = customView.findViewById(R.id.custom_positive_button);
+                    ImageView hash_image = customView.findViewById(R.id.hash_image);
 
-                        hash_image.setImageBitmap(
-                                Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false));
+                    // create qrCode object
+                    QRCode qrCode = new QRCode(documentId);
+                    // Set the hash text
+                    hashText.setText(qrCode.getName());
 
-                        Log.e("Testing", scannedByList.toString());
+                    hash_image.setImageBitmap(
+                            Bitmap.createScaledBitmap(qrCode.getImage(), 100, 100, false));
+
+                    Log.e("Testing", scannedByList.toString());
 
                         if (scannedByList.isEmpty()) {
                             builder.setMessage("No other user has scanned this QR code yet.");
                         } else {
                             // Set the adapter for the ListView
+                            Log.e("scanned", scannedByList.toString());
                             MapQRCodeAdapter adapter = new MapQRCodeAdapter(requireActivity(), scannedByList);
                             usersList.setAdapter(adapter);
                         }
@@ -309,8 +318,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                     });
                     return true; // Return true to indicate that we've handled the marker click event
                 });
-
-            }
         });
     }
 

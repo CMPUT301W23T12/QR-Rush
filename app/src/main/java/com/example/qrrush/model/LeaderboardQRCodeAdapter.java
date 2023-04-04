@@ -94,35 +94,35 @@ public class LeaderboardQRCodeAdapter extends ArrayAdapter<QRCode> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Display other users who have scanned the same QR code as an AlertDialog
-                FirebaseWrapper.getScannedQRCodeDataLeader(qrCode.getHash(), (scannedByList) -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Scanned by...");
-
-                    if (scannedByList.isEmpty()) {
-                        builder.setMessage("No other user has scanned this QR code yet.");
-                    } else {
-                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
-
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int pos) {
-                                        // position is tracked by "pos" so now we pass the clickable profile
-                                        // We need to create a user object with that so we gotta use getUserData
-                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
-                                            // scannedByList.get(pos) returns the name -> STRING
-                                            // send the user object to the profile fragment
-                                            new ProfileDialogFragment(user.get()).show(
-                                                    ((AppCompatActivity) context).getSupportFragmentManager(),
-                                                    "");
-                                        });
-
-                                    }
-                                });
-                    }
-                    builder.setPositiveButton("OK", null);
-                    builder.show();
-                });
+//                // Display other users who have scanned the same QR code as an AlertDialog
+//                FirebaseWrapper.getScannedQRCodeDataLeader(qrCode.getHash(), (scannedByList) -> {
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                    builder.setTitle("Scanned by...");
+//
+//                    if (scannedByList.isEmpty()) {
+//                        builder.setMessage("No other user has scanned this QR code yet.");
+//                    } else {
+//                        builder.setItems(scannedByList.toArray(new String[scannedByList.size()]),
+//
+//                                new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int pos) {
+//                                        // position is tracked by "pos" so now we pass the clickable profile
+//                                        // We need to create a user object with that so we gotta use getUserData
+//                                        FirebaseWrapper.getUserData(scannedByList.get(pos), user -> {
+//                                            // scannedByList.get(pos) returns the name -> STRING
+//                                            // send the user object to the profile fragment
+//                                            new ProfileDialogFragment(user.get()).show(
+//                                                    ((AppCompatActivity) context).getSupportFragmentManager(),
+//                                                    "");
+//                                        });
+//
+//                                    }
+//                                });
+//                    }
+//                    builder.setPositiveButton("OK", null);
+//                    builder.show();
+//                });
 
             }
         });
