@@ -47,9 +47,9 @@ Engage & Compliment: Leave comments on other players' QR codes, creating a sense
 Developed for CMPUT 301 - Intro Software Engineering Course at the University of Alberta.
 
 Developed by:
-- [Mohamed Al-Nassirat]()
-- [Ayman El-Didi]()
-- [Adib Nasreddine]()
-- [Abdullahi Nur]()
-- [Musa Abdullahi]()
-- [Jimmy Lam]()
+- [Mohamed Al-Nassirat](https://github.com/MohamedAl-Nassirat)
+- [Ayman El-Didi](https://github.com/aeldidi)
+- [Adib Nasreddine](https://github.com/AdibNasreddine)
+- [Abdullahi Nur](https://github.com/AbdullahiNur2828)
+- [Musa Abdullahi](https://github.com/VelocityEX)
+- [Jimmy Lam](https://github.com/jimyl1)
