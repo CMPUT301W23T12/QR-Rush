@@ -10,7 +10,7 @@ A location-based game where players venture into the real world to scan QR codes
 
 ## Map
 
-Navigate the real-world map to locate and scan QR codes, each contributing to your score. Uncover common to epic QR codes to add them to your collection.
+Navigate the real-world map to locate and scan QR codes, each contributing to your score. Uncover common to epic QR codes to add them to your collection. Players also have the ability to view where others users qr codes have been scanned (if the scanned user wishes to share the location of the QRCode) and scan that same QR code, or better yet visit their profile!
 
 ## Profiles
 
