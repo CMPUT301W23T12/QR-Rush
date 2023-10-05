@@ -1,7 +1,7 @@
 QR Rush
 =======
 
-![QR Rush Logo](/doc/2023-09-12.mp4)
+![Video Demo](/doc/2023-09-12.mp4)
 
 Welcome to **QR Rush**! Dive into the world of QR codes and embark on a
 thrilling adventure to scan, collect, and compete. QR Rush offers an exciting
